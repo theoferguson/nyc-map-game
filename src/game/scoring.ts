@@ -5,11 +5,22 @@ export type LngLat = { lng: number; lat: number }
 /**
  * Findability varies enormously by class -- a park is visible from orbit, a deli's
  * roof tells you nothing -- so the decay curve is per class rather than global.
+ *
+ * Calibrated from play rather than from the spec's original figures, which decayed
+ * far too fast: they scored a guess half an avenue from the answer at 58, when that
+ * is essentially the right block. The anchor now is that ~15 short blocks out earns
+ * a middling score, and a block or two out still reads as a hit.
+ *
+ *   venue @ 15 blocks (1.2km) -> 58        venue @ 2 blocks (160m) -> 93
+ *
+ * `area` stays the most forgiving because it is scored against a centroid: until
+ * polygon containment lands, tapping the south end of Central Park is a kilometre
+ * from its middle and must not be punished as a miss.
  */
 const LAMBDA: Record<LocationClass, number> = {
-  area: 400,
-  landmark: 250,
-  venue: 350,
+  area: 2500,
+  landmark: 1600,
+  venue: 2200,
 }
 
 /** Inside this radius every guess is a bullseye; below it the curve is noise. */
@@ -61,8 +72,8 @@ function dominantAxis(guess: LngLat, answer: LngLat): Miss {
   }
 }
 
-const plural = (n: number, axis: Miss['axis']) =>
-  n === 1 ? (axis === 'avenues' ? 'avenue' : 'block') : axis
+const singular = (axis: Miss['axis']) => (axis === 'avenues' ? 'avenue' : 'block')
+const article = (axis: Miss['axis']) => (axis === 'avenues' ? 'an' : 'a')
 
 /** The emotional payoff of the round -- worth writing rather than templating. */
 export function describeMiss(guess: LngLat, answer: LngLat): string {
@@ -77,8 +88,8 @@ export function describeMiss(guess: LngLat, answer: LngLat): string {
 
   if (feet <= 150) return `${feet} feet off — same block.`
   if (blocks < 0.4) return `${feet} feet off, still on the right block.`
-  if (blocks < 0.8) return `Half a ${plural(1, axis)} off, about ${feet} feet.`
-  if (blocks < 1.5) return `One ${plural(1, axis)} off.`
+  if (blocks < 0.8) return `Half ${article(axis)} ${singular(axis)} off, about ${feet} feet.`
+  if (blocks < 1.5) return `One ${singular(axis)} off.`
   if (blocks < 2.5) return `Two ${axis} off.`
   if (blocks < 6) return `${Math.round(blocks)} ${axis} off.`
   if (blocks < 12) return `${Math.round(blocks)} ${axis} off — wrong end of the neighborhood.`
