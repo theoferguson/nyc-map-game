@@ -211,3 +211,22 @@ account work happens rather than bolted onto the static build.
 *Note:* playing tomorrow's locations early means testers cannot play them fresh on the day,
 so either the harvest pipeline stays ahead enough to burn days cheaply, or beta days come
 from a separate pool that never enters the main rotation. Decide before content is scarce.
+
+**Scoring recalibrated (2026-08-19).** The spec's lambdas (area 400, landmark 250, venue
+350) decayed far too fast to match how a miss feels on the ground: a guess half an avenue
+from the Louis Armstrong House -- essentially the right block -- scored 58, and one block
+out scored 80. Retuned to area 2500, landmark 1600, venue 2200, anchored on ~15 short blocks
+earning a middling score rather than near-zero.
+
+| miss            | venue was | now | landmark was | now |
+|-----------------|-----------|-----|--------------|-----|
+| 1 block         | 80        | 96  | 73           | 95  |
+| half an avenue  | 58        | 92  | 47           | 89  |
+| 5 blocks        | 32        | 83  | 20           | 78  |
+| 15 blocks       | 3         | 58  | 1            | 47  |
+| 3 miles         | 0         | 11  | 0            | 5   |
+| wrong borough   | 0         | 1   | 0            | 0   |
+
+The far end still has to stay near zero or tapping the middle of Manhattan every round
+becomes a viable strategy -- that is the constraint the tuning is squeezed against, and the
+anchors are pinned in `scoring.test.ts` so a future retune has to be deliberate.

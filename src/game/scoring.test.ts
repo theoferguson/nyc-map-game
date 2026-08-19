@@ -34,12 +34,31 @@ test('scoring is bullseye inside 40m and decays per class', () => {
   expect(roundScore(20_000, 'area')).toBe(0)
 })
 
+test('the curve is calibrated to how a miss actually feels', () => {
+  // The anchors the tuning was derived from. If a future retune moves these,
+  // it should be a deliberate decision, not a side effect.
+  expect(roundScore(1200, 'venue')).toBe(58)   // ~15 short blocks -> middling
+  expect(roundScore(160, 'venue')).toBe(93)    // ~2 blocks -> still a hit
+
+  // Being on the right block must never read as a failure.
+  expect(roundScore(190, 'venue')).toBeGreaterThan(85)
+  expect(roundScore(190, 'landmark')).toBeGreaterThan(85)
+
+  // ...but the wrong borough must still be worth close to nothing, or tapping
+  // the middle of Manhattan every round becomes a viable strategy.
+  expect(roundScore(10_000, 'venue')).toBeLessThan(5)
+})
+
 test('miss copy follows the dominant axis and names it correctly', () => {
   expect(describeMiss(ESB, ESB)).toBe('Dead on.')
 
   // Due west: crossing an avenue, so it must say avenue, not block.
   expect(describeMiss(SIXTH_AVE, ESB)).toMatch(/avenue/)
   expect(describeMiss(SIXTH_AVE, ESB)).not.toMatch(/block/)
+
+  // "Half a avenue" -- the article has to follow the noun.
+  const halfAve = { lat: ESB.lat, lng: ESB.lng - 190 / (111_320 * Math.cos((40.75 * Math.PI) / 180)) }
+  expect(describeMiss(halfAve, ESB)).toBe('Half an avenue off, about 620 feet.')
 
   // Due north: crossing streets, so it must say blocks.
   expect(describeMiss(FOUR_NORTH, ESB)).toMatch(/blocks/)
