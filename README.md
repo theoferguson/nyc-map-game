@@ -1,32 +1,82 @@
-# React + TypeScript + Vite
+# NYC Daily Map Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A daily browser game in the Wordle family. Five significant New York locations are named;
+you find each one on unlabelled satellite imagery and tap it. Scoring is by proximity,
+feedback is immediate, and the day ends with every answer on the map at once.
 
-Currently, two official plugins are available:
+No accounts, no backend, no database. Static files and `localStorage`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Running it
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev          # http://localhost:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+| script | what it does |
+|---|---|
+| `npm run dev` | dev server (builds puzzles first) |
+| `npm run build` | typecheck, build puzzles, bundle |
+| `npm test` | unit tests |
+| `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
+| `npm run puzzles:build` | encodes `puzzles/` into `public/puzzles/` |
+
+`check:tiles` is worth running on a schedule. The imagery services are third-party and
+break silently — NYC dropped every survey after 2018 from one host without notice, and a
+dead endpoint takes the whole game with it.
+
+## Imagery
+
+Satellite only. **No label layer is ever loaded** — labels are the answers. Zoom is capped
+at z18, past which painted rooftop signage starts to become legible.
+
+Two city surveys are served 50/50 and sticky per browser, as an experiment in whether
+fresher imagery makes restaurant and bar rounds fairer:
+
+- NYC DoITT aerial survey, 2018
+- NYC orthoimagery, 2024
+
+Esri World Imagery draws underneath both, because the city surveys stop at the city line.
+The survey in use is named in the bottom-left corner.
+
+## Puzzle content
+
+Days are authored as plain JSON in `puzzles/` and encoded into `public/puzzles/` at build
+time. Each location carries coordinates, a class (`area` / `landmark` / `venue`) that sets
+its scoring curve, tags, a short fact and a source.
+
+**The answers are in the client, and the obfuscation is not security.** Coordinates are
+XOR'd against the puzzle date and base64'd, which stops casual devtools peeking and nothing
+more — the decoder is `src/data/loadPuzzle.ts`, right here in the open. Wordle shipped its
+entire word list and survived; this is the same bet.
+
+## Layout
+
+```
+src/game/     scoring curve, miss copy, share string, telemetry
+src/map/      MapLibre setup, imagery sources, recap card placement
+src/data/     puzzle schema, loading, decoding
+puzzles/      authored days (plain)
+scripts/      puzzle encoder, imagery health check
+PLAN.md       milestones, decisions and why they were made
+```
+
+`PLAN.md` is the interesting file. It records where the original spec turned out to be
+wrong and what replaced it.
+
+## Privacy
+
+Gameplay events buffer in `localStorage` and **nothing is transmitted** — there is no
+backend to transmit to. No accounts, no contact details, no device geolocation, no IP. The
+only coordinates recorded are the ones a player deliberately taps inside the game.
+
+## Licence
+
+Code is MIT (see `LICENSE`).
+
+Location facts are rewritten from Wikipedia, which is CC BY-SA 4.0. Derived text carries
+the same terms, so **the contents of `puzzles/` are CC BY-SA 4.0**, with per-location
+attribution in each entry's `sourceAttribution` field.
+
+Map imagery belongs to its providers and is attributed in-app; it is not covered by either
+licence here.

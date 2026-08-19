@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "check:tiles": "node scripts/check-tiles.mjs",
     "test": "vitest run",
-    "puzzles:build": "node scripts/build-puzzles.mjs"
+    "puzzles:build": "node scripts/build-puzzles.mjs",
+    "predev": "npm run puzzles:build",
+    "pretest": "npm run puzzles:build"
   },
   "dependencies": {
     "maplibre-gl": "^6.4.1",
