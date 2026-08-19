@@ -38,6 +38,9 @@ const MIN_ZOOM = 9.5
  * pinch-out back to the city.
  */
 const REVEAL_MAX_ZOOM = 15
+
+/** Mirrors the reveal's zoom-in, so the round ends by running it backwards. */
+const RESET_MS = 900
 const FRAMING_PADDING = 20
 
 /**
@@ -80,6 +83,7 @@ export function MapView({
   const standardFraming = useRef<CenterZoomBearing | null>(null)
   const pins = useRef<Marker[]>([])
   const pendingPlace = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const resetting = useRef(false)
   const [loaded, setLoaded] = useState<MapLibreMap | null>(null)
   const [moveTick, setMoveTick] = useState(0)
 
@@ -149,7 +153,9 @@ export function MapView({
       m.on('click', (e) => {
         // Gated here rather than in the caller: the pin is dropped from this
         // handler, so a guard further downstream leaves a stray pin behind.
-        if (!canPlace.current) return
+        // A tap mid-zoom-out would commit wherever the camera happens to be
+        // pointing at that instant, which is not where the player aimed.
+        if (!canPlace.current || resetting.current) return
         const p = { lng: e.lngLat.lng, lat: e.lngLat.lat }
         if (pendingPlace.current) clearTimeout(pendingPlace.current)
         pendingPlace.current = setTimeout(() => {
@@ -220,7 +226,19 @@ export function MapView({
   useImperativeHandle(ref, () => ({
     resetCamera: () => {
       const m = map.current
-      if (m && standardFraming.current) m.jumpTo(standardFraming.current)
+      if (!m || !standardFraming.current) return
+
+      // Eased rather than cut, so the round closes by reversing the reveal's
+      // zoom. The destination is still the one camera computed at startup, so
+      // every round starts from an identical framing however it got there.
+      resetting.current = true
+      m.easeTo({ ...standardFraming.current, duration: RESET_MS })
+
+      // Also fires if the player grabs the map mid-flight, which aborts the
+      // ease -- they have taken over, so hand control straight back.
+      m.once('moveend', () => {
+        resetting.current = false
+      })
     },
 
     revealAnswer: (guess, answer) => {
