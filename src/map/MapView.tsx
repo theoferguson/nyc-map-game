@@ -184,6 +184,8 @@ export function MapView({
       })
 
       map.current = m
+      // Dev-only handle so browser-driven tests can assert on camera state.
+      if (import.meta.env.DEV) (window as unknown as { __map?: unknown }).__map = m
 
       // Captured immediately, and replayed verbatim at the start of every round.
       // Recomputing per round, or easing into it, lets the previous reveal leak
@@ -211,14 +213,17 @@ export function MapView({
   }, [])
 
   // The camera is the external system; subscribing is all the effect does.
+  // Only while cards are on screen -- during normal play there is nothing
+  // anchored to the map, so waking React on every frame buys nothing.
+  const hasOverlays = overlays.length > 0
   useEffect(() => {
-    if (!loaded) return
+    if (!loaded || !hasOverlays) return
     const bump = () => setMoveTick((t) => t + 1)
     loaded.on('move', bump)
     return () => {
       loaded.off('move', bump)
     }
-  }, [loaded])
+  }, [loaded, hasOverlays])
 
   // Card heights vary by more than 2x with fact length, so they are measured
   // rather than estimated. An estimate here silently overlaps the tall ones.
@@ -238,7 +243,10 @@ export function MapView({
         Object.entries(measured).every(([k, v]) => prev[k] === v)
       return same ? prev : measured
     })
-  }, [overlays, moveTick])
+    // Deliberately NOT keyed on camera movement: offsetHeight forces a
+    // synchronous layout, and card height cannot change from panning. Measuring
+    // per move meant five forced layouts every frame of every drag.
+  }, [overlays])
 
   // Card positions are derived, not stored: project each coordinate to screen
   // space and re-derive whenever the camera moves. Only five cards, and only at

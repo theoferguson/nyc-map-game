@@ -35,29 +35,49 @@ export function deoverlap(pins: Card[], viewportH = Infinity): Placed[] {
 
   // North to south, so the stack order matches how the map reads.
   for (const pin of [...pins].sort((a, b) => a.y - b.y)) {
-    // Never let a card hang off the top of the screen -- it is unreachable
-    // there, because the recap framing is already at the edge of what the
-    // camera is allowed to show.
-    const card = {
-      ...pin,
-      y: Math.max(pin.y - PIN_CLEARANCE, pin.h + CARD_GAP),
-    }
+    // Integer pixels throughout, and not for crispness.
+    //
+    // A card is pushed to `other.y + CARD_GAP + h`, which clears `other` only if
+    // `(other.y + CARD_GAP + h) - h` recovers `other.y + CARD_GAP` exactly. In
+    // floating point it does not: projected coordinates are fractional, the
+    // round trip lands an ULP low, the card still tests as overlapping, and the
+    // loop below re-assigns it the same value forever. That froze the tab at the
+    // end of every game. Integers make the cancellation exact.
+    const x0 = Math.round(pin.x)
+    const h = Math.round(pin.h)
+    const anchorY = Math.round(pin.y)
 
-    let moved = true
-    while (moved) {
-      moved = false
-      for (const placed of done) {
-        if (overlaps(placed, card)) {
-          card.y = placed.y + CARD_GAP + card.h
+    let x = x0
+    let y = Math.max(anchorY - PIN_CLEARANCE, h + CARD_GAP)
+    let column = 0
+
+    // Bounded as a backstop: a freeze is far worse than a card in the wrong
+    // place, and this loop is one arithmetic slip away from never ending.
+    for (let pass = 0; pass < 64; pass++) {
+      let moved = false
+      for (const other of done) {
+        if (overlaps(other, { id: pin.id, x, y, h })) {
+          y = other.y + CARD_GAP + h
           moved = true
         }
       }
+
+      // Five cards of two hundred-odd pixels need more stack than a phone is
+      // tall, so a full column starts another one beside it. Folding back to the
+      // top instead -- the obvious move -- just drops the card onto the ones
+      // already placed there, which is the overlap this whole function exists to
+      // prevent.
+      if (y > viewportH) {
+        column += 1
+        const step = Math.ceil(column / 2) * (CARD_W + CARD_GAP)
+        x = x0 + (column % 2 === 1 ? step : -step)
+        y = h + CARD_GAP
+        moved = true
+      }
+      if (!moved) break
     }
 
-    // If the stack has run off the bottom, fold back to the top of the column.
-    if (card.y > viewportH) card.y = pin.h + CARD_GAP
-
-    done.push({ ...card, anchorX: pin.x, anchorY: pin.y })
+    done.push({ id: pin.id, x, y, h, anchorX: x0, anchorY })
   }
   return done
 }

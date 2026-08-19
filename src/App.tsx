@@ -139,7 +139,10 @@ function FactCard({
   index: number
 }) {
   return (
-    <div className="w-full rounded-lg bg-neutral-900/92 p-2.5 text-left text-white shadow-xl ring-1 ring-white/15 backdrop-blur">
+    // Opaque rather than blurred on purpose: a backdrop-filter over satellite
+    // imagery is repainted on every frame the card moves, and five of them made
+    // panning the recap unusable.
+    <div className="w-full rounded-lg bg-neutral-900 p-2.5 text-left text-white shadow-xl ring-1 ring-white/15">
       <div className="flex items-baseline gap-1.5">
         <span className="text-[10px] font-semibold tabular-nums text-neutral-500">
           {index + 1}

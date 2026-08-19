@@ -331,3 +331,24 @@ pulls back further than the city -- rendered everything outside the five borough
 void, which reads as a broken map and made panning feel pointless. Esri World Imagery now
 draws underneath to fill the surround, with DoITT's sharper imagery on top wherever it has
 coverage. Both attributions are already carried.
+
+**The recap froze the tab (2026-08-19).** "The map doesn't pan" was not a pan bug at all --
+the page was locked solid. `deoverlap` had an infinite loop, and it hit on the fifth Next of
+every game.
+
+The loop pushes a card to `other.y + CARD_GAP + h`, which clears `other` only if
+`(other.y + CARD_GAP + h) - h` recovers `other.y + CARD_GAP` exactly. In floating point it
+does not. Projected coordinates are fractional, the round trip lands an ULP low, the card
+still tests as overlapping, and it is reassigned the identical value forever. The
+termination argument is sound in exact arithmetic and wrong in doubles. Fixed by rounding to
+integer pixels, where the cancellation is exact, plus a bounded pass count as a backstop --
+a card in the wrong place beats a frozen tab.
+
+Found by bisecting in a real browser after two wrong guesses from reading the code. Loading
+the recap state directly was fine; only reaching it through play froze, because that path
+produced the fractional geometry that triggered it.
+
+**Overflow columns.** Five cards of two hundred-odd pixels need ~1100px of stack and a phone
+gives ~800. The previous "fold back to the top of the column" overflow dropped cards onto
+the ones already placed there -- the exact overlap the function exists to prevent. A full
+column now starts another beside it, alternating right and left of the pin.
