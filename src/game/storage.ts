@@ -65,9 +65,16 @@ export type Progress = { guesses: { lng: number; lat: number }[] }
 export function loadProgress(date: string): Progress | null {
   const saved = storage.parse<Progress | null>(PROGRESS_PREFIX + date, null)
   if (!saved || !Array.isArray(saved.guesses)) return null
-  const guesses = saved.guesses.filter(
-    (g) => typeof g?.lng === 'number' && typeof g?.lat === 'number',
-  )
+
+  // Truncated at the first bad entry, never filtered. Guess N is scored against
+  // location N, so dropping a corrupt one from the middle would re-pair every
+  // later guess with the wrong place -- wrong distance, wrong score, wrong copy,
+  // and no sign anything went wrong.
+  const guesses: Progress['guesses'] = []
+  for (const g of saved.guesses) {
+    if (!Number.isFinite(g?.lng) || !Number.isFinite(g?.lat)) break
+    guesses.push({ lng: g.lng, lat: g.lat })
+  }
   return guesses.length ? { guesses } : null
 }
 
@@ -109,7 +116,10 @@ const EMPTY: Stats = {
 }
 
 export function loadStats(): Stats {
-  const saved = storage.parse<Partial<Stats>>(STATS_KEY, {})
+  // `?? {}` is load-bearing: the string "null" parses cleanly to null, which
+  // would throw below -- during render, via useState(loadStats) -- and leave a
+  // blank page fixable only by clearing site data.
+  const saved = storage.parse<Partial<Stats> | null>(STATS_KEY, {}) ?? {}
   return {
     ...EMPTY,
     ...saved,
