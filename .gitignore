@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# generated from puzzles/ by npm run puzzles:build
+public/puzzles/
