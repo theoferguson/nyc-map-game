@@ -496,3 +496,53 @@ that IP geolocation is explicitly personal data under GDPR/UK GDPR even before i
 to anything else. Combined with the neighbourhood-familiarity inference above, the two
 together get closer to identifying where somebody lives than either does alone -- which is
 the version worth having a retention policy for before it exists rather than after.
+
+---
+
+## 10. M4 — persistence and rollover (2026-08-19)
+
+**The day is New York's day, for everyone.** `src/game/date.ts` derives the puzzle date from
+`America/New_York` via `Intl`, no date library. Not UTC -- a player in the city would roll to
+tomorrow's puzzle at 8pm -- and not the device clock, which would hand a player in Berlin New
+York's Tuesday on their Wednesday.
+
+The countdown resolves the next New York midnight in two passes: the first uses the current
+UTC offset, the second uses the offset actually in force at the instant found. They differ
+across a clock change, which is why the day before one is 23 hours long and the day before
+the other is 25. Both are pinned by test against the real 2026 transitions.
+
+**Only the taps are saved.** `nycmap:progress:YYYY-MM-DD` stores guessed coordinates and
+nothing else; distance, score and miss copy are replayed through the live scoring rules on
+resume via a single `scoreGuess`. Storing the numbers instead would copy the scoring rules
+into storage, and the recalibration earlier in this file would have left resumed games
+showing totals the game could no longer produce.
+
+Progress is written on commit, not on Next, so a refresh during the reveal cannot cost a
+round already played. Older days are pruned on save -- one key per day would otherwise
+accumulate for as long as somebody keeps playing.
+
+*Simplification:* a refresh during a reveal resumes at the start of the next round rather
+than restoring the reveal card. Every score survives, which is the part that matters; the
+player loses only a card they had just read.
+
+**Stats are idempotent per day.** `recordGame` no-ops if that date is already recorded, so
+reopening the results screen cannot inflate played count or streak. Streaks continue when the
+last completed day is the calendar day before, which is why `previousDate` handles month,
+year and leap-day boundaries.
+
+**A landing screen, including on resume.** A player who refreshes gets `Resume` rather than
+being dropped straight back on the map wondering whether their game survived. A finished game
+bypasses the landing entirely and restores the recap.
+
+### Two bugs the browser test caught that unit tests could not
+
+**Reloading a finished game restored the cards but no answer pins.** The recap effect fired as
+soon as `puzzle` and `over` were true, which on a cold load beats the map into existence --
+the map is built behind an async tile probe. `map.current?.showAllAnswers()` then no-opped
+silently. MapView now reports readiness through `onReady`, and the effect waits for it. This
+is the second time an optional-chained call on the map handle has failed silently rather than
+loudly; anything that drives the map on first paint has to wait for it.
+
+**Restoring a finished game added a second set of pins.** `next()` and the restore effect both
+called `showAllAnswers`. Now only the effect does, so fresh completion and reload follow one
+path.

@@ -70,11 +70,15 @@ export type MapHandle = {
 export function MapView({
   ref,
   onPlace,
+  onReady,
   enabled = true,
   overlays = [],
 }: {
   ref?: Ref<MapHandle>
   onPlace: (p: LngLat) => void
+  /** The map is built after an async tile probe, so callers that need to drive
+   *  it on first paint -- restoring a finished game, say -- have to wait. */
+  onReady?: () => void
   /** False during a reveal and after the game -- taps must not drop a pin. */
   enabled?: boolean
   overlays?: Overlay[]
@@ -94,9 +98,11 @@ export function MapView({
   // so read the current values through refs rather than rebuilding the map.
   const place = useRef(onPlace)
   const canPlace = useRef(enabled)
+  const ready = useRef(onReady)
   useEffect(() => {
     place.current = onPlace
     canPlace.current = enabled
+    ready.current = onReady
   })
 
   const addPin = (m: MapLibreMap, p: LngLat, color: string) => {
@@ -202,6 +208,7 @@ export function MapView({
           bearing: 0,
         }
       setLoaded(m)
+      ready.current?.()
     })
 
     return () => {

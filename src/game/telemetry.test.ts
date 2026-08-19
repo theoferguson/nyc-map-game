@@ -5,6 +5,11 @@ const store = new Map<string, string>()
 const workingStorage = {
   getItem: (k: string) => store.get(k) ?? null,
   setItem: (k: string, v: string) => void store.set(k, v),
+  removeItem: (k: string) => void store.delete(k),
+  key: (i: number) => [...store.keys()][i] ?? null,
+  get length() {
+    return store.size
+  },
 }
 vi.stubGlobal('localStorage', workingStorage)
 vi.stubGlobal('crypto', { randomUUID: () => 'test-uuid' })
@@ -13,6 +18,7 @@ vi.stubGlobal('window', { location: { search: '?utm_source=twitter&utm_medium=so
 vi.stubGlobal('navigator', { language: 'en-US' })
 
 const { track, drain } = await import('./telemetry')
+const { loadProgress, saveProgress, loadStats, recordGame } = await import('./storage')
 const { imageryVariant, VARIANTS } = await import('../map/tiles')
 
 // Two tests below break storage and crypto on purpose; restore them each time
@@ -100,4 +106,62 @@ test('an install id is still issued without a secure context', () => {
   store.clear()
   expect(() => track('game_start', {})).not.toThrow()
   expect(drain()[0].installId).toMatch(/^anon-/)
+})
+
+/* ------------------------------------------------------- progress & stats */
+
+test('a mid-game refresh resumes with every earlier guess intact', () => {
+  const guesses = [
+    { lng: -73.98, lat: 40.75 },
+    { lng: -73.92, lat: 40.83 },
+    { lng: -73.97, lat: 40.57 },
+  ]
+  saveProgress('2026-08-19', { guesses })
+  expect(loadProgress('2026-08-19')?.guesses).toEqual(guesses)
+  // A different day is a different puzzle, never a partial resume.
+  expect(loadProgress('2026-08-20')).toBeNull()
+})
+
+test('only the current day is kept, so saves cannot pile up forever', () => {
+  saveProgress('2026-08-17', { guesses: [{ lng: -74, lat: 40.7 }] })
+  saveProgress('2026-08-18', { guesses: [{ lng: -74, lat: 40.7 }] })
+  saveProgress('2026-08-19', { guesses: [{ lng: -74, lat: 40.7 }] })
+  expect([...store.keys()].filter((k) => k.startsWith('nycmap:progress:'))).toEqual([
+    'nycmap:progress:2026-08-19',
+  ])
+})
+
+test('corrupt or hand-edited progress resumes as a fresh game', () => {
+  store.set('nycmap:progress:2026-08-19', '{"guesses": "not an array"}')
+  expect(loadProgress('2026-08-19')).toBeNull()
+  store.set('nycmap:progress:2026-08-19', '{"guesses":[{"lng":"x","lat":null}]}')
+  expect(loadProgress('2026-08-19')).toBeNull()
+})
+
+test('streaks continue across consecutive days and reset after a gap', () => {
+  expect(recordGame('2026-08-17', 700).streak).toBe(1)
+  expect(recordGame('2026-08-18', 800).streak).toBe(2)
+  expect(recordGame('2026-08-19', 900).streak).toBe(3)
+  // Skipped the 20th.
+  const after = recordGame('2026-08-21', 600)
+  expect(after.streak).toBe(1)
+  expect(after.maxStreak).toBe(3)
+  expect(after.played).toBe(4)
+})
+
+test('replaying the results screen does not inflate the streak', () => {
+  recordGame('2026-08-19', 855)
+  const again = recordGame('2026-08-19', 855)
+  expect(again.played).toBe(1)
+  expect(again.streak).toBe(1)
+  expect(again.totalScore).toBe(855)
+})
+
+test('score distribution buckets every total including a perfect game', () => {
+  recordGame('2026-08-15', 0)
+  recordGame('2026-08-16', 1000)
+  const stats = loadStats()
+  expect(stats.distribution[0]).toBe(1)
+  expect(stats.distribution[4]).toBe(1)
+  expect(stats.distribution.reduce((a, b) => a + b, 0)).toBe(2)
 })

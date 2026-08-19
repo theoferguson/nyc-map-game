@@ -49,7 +49,7 @@ export const VARIANTS: Imagery[] = [
   },
 ]
 
-import { storage } from '../game/telemetry'
+import { storage } from '../game/storage'
 
 const VARIANT_KEY = 'nycmap:imagery'
 

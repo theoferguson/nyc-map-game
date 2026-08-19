@@ -45,6 +45,8 @@ export function decodePuzzle(raw: EncodedPuzzle): Puzzle {
 
 export async function loadPuzzle(date: string): Promise<Puzzle> {
   const res = await fetch(`/puzzles/${date}.json`)
-  if (!res.ok) throw new Error(`No puzzle for ${date} (${res.status})`)
+  // Reachable in normal use the moment the calendar passes the last authored
+  // day, so it says something a player can act on rather than a status code.
+  if (!res.ok) throw new Error(`No puzzle for ${date} yet — check back soon.`)
   return decodePuzzle(await res.json())
 }
