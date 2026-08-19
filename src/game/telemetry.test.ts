@@ -9,6 +9,7 @@ vi.stubGlobal('localStorage', {
 vi.stubGlobal('crypto', { randomUUID: () => 'test-uuid' })
 vi.stubGlobal('document', { referrer: '' })
 vi.stubGlobal('window', { location: { search: '?utm_source=twitter&utm_medium=social' } })
+vi.stubGlobal('navigator', { language: 'en-US' })
 
 const { track, drain } = await import('./telemetry')
 const { imageryVariant, VARIANTS } = await import('../map/tiles')
@@ -39,6 +40,17 @@ test('first-touch attribution is captured once, on game_start only', () => {
   // A later round must not restate attribution, and a second session must not
   // overwrite where the player originally came from.
   expect(round.props.utm_source).toBeUndefined()
+})
+
+test('game_start carries a coarse region, and no raw IP or precise location', () => {
+  track('game_start', { puzzleNumber: 1 })
+  const [start] = drain()
+  expect(start.props.timezone).toBeTruthy()
+  expect(start.props.locale).toBe('en-US')
+  // Coarse only: nothing that pins the player to an address.
+  expect(start.props).not.toHaveProperty('ip')
+  expect(start.props).not.toHaveProperty('lat')
+  expect(start.props).not.toHaveProperty('lng')
 })
 
 test('drain empties the queue so events cannot be sent twice', () => {

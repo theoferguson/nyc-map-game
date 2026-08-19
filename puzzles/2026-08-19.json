@@ -14,7 +14,14 @@
       "difficulty": 1,
       "factShort": "It went up in 410 days during the depths of the Depression, a pace helped along by the fact that most of its floors were identical. It then sat mostly empty for years, earning the nickname the Empty State Building.",
       "sourceUrl": "https://en.wikipedia.org/wiki/Empire_State_Building",
-      "sourceAttribution": "Wikipedia, CC BY-SA 4.0"
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "tags": [
+        "midtown",
+        "skyscraper",
+        "art-deco",
+        "1930s",
+        "observation-deck"
+      ]
     },
     {
       "id": "yankee-stadium",
@@ -27,7 +34,14 @@
       "difficulty": 2,
       "factShort": "The current stadium opened in 2009 across the street from the 1923 original, which was demolished and turned into a public park. The old field's home plate is marked in the grass where it stood.",
       "sourceUrl": "https://en.wikipedia.org/wiki/Yankee_Stadium",
-      "sourceAttribution": "Wikipedia, CC BY-SA 4.0"
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "tags": [
+        "south-bronx",
+        "stadium",
+        "baseball",
+        "2000s",
+        "sports"
+      ]
     },
     {
       "id": "wonder-wheel",
@@ -40,7 +54,14 @@
       "difficulty": 3,
       "factShort": "Built in 1920 and never once shut down for mechanical failure, the Wonder Wheel carries 24 cars, 16 of which slide along curved tracks as the wheel turns. It kept running through the decades when the rest of Coney Island was falling apart.",
       "sourceUrl": "https://en.wikipedia.org/wiki/Wonder_Wheel",
-      "sourceAttribution": "Wikipedia, CC BY-SA 4.0"
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "tags": [
+        "coney-island",
+        "amusement-park",
+        "waterfront",
+        "1920s",
+        "landmark-ride"
+      ]
     },
     {
       "id": "katzs-delicatessen",
@@ -53,7 +74,14 @@
       "difficulty": 4,
       "factShort": "Open on Houston Street since 1888, Katz's still hands you a paper ticket at the door that you surrender on the way out. During the Second World War it mailed salami to soldiers overseas under the slogan it still hangs on the wall.",
       "sourceUrl": "https://en.wikipedia.org/wiki/Katz%27s_Delicatessen",
-      "sourceAttribution": "Wikipedia, CC BY-SA 4.0"
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "tags": [
+        "lower-east-side",
+        "deli",
+        "jewish-new-york",
+        "1880s",
+        "film-location"
+      ]
     },
     {
       "id": "louis-armstrong-house",
@@ -66,7 +94,14 @@
       "difficulty": 5,
       "factShort": "Armstrong could have lived anywhere and chose a modest brick house in Corona, Queens, staying from 1943 until his death in 1971. His wife Lucille bought it while he was on tour; he saw it for the first time by taxi at night.",
       "sourceUrl": "https://en.wikipedia.org/wiki/Louis_Armstrong_House",
-      "sourceAttribution": "Wikipedia, CC BY-SA 4.0"
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "tags": [
+        "corona",
+        "house-museum",
+        "jazz",
+        "music-history",
+        "1940s"
+      ]
     }
   ]
 }

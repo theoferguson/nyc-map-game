@@ -69,6 +69,7 @@ export default function App() {
       class: location.class,
       borough: location.borough,
       difficulty: location.difficulty,
+      tags: location.tags,
       distanceM: Math.round(distanceM),
       score,
       msToGuess: Date.now() - roundStarted.current,

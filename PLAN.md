@@ -454,12 +454,13 @@ individual places: this player is strong on Lower East Side venues, on pre-war c
 buildings, on Queens generally. Individual-location affinity is an output of the category
 model, not an input to it.
 
-**That requires tagging locations, which is the one real cost.** `class` and `borough` are too
-coarse -- they cannot distinguish a deli from a nightclub, or SoHo from Inwood. A `tags` array
-on each location (neighbourhood, era, venue type, theme) is what makes the categories exist.
-It is a few words per entry at authoring time, unlike the `factLong` paragraph just dropped,
-and it also feeds themed days and the difficulty tiers. Worth adding to the schema before much
-content is written, since retrofitting tags across accumulated days is the expensive version.
+**Tagging locations is the enabling piece, and it is now in the schema.** `class` and `borough`
+are too coarse -- they cannot distinguish a deli from a nightclub, or SoHo from Inwood. Every
+location carries a `tags` array (neighbourhood, era, venue type, theme); a test rejects any
+day with fewer than three tags per location, because retrofitting them across accumulated
+content is the expensive version. Tags ride along on `round_complete`, so the affinity model
+has its categories from the first day of real play. They also feed themed days and difficulty
+tiering.
 
 **Consent basis changes here, and this is the part to get right before building it.** Product
 analytics that improve the game are one thing; profiling individuals to target advertising is
@@ -469,3 +470,29 @@ these profiles to real identities and make them personal data outright; and infe
 neighbourhood familiarity is close to a home-location inference, which is sensitive in a way
 raw game scores are not. Decide the consent flow and the retention window before the profiles
 exist, because deleting them afterwards is much harder than not building them yet.
+
+### Player location
+
+**What is captured now:** `game_start` carries IANA timezone and browser locale. No third
+party, no network call, nothing about the player's IP leaving the device.
+
+**What that is actually worth:** timezone answers "which part of the world", not "which
+neighbourhood". `America/New_York` spans Maine to Florida, so it cannot separate a local from
+a visitor -- which is the question that would most explain scores, and probably the single
+most valuable bit this game could know about a player.
+
+**Why IP geolocation is not wired up yet.** There is no backend, and resolving an IP from the
+browser means calling a third-party lookup service: every player's IP handed to a vendor, on
+a request ad blockers routinely block, with rate limits behind it. The server-side version is
+better on every axis -- it already sees the request IP, resolves it without involving anyone
+else, and can store city/region while discarding the address. So this lands with the backend
+rather than being bolted onto a static build.
+
+*If it is wanted before then*, a client-side vendor lookup is a small change -- it is a
+deliberate trade, not a technical obstacle, and worth making knowingly.
+
+**When it does land:** store city or metro, not coordinates; never retain the raw IP; and note
+that IP geolocation is explicitly personal data under GDPR/UK GDPR even before it is joined
+to anything else. Combined with the neighbourhood-familiarity inference above, the two
+together get closer to identifying where somebody lives than either does alone -- which is
+the version worth having a retention policy for before it exists rather than after.
