@@ -352,3 +352,78 @@ produced the fractional geometry that triggered it.
 gives ~800. The previous "fold back to the top of the column" overflow dropped cards onto
 the ones already placed there -- the exact overlap the function exists to prevent. A full
 column now starts another beside it, alternating right and left of the pin.
+
+---
+
+## 9. Imagery experiment and data capture (2026-08-19)
+
+**`factLong` dropped.** It lost its home when the recap cards became inert, and carrying an
+unused long-form write-up is real authoring cost on every one of ~1,800 locations a year.
+Removed from the schema and from the one built day. `factShort` is what the recap shows.
+
+### The imagery A/B
+
+Two city surveys, assigned 50/50 and **sticky per browser** in `nycmap:imagery`:
+
+| variant | source | wordmark |
+|---|---|---|
+| `doitt-2018` | `maps.nyc.gov` DoITT photo/2018 | NYC aerial · 2018 |
+| `nyc-2024` | `tiles.arcgis.com` NYC_Orthos_2024 | NYC aerial · 2024 |
+
+2024 was found while probing for 2022 and is the better comparison -- six years apart rather
+than four, against a `venue` category that churns fastest. (A 2023 service exists but returns
+HTML, not tiles.) Esri World Imagery still draws underneath both to fill outside the city.
+
+Stickiness is the experiment. Reassigning per round or per day would mix both surveys into
+one player's results and make the comparison meaningless, quite apart from the imagery
+visibly changing mid-game. A test pins it.
+
+A small wordmark in the bottom-left names the survey the player is on -- honest about what
+they are looking at, and it makes the variant visible in any screenshot they share.
+
+**Before this can answer anything, decide the success metric.** The hypothesis is that fresher
+imagery makes `venue` rounds fairer, so the candidate measures are venue-round score,
+time-to-guess on venue rounds, and abandonment before round 5. Pick one as primary before
+looking at the data, or the result is whatever the first slice happens to say.
+
+*Statistical caveat worth stating up front:* five rounds a day against an early player base
+will not power a real test for a long while. Treat the first weeks as directional only. It
+also means the two variants are playing measurably different games, which is fine now and
+becomes a fairness problem the moment leaderboards exist -- Phase 3 must either freeze the
+variant or exclude experiment cohorts from ranking.
+
+### Data capture
+
+`src/game/telemetry.ts`. Events buffer in `localStorage` and **nothing is transmitted** --
+there is no backend, and no data should leave the device before there is a consent story.
+Buffering now means the schema is exercised by real play from day one instead of being
+designed in the abstract against a backend that does not exist.
+
+| event | carries |
+|---|---|
+| `game_start` | puzzle number, date, viewport, first-touch attribution |
+| `round_complete` | round, location id, class, borough, difficulty, distance, score, ms-to-guess |
+| `game_complete` | total, per-round scores, average distance, duration |
+| `share` | method (Web Share vs clipboard), total |
+
+Every event carries an anonymous install id and the imagery variant.
+
+**Optimization** questions this answers: which locations are unfairly hard (low scores plus
+long ms-to-guess), whether difficulty actually climbs across the five rounds as intended,
+where players abandon, and whether the imagery variant moves any of it. `msToGuess` is the
+one that cannot be reconstructed later, which is why it is captured from the start.
+
+**Marketing** is first-touch only -- referrer hostname and any UTM parameters, recorded on
+the first visit and never overwritten. Where somebody came from the day they discovered the
+game is the question; the referrer on their fortieth visit is not. Plus share rate and
+method from the `share` event.
+
+**Deliberately not captured:** no accounts, no contact details, no device geolocation, no IP,
+no full referrer URL (hostname only). The only coordinates recorded are the ones the player
+deliberately tapped inside the game. Storage failures are swallowed -- Safari in private mode
+throws on write, and telemetry must never break a game.
+
+**Open before anything is transmitted:** a consent notice is likely required in the EU/UK
+once events leave the device, even anonymous ones. Decide the lawful basis and the banner
+before wiring a flush endpoint, not after. `drain()` exists as that seam and is deliberately
+not called anywhere yet.

@@ -1,0 +1,96 @@
+import { imageryVariant } from '../map/tiles'
+
+/**
+ * Local event capture. Nothing is transmitted -- there is no backend yet -- so
+ * events buffer in localStorage until something exists to flush them to. That
+ * keeps the instrumentation honest: the schema gets exercised by real play from
+ * day one, and no data leaves the device before there is a consent story.
+ *
+ * Nothing here is personal. An anonymous install id, which survey the browser
+ * was assigned, how the player did, and where they arrived from. No account, no
+ * contact details, no device location -- the only coordinates recorded are the
+ * ones the player deliberately tapped inside the game.
+ */
+
+const ID_KEY = 'nycmap:id'
+const ATTRIBUTION_KEY = 'nycmap:attribution'
+const QUEUE_KEY = 'nycmap:events'
+
+/** Roughly a month of daily play. Oldest go first; this is not a ledger. */
+const QUEUE_CAP = 400
+
+/** Safari in private mode throws on write. Telemetry must never break a game. */
+export const storage = {
+  get(key: string): string | null {
+    try {
+      return localStorage.getItem(key)
+    } catch {
+      return null
+    }
+  },
+  set(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value)
+    } catch {
+      // no-op
+    }
+  },
+}
+
+export type TrackedEvent = {
+  name: string
+  ts: number
+  installId: string
+  imagery: string
+  props: Record<string, unknown>
+}
+
+function installId(): string {
+  const existing = storage.get(ID_KEY)
+  if (existing) return existing
+  const id = crypto.randomUUID()
+  storage.set(ID_KEY, id)
+  return id
+}
+
+/**
+ * First-touch only. Where someone came from the day they discovered the game is
+ * the marketing question; the referrer on their fortieth visit is not.
+ */
+function attribution(): Record<string, string> {
+  const stored = storage.get(ATTRIBUTION_KEY)
+  if (stored) return JSON.parse(stored)
+
+  const params = new URLSearchParams(window.location.search)
+  const first: Record<string, string> = {
+    referrer: document.referrer ? new URL(document.referrer).hostname : 'direct',
+    landedAt: new Date().toISOString().slice(0, 10),
+  }
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign']) {
+    const value = params.get(key)
+    if (value) first[key] = value.slice(0, 64)
+  }
+  storage.set(ATTRIBUTION_KEY, JSON.stringify(first))
+  return first
+}
+
+export function track(name: string, props: Record<string, unknown> = {}): void {
+  const event: TrackedEvent = {
+    name,
+    ts: Date.now(),
+    installId: installId(),
+    imagery: imageryVariant().id,
+    props: name === 'game_start' ? { ...props, ...attribution() } : props,
+  }
+
+  const queue: TrackedEvent[] = JSON.parse(storage.get(QUEUE_KEY) ?? '[]')
+  queue.push(event)
+  storage.set(QUEUE_KEY, JSON.stringify(queue.slice(-QUEUE_CAP)))
+}
+
+/** Returns buffered events and clears them. For whenever there is somewhere to send them. */
+export function drain(): TrackedEvent[] {
+  const queue: TrackedEvent[] = JSON.parse(storage.get(QUEUE_KEY) ?? '[]')
+  storage.set(QUEUE_KEY, '[]')
+  return queue
+}
