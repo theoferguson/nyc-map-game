@@ -59,3 +59,35 @@ test('answers that are already far apart are not displaced', () => {
     expect(c.anchorY - c.y).toBe(36)
   }
 })
+
+test('fractional coordinates terminate', () => {
+  // Regression: these are the real values that froze the browser. Pushing a card
+  // to `other.y + GAP + h` only clears `other` if subtracting h recovers the
+  // original exactly, which floating point does not do -- so the card tested as
+  // still overlapping and was re-assigned the same y forever.
+  const pins = [
+    card('a', 300.2481, 226.4857, 180),
+    card('b', 300.7735, 252.1119, 206),
+    card('c', 299.9312, 253.4857, 180),
+    card('d', 300.5001, 253.9913, 208),
+  ]
+  const out = deoverlap(pins, 900)
+  expect(out).toHaveLength(4)
+  for (const p of out) expect(Number.isFinite(p.y)).toBe(true)
+})
+
+test('a viewport too short to stack them all still yields no overlaps', () => {
+  // Five ~210px cards need ~1100px of column; a phone gives ~800. Folding the
+  // overflow back to the top of the same column re-creates the exact overlap
+  // this function exists to prevent, so it has to break into a new column.
+  const pins = Array.from({ length: 5 }, (_, i) =>
+    card(`l${i}`, 300 + i * 4, 320 + i * 3, 210),
+  )
+  const out = deoverlap(pins, 800)
+  expect(out).toHaveLength(5)
+  for (let i = 0; i < out.length; i++)
+    for (let j = i + 1; j < out.length; j++)
+      expect(collides(out[i], out[j])).toBe(false)
+  // And nothing is left hanging off the top.
+  for (const p of out) expect(p.y - p.h).toBeGreaterThanOrEqual(0)
+})
