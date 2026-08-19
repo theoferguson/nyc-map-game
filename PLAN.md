@@ -141,3 +141,18 @@ shapes which locations get written at all.
   bottleneck rather than the game design
 - Timer, hard mode, the name — spec's open questions, all answerable after playtest
 - Colorblind share palette — ships with M5 settings if cheap, otherwise first feedback
+
+---
+
+## 6. Decisions taken during build
+
+**z18 cap confirmed by eye (2026-08-19).** DoITT serves through z21 and its native 6-inch
+survey is ~0.15 m/px (≈z19–20), so the cap discards roughly two thirds of the available
+detail on purpose — it is a difficulty dial, not a technical ceiling. Held at 18 after
+looking at real imagery: rooftop text legible at 0.45 m/px is metres tall, which means it
+sits on `area`/`landmark` locations whose shape already gives them away, while `venue`
+roofs are blank and leak nothing at any zoom.
+
+Knob: `MAX_ZOOM` in `src/map/MapView.tsx`. Turn it down for the spec's open "hard mode"
+question; turn it up only if playtests show `venue` rounds are unfair-hard rather than
+fun-hard, since close inspection is the only tool players have on that class.
