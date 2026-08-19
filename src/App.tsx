@@ -71,19 +71,25 @@ export default function App() {
       <MapView ref={map} onPlace={place} overlays={overlays} />
 
       {!over && (
-        <header className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/85 to-transparent p-4 pb-10 text-white">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-neutral-300">Find</p>
-            <h1 className="text-xl font-semibold leading-tight">{location.prompt}</h1>
+        <Floating className="top-3">
+          {/* No controls in here, so let map drags pass straight through it. */}
+          <div className="pointer-events-none flex items-center justify-between gap-3 rounded-2xl bg-neutral-900/90 px-4 py-3 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-widest text-neutral-400">Find</p>
+              <h1 className="truncate text-lg font-semibold leading-tight">
+                {location.prompt}
+              </h1>
+            </div>
+            <p className="shrink-0 text-sm tabular-nums text-neutral-400">
+              {round + 1}/{puzzle.locations.length}
+            </p>
           </div>
-          <p className="shrink-0 pt-4 text-sm tabular-nums text-neutral-300">
-            {round + 1}/{puzzle.locations.length}
-          </p>
-        </header>
+        </Floating>
       )}
 
       {current && (
-        <div className="absolute inset-x-0 bottom-0 space-y-4 rounded-t-2xl bg-neutral-900/95 p-5 text-white shadow-2xl backdrop-blur">
+        <Floating className="bottom-3">
+          <div className="space-y-4 rounded-2xl bg-neutral-900/90 p-5 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
           <div className="flex items-baseline justify-between gap-4">
             <p className="text-lg font-medium">{current.copy}</p>
             <p className="shrink-0 text-2xl font-semibold tabular-nums">
@@ -101,7 +107,8 @@ export default function App() {
           >
             Next
           </button>
-        </div>
+          </div>
+        </Floating>
       )}
 
       {over && <Results puzzle={puzzle} results={results} />}
@@ -163,8 +170,8 @@ function Results({ puzzle, results }: { puzzle: Puzzle; results: Result[] }) {
   }
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3">
-      <div className="pointer-events-auto mx-auto max-w-md space-y-3 rounded-2xl bg-neutral-900/95 p-5 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
+    <Floating className="bottom-3">
+      <div className="space-y-3 rounded-2xl bg-neutral-900/90 p-5 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
         <div className="flex items-baseline justify-between">
           <p className="text-sm text-neutral-400">NYC Daily #{puzzle.puzzleNumber}</p>
           <p className="text-3xl font-semibold tabular-nums">
@@ -186,6 +193,31 @@ function Results({ puzzle, results }: { puzzle: Puzzle; results: Result[] }) {
           Tap any card on the map to read more.
         </p>
       </div>
+    </Floating>
+  )
+}
+
+/**
+ * Every panel floats over the imagery rather than docking to a screen edge, so
+ * the map stays the whole surface and nothing reads as chrome. Insets clear the
+ * iOS notch and home indicator.
+ */
+function Floating({
+  className,
+  children,
+}: {
+  className: string
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      className={`pointer-events-none absolute inset-x-3 z-10 mx-auto max-w-md ${className}`}
+      style={{
+        marginBottom: 'env(safe-area-inset-bottom)',
+        marginTop: 'env(safe-area-inset-top)',
+      }}
+    >
+      <div className="pointer-events-auto">{children}</div>
     </div>
   )
 }
