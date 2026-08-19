@@ -165,3 +165,42 @@ test('score distribution buckets every total including a perfect game', () => {
   expect(stats.distribution[4]).toBe(1)
   expect(stats.distribution.reduce((a, b) => a + b, 0)).toBe(2)
 })
+
+/* ------------------------------------------- regressions from code review */
+
+test('a stats key holding the string "null" does not blank the page', () => {
+  // "null" parses cleanly to null rather than throwing, so the parse guard lets
+  // it through. loadStats runs during render, so this surfaced as a blank page
+  // that only clearing site data could fix.
+  store.set('nycmap:stats', 'null')
+  expect(() => loadStats()).not.toThrow()
+  expect(loadStats().played).toBe(0)
+
+  store.set('nycmap:stats', '{"distribution":"not an array"}')
+  expect(loadStats().distribution).toHaveLength(5)
+})
+
+test('a corrupt guess truncates the resume rather than shifting later ones', () => {
+  // Guess N is scored against location N. Filtering the bad entry out would
+  // compact the array and score guess 3 against location 2 -- wrong distance,
+  // wrong score, wrong copy, and nothing to show anything had gone wrong.
+  store.set(
+    'nycmap:progress:2026-08-19',
+    JSON.stringify({
+      guesses: [
+        { lng: -73.98, lat: 40.75 },
+        { lng: 'x', lat: null },
+        { lng: -73.86, lat: 40.75 },
+      ],
+    }),
+  )
+  expect(loadProgress('2026-08-19')?.guesses).toEqual([{ lng: -73.98, lat: 40.75 }])
+})
+
+test('NaN coordinates are rejected, not stored as numbers', () => {
+  store.set(
+    'nycmap:progress:2026-08-19',
+    JSON.stringify({ guesses: [{ lng: null, lat: 40.75 }] }),
+  )
+  expect(loadProgress('2026-08-19')).toBeNull()
+})

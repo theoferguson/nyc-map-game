@@ -546,3 +546,38 @@ loudly; anything that drives the map on first paint has to wait for it.
 **Restoring a finished game added a second set of pins.** `next()` and the restore effect both
 called `showAllAnswers`. Now only the effect does, so fresh completion and reload follow one
 path.
+
+### Code review fixes on M4
+
+Seven findings, all real, all fixed. Three were reproduced before being touched.
+
+**Blank page on a stats key holding `"null"`.** `storage.parse` returns its fallback for a
+falsy raw value or a parse error -- but `"null"` parses cleanly *to* `null`, and reading
+`.distribution` off it throws. `loadStats` runs during render via `useState(loadStats)`, so
+this was an uncaught render throw: a blank page on every load, fixable only by clearing site
+data. Exactly the failure the module's own docstring promises cannot happen. A guard that
+only catches malformed input misses input that is well-formed and wrong.
+
+**A corrupt guess shifted every later one onto the wrong location.** `loadProgress` filtered
+invalid entries instead of truncating, so `[valid, corrupt, valid]` compacted to two guesses
+and scored guess 3 against location 2 -- wrong distance, wrong score, wrong copy, and nothing
+to indicate it. Truncates at the first bad entry now.
+
+**Midnight mid-game swapped the puzzle underneath the player.** `today` was recomputed every
+render and was the sole dependency of the loading effect, so crossing New York midnight
+loaded tomorrow's puzzle while `round`, `results` and the current reveal still described
+today's -- then wrote the guesses under the new date, whose purge loop deleted the real save.
+The date is pinned at load now, and rollover is handled only where no game is in progress.
+
+**A save longer than its puzzle bricked the game permanently.** Replaying guesses past the end
+of `locations` threw on `undefined.lng`; the throw landed on the error screen, which offers no
+route back to the only code that rewrites the progress key. Reachable by re-authoring a day
+with fewer stops. Bounded now.
+
+Also: recording a completed game no longer waits on the map, so a WebGL failure cannot silently
+lose it from played/streak/distribution; the countdown reloads when it reaches zero, but only
+from screens where no game is in progress; and `scoreGuess` is evaluated once per guess.
+
+*The pattern across these:* every one is a storage or clock edge that unit tests would pass
+and a player would hit eventually. Storage is untrusted input, and the clock moves while the
+page is open.

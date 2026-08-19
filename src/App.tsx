@@ -32,7 +32,13 @@ export default function App() {
   const [started, setStarted] = useState(false)
   const [mapReady, setMapReady] = useState(false)
   const [stats, setStats] = useState<Stats>(loadStats)
-  const today = puzzleDate()
+  // Captured once, deliberately. Recomputed per render, a player crossing New
+  // York midnight mid-game would have the loader swap in tomorrow's puzzle while
+  // their round, results and current reveal all still referred to today's --
+  // saving their guesses under the wrong date and scoring the wrong locations.
+  // Rollover is handled explicitly instead, by the countdown, and only when no
+  // game is in progress.
+  const [today] = useState(puzzleDate)
   const [current, setCurrent] = useState<Result | null>(null)
   const [results, setResults] = useState<Result[]>([])
   const map = useRef<MapHandle>(null)
@@ -53,7 +59,9 @@ export default function App() {
         // disagree about what a guess was worth.
         const saved = loadProgress(today)
         if (saved) {
-          const replayed = saved.guesses.map((guess, i) => scoreGuess(guess, p.locations[i]))
+          const replayed = saved.guesses
+            .slice(0, p.locations.length)
+            .map((guess, i) => scoreGuess(guess, p.locations[i]))
           setResults(replayed)
           setRound(replayed.length)
           track('game_resumed', { round: replayed.length + 1, date: today })
@@ -75,16 +83,23 @@ export default function App() {
   // One path into the recap, whether the fifth round just ended or the page was
   // reloaded on a finished game. Running it from `next` as well would add a
   // second set of pins over the first.
+  const recorded = useRef(false)
+  useEffect(() => {
+    if (!puzzle || !over || recorded.current) return
+    recorded.current = true
+    setStats(recordGame(today, totalScore(results)))
+  }, [puzzle, over, results, today])
+
   const recapShown = useRef(false)
   useEffect(() => {
     // `mapReady` is load-bearing on a reload into a finished game: the map is
     // built behind an async tile probe, so without it this fires first and the
-    // answer pins are silently never added.
+    // answer pins are silently never added. Kept separate from recording the
+    // result, which must not depend on the map coming up at all.
     if (!puzzle || !over || !mapReady || recapShown.current) return
     recapShown.current = true
-    setStats(recordGame(today, totalScore(results)))
     map.current?.showAllAnswers(puzzle.locations.map((l) => ({ lng: l.lng, lat: l.lat })))
-  }, [puzzle, over, mapReady, results, today])
+  }, [puzzle, over, mapReady])
 
   // Every answer, each card pinned to its own location, all at once.
   const overlays = useMemo<Overlay[]>(() => {
@@ -120,8 +135,9 @@ export default function App() {
     // The reveal is showing; taps must not overwrite a committed answer.
     if (current || over) return
     const answer = { lng: location.lng, lat: location.lat }
-    const { distanceM, score } = scoreGuess(guess, location)
-    setCurrent(scoreGuess(guess, location))
+    const result = scoreGuess(guess, location)
+    const { distanceM, score } = result
+    setCurrent(result)
     map.current?.revealAnswer(guess, answer)
 
     // Written on commit, not on Next. A refresh during the reveal must not cost
@@ -263,11 +279,20 @@ function FactCard({
   )
 }
 
-/** Ticks once a second, but only where a countdown is actually on screen. */
+/**
+ * Ticks once a second, but only where a countdown is actually on screen -- which
+ * is never mid-game. That matters: reaching zero reloads to pick up the new
+ * day's puzzle, and a player who started before midnight must be left alone to
+ * finish the day they started rather than have it pulled out from under them.
+ */
 function useCountdown(): string {
   const [ms, setMs] = useState(msUntilRollover)
   useEffect(() => {
-    const id = setInterval(() => setMs(msUntilRollover()), 1000)
+    const id = setInterval(() => {
+      const remaining = msUntilRollover()
+      if (remaining <= 0) window.location.reload()
+      setMs(remaining)
+    }, 1000)
     return () => clearInterval(id)
   }, [])
   return formatCountdown(ms)
