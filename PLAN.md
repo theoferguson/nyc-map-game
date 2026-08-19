@@ -208,6 +208,46 @@ anything, so this stays inside the no-labels rule as long as station names are n
 Source: NYC Open Data subway routes GeoJSON, added as a line layer above the raster and
 toggled. Open: flat penalty per hint, or a multiplier on that round's score.
 
+**Custom quizzes and an admin panel.** An authoring UI that builds a quiz -- pick answers by
+clicking a map rather than typing coordinates, set each prompt, class and point value -- and
+shares it by code, the same delivery as the beta codes above.
+
+Scope becomes a property of the quiz rather than a constant: city, state, country or global.
+This is the feature that turns a New York game into a game engine, and most of the work is
+not the admin panel. It is that four things currently hardcoded to New York have to become
+per-quiz:
+
+| hardcoded today | where | why it breaks elsewhere |
+|---|---|---|
+| `NYC_BOUNDS`, min zoom, standard framing | `MapView.tsx` | every quiz needs its own extent |
+| blocks and avenues | `scoring.ts` `describeMiss` | "3 avenues off" is nonsense in London, and meaningless at country scale |
+| lambda per class (3000 / 2000 / 2600) | `scoring.ts` | tuned for city distances; a global quiz misses by thousands of km and every guess scores zero |
+| DoITT imagery, z18 cap | `tiles.ts` | the city surveys stop at the city line, so anything outside NYC is Esri-only |
+
+So the unit of configuration is a **scope**: a bounding box, a zoom range, a distance
+vocabulary, and a lambda set. Daily NYC becomes one scope among several rather than the
+assumption the code is built on. The lambda point is the one most likely to be
+underestimated -- the decay curve is calibrated in metres against how a *city* miss feels,
+and a country-scale quiz needs values two or three orders of magnitude larger or every
+answer scores zero.
+
+Per-question point scaling is the cheap part: `MULTIPLIERS` moves from a module constant to a
+field on each question. `MAX_TOTAL` is already derived rather than hardcoded to 1000, so the
+share string and results survive that unchanged.
+
+**Sharing may not need a backend.** A quiz is small -- five locations with prompts and short
+facts is a few kilobytes -- so compressing it into a URL fragment would make custom quizzes
+entirely client-side and shippable against the current static build. That is worth testing
+before assuming this waits on server work, because it is the difference between a Phase 2
+feature and a Phase 3 one. Codes backed by a server buy discoverability, editing after
+sharing, and play counts; a fragment buys shipping now.
+
+*Two things to settle before building, not after:* a server-stored quiz means hosting
+user-generated content, which brings moderation, reporting and takedown with it -- a
+fragment-encoded quiz never touches your infrastructure and carries none of that. And custom
+quiz results must be segregated from daily telemetry, or the affinity model and the imagery
+experiment both get polluted by scopes and scoring curves they were never calibrated against.
+
 **Beta mode — playtest codes.** A code that unlocks five plays per day drawn from the *next*
 scheduled days' rounds, so testers burn future content instead of replaying today's. Needs a
 feedback capture path and somewhere to put the results, which is the first thing in this
