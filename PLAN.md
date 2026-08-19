@@ -305,3 +305,29 @@ wherever the card drifted to, and a test pins that.
 Recap framing now derives its padding from the card size rather than using round numbers.
 Cards hang above their pins and are wider than them, so the camera has to frame the cards,
 not the answers; the previous 150px top padding cut the northernmost card off the screen.
+
+**Card heights are measured, not estimated (2026-08-19).** The de-overlap was correct and
+running on wrong numbers: it reserved a fixed 122px per card while a real card renders
+anywhere from ~130px to ~260px depending on how long that location's fact runs. Cards it
+believed were clear overlapped by a hundred pixels, which looked exactly like a broken
+de-overlap.
+
+Heights are now read from the rendered DOM in a layout effect and fed back into placement.
+The first pass assumes a tall card, so cards only ever settle inward and never flash an
+overlap. `deoverlap` takes a height per card and a viewport height, and clamps so nothing
+hangs off the top of the screen where it cannot be reached.
+
+*The general lesson:* any constant describing rendered text is a guess with a short shelf
+life. Measure it or fix it -- do not estimate it.
+
+**maxBounds released at the recap.** The cage exists to stop players wandering out of the
+city mid-round. At the end-of-game framing the viewport is *wider than the city*, so
+MapLibre had nowhere legal to pan and the map locked solid -- reported as "the map doesn't
+navigate", and it genuinely did not. The game is over by then and there is nothing left to
+constrain, so the bounds are dropped when the recap opens.
+
+**Esri layered under DoITT.** DoITT stops at the city line, so the recap framing -- which
+pulls back further than the city -- rendered everything outside the five boroughs as a black
+void, which reads as a broken map and made panning feel pointless. Esri World Imagery now
+draws underneath to fill the surround, with DoITT's sharper imagery on top wherever it has
+coverage. Both attributions are already carried.

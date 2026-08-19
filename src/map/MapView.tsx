@@ -1,6 +1,7 @@
 import {
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -14,8 +15,8 @@ import {
   type CenterZoomBearing,
   type GeoJSONSource,
 } from 'maplibre-gl'
-import { pickSource } from './tiles'
-import { deoverlap, CARD_W, CARD_H } from './deoverlap'
+import { resolveSources } from './tiles'
+import { deoverlap, CARD_W } from './deoverlap'
 import type { LngLat } from '../game/scoring'
 
 /** [[W,S],[E,N]] -- the player cannot pan out of the city. */
@@ -86,6 +87,8 @@ export function MapView({
   const resetting = useRef(false)
   const [loaded, setLoaded] = useState<MapLibreMap | null>(null)
   const [moveTick, setMoveTick] = useState(0)
+  const cardEls = useRef<Record<string, HTMLDivElement | null>>({})
+  const [heights, setHeights] = useState<Record<string, number>>({})
 
   // These change as the round advances, but the map listener is registered once,
   // so read the current values through refs rather than rebuilding the map.
@@ -103,7 +106,7 @@ export function MapView({
   useEffect(() => {
     let cancelled = false
 
-    pickSource().then((source) => {
+    resolveSources().then((sources) => {
       if (cancelled || !container.current) return
 
       const m = new MapLibreMap({
@@ -111,17 +114,26 @@ export function MapView({
         style: {
           version: 8,
           sources: {
-            satellite: {
-              type: 'raster',
-              tiles: [source.url],
-              tileSize: 256,
-              maxzoom: MAX_ZOOM,
-              attribution: source.attribution,
-            },
+            ...Object.fromEntries(
+              sources.map((s, i) => [
+                `satellite-${i}`,
+                {
+                  type: 'raster',
+                  tiles: [s.url],
+                  tileSize: 256,
+                  maxzoom: MAX_ZOOM,
+                  attribution: s.attribution,
+                },
+              ]),
+            ),
             link: { type: 'geojson', data: EMPTY },
           },
           layers: [
-            { id: 'satellite', type: 'raster', source: 'satellite' },
+            ...sources.map((_, i) => ({
+              id: `satellite-${i}`,
+              type: 'raster' as const,
+              source: `satellite-${i}`,
+            })),
             {
               id: 'link',
               type: 'line',
@@ -208,6 +220,26 @@ export function MapView({
     }
   }, [loaded])
 
+  // Card heights vary by more than 2x with fact length, so they are measured
+  // rather than estimated. An estimate here silently overlaps the tall ones.
+  useLayoutEffect(() => {
+    const measured: Record<string, number> = {}
+    for (const o of overlays) {
+      const h = cardEls.current[o.id]?.offsetHeight
+      if (h) measured[o.id] = h
+    }
+    // Measuring rendered DOM is exactly the "synchronise with an external
+    // system" case; the height cannot be derived during render because it does
+    // not exist until the browser has laid the card out.
+    // oxlint-disable-next-line react/set-state-in-effect
+    setHeights((prev) => {
+      const same =
+        Object.keys(measured).length === Object.keys(prev).length &&
+        Object.entries(measured).every(([k, v]) => prev[k] === v)
+      return same ? prev : measured
+    })
+  }, [overlays, moveTick])
+
   // Card positions are derived, not stored: project each coordinate to screen
   // space and re-derive whenever the camera moves. Only five cards, and only at
   // game over, so this is cheaper than the marker-plus-portal lifecycle it
@@ -218,10 +250,13 @@ export function MapView({
     return deoverlap(
       overlays.map((o) => {
         const { x, y } = loaded.project([o.lngLat.lng, o.lngLat.lat])
-        return { id: o.id, x, y }
+        // Before the first measurement lands, assume tall: a card that starts
+        // too large only settles inward, which never flashes an overlap.
+        return { id: o.id, x, y, h: heights[o.id] ?? 240 }
       }),
+      loaded.getContainer().clientHeight,
     )
-  }, [loaded, overlays, moveTick])
+  }, [loaded, overlays, moveTick, heights])
 
   useImperativeHandle(ref, () => ({
     resetCamera: () => {
@@ -281,6 +316,12 @@ export function MapView({
       if (!m || !points.length) return
       points.forEach((p) => addPin(m, p, '#22c55e'))
 
+      // maxBounds exists to stop players wandering out of the city mid-round.
+      // At the recap framing the viewport is wider than the city itself, so
+      // MapLibre has nowhere legal to pan and the map locks solid. The game is
+      // over -- there is nothing left to constrain.
+      m.setMaxBounds(null)
+
       const bounds = points.reduce(
         (b, p) => b.extend([p.lng, p.lat]),
         new LngLatBounds([points[0].lng, points[0].lat], [points[0].lng, points[0].lat]),
@@ -290,8 +331,8 @@ export function MapView({
       // northernmost card is simply cut off the top of the screen.
       m.fitBounds(bounds, {
         padding: {
-          top: CARD_H + 60,
-          bottom: 240, // clears the results sheet
+          top: 280, // a tall card plus its pin
+          bottom: 260, // clears the results sheet
           left: CARD_W / 2 + 12,
           right: CARD_W / 2 + 12,
         },
@@ -337,6 +378,9 @@ export function MapView({
           // pinch aimed at the map underneath.
           <div
             key={o.id}
+            ref={(el) => {
+              cardEls.current[o.id] = el
+            }}
             className="pointer-events-none absolute z-20"
             style={{
               left: p.x,
