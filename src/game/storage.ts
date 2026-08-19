@@ -154,3 +154,50 @@ export function recordGame(date: string, total: number): Stats {
   storage.set(STATS_KEY, JSON.stringify(next))
   return next
 }
+
+/* ---------------------------------------------------------------- settings */
+
+const SETTINGS_KEY = 'nycmap:settings'
+
+export type Settings = {
+  carefulMode: boolean
+  /** Milliseconds a press must be held before it commits. */
+  holdMs: number
+  /** Shapes instead of colours in the share squares. */
+  colorblind: boolean
+}
+
+/**
+ * 800ms, not the 3s the spec floated as an option.
+ *
+ * Three seconds times five rounds times every day is a chore, and a standard
+ * long-press is around 500ms -- so 800 already reads as deliberate without
+ * making deliberate feel like waiting. The longer options exist for players who
+ * need them, which is the point of the setting.
+ */
+export const HOLD_OPTIONS = [800, 1500, 3000]
+
+const DEFAULT_SETTINGS: Settings = {
+  // Off by default: a tap that commits is the core of the game, and making
+  // everyone hold to fix a problem only some players have is the wrong trade.
+  carefulMode: false,
+  holdMs: HOLD_OPTIONS[0],
+  colorblind: false,
+}
+
+export function loadSettings(): Settings {
+  const saved = storage.parse<Partial<Settings> | null>(SETTINGS_KEY, {}) ?? {}
+  return {
+    ...DEFAULT_SETTINGS,
+    ...saved,
+    // A hold duration outside the offered set means edited or stale storage;
+    // an absurd value here would lock the player out of placing a pin at all.
+    holdMs: HOLD_OPTIONS.includes(saved.holdMs as number)
+      ? (saved.holdMs as number)
+      : DEFAULT_SETTINGS.holdMs,
+  }
+}
+
+export function saveSettings(settings: Settings): void {
+  storage.set(SETTINGS_KEY, JSON.stringify(settings))
+}

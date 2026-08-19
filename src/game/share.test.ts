@@ -51,3 +51,21 @@ test('share string is plain text that pastes anywhere', () => {
   expect(s.split('\n')).toHaveLength(3)
   expect(s).not.toMatch(/<|>|&\w+;/)
 })
+
+test('colourblind squares change encoding, not just hue', () => {
+  const mixed = [
+    { score: 95, distanceM: 30 },
+    { score: 62, distanceM: 300 },
+    { score: 35, distanceM: 800 },
+    { score: 12, distanceM: 2000 },
+    { score: 88, distanceM: 120 },
+  ]
+  expect(shareString(1, mixed, false).split('\n')[1]).toBe('🟩🟨🟧⬜🟩')
+
+  // Fill level, not colour. Green/yellow/orange is the axis red-green
+  // colourblindness collapses, so a recoloured palette would still leave most
+  // of these bands indistinguishable.
+  const shapes = shareString(1, mixed, true).split('\n')[1]
+  expect(shapes).toBe('●◕◔○●')
+  expect(new Set([...shapes]).size).toBe(4)
+})

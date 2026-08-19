@@ -9,9 +9,20 @@ export function totalScore(results: RoundResult[]): number {
   return results.reduce((sum, r, i) => sum + r.score * (MULTIPLIERS[i] ?? 1), 0)
 }
 
-/** Bands are per-round and pre-multiplier, so the squares read as accuracy. */
-const band = (score: number) =>
-  score >= 80 ? '🟩' : score >= 50 ? '🟨' : score >= 20 ? '🟧' : '⬜'
+/**
+ * Bands are per-round and pre-multiplier, so the squares read as accuracy.
+ *
+ * The colourblind set is not a recoloured palette but a different encoding: how
+ * full the circle is, rather than what colour the square is. Green/yellow/orange
+ * is precisely the axis red-green colourblindness collapses, so swapping hues
+ * would still leave three of the four bands indistinguishable to the people the
+ * setting exists for. Fill survives being seen in greyscale.
+ */
+const COLOUR = ['⬜', '🟧', '🟨', '🟩']
+const SHAPES = ['○', '◔', '◕', '●']
+
+const bandIndex = (score: number) =>
+  score >= 80 ? 3 : score >= 50 ? 2 : score >= 20 ? 1 : 0
 
 /**
  * The block line is the one people quote at each other, so it uses the short
@@ -34,11 +45,16 @@ function medianBlocks(results: RoundResult[]): number {
   return median / SHORT_BLOCK_M
 }
 
-export function shareString(puzzleNumber: number, results: RoundResult[]): string {
+export function shareString(
+  puzzleNumber: number,
+  results: RoundResult[],
+  colorblind = false,
+): string {
   const blocks = medianBlocks(results)
+  const set = colorblind ? SHAPES : COLOUR
   return [
     `NYC Daily #${puzzleNumber} — ${totalScore(results)}/${MAX_TOTAL}`,
-    results.map((r) => band(r.score)).join(''),
+    results.map((r) => set[bandIndex(r.score)]).join(''),
     `median ${blocks < 1 ? blocks.toFixed(1) : Math.round(blocks)} blocks off`,
   ].join('\n')
 }

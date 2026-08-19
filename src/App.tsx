@@ -6,7 +6,17 @@ import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
 import { track } from './game/telemetry'
 import { imageryVariant } from './map/tiles'
 import { puzzleDate, msUntilRollover, formatCountdown } from './game/date'
-import { loadProgress, saveProgress, recordGame, loadStats, type Stats } from './game/storage'
+import {
+  loadProgress,
+  saveProgress,
+  recordGame,
+  loadStats,
+  loadSettings,
+  saveSettings,
+  HOLD_OPTIONS,
+  type Stats,
+  type Settings,
+} from './game/storage'
 
 type Result = { guess: LngLat; distanceM: number; score: number; copy: string }
 
@@ -31,6 +41,15 @@ export default function App() {
   const [round, setRound] = useState(0)
   const [started, setStarted] = useState(false)
   const [mapReady, setMapReady] = useState(false)
+  const [settings, setSettings] = useState<Settings>(loadSettings)
+  const [showSettings, setShowSettings] = useState(false)
+
+  function updateSettings(patch: Partial<Settings>) {
+    const next = { ...settings, ...patch }
+    setSettings(next)
+    saveSettings(next)
+    track('settings_changed', patch)
+  }
   const [stats, setStats] = useState<Stats>(loadStats)
   // Captured once, deliberately. Recomputed per render, a player crossing New
   // York midnight mid-game would have the loader swap in tomorrow's puzzle while
@@ -116,16 +135,26 @@ export default function App() {
 
   if (!started && !over) {
     return (
-      <Landing
-        puzzle={puzzle}
-        stats={stats}
-        resuming={results.length > 0}
-        onPlay={() => {
-          setStarted(true)
-          roundStarted.current = Date.now()
-          gameStarted.current = Date.now()
-        }}
-      />
+      <>
+        <Landing
+          puzzle={puzzle}
+          stats={stats}
+          resuming={results.length > 0}
+          onPlay={() => {
+            setStarted(true)
+            roundStarted.current = Date.now()
+            gameStarted.current = Date.now()
+          }}
+          onSettings={() => setShowSettings(true)}
+        />
+        {showSettings && (
+          <SettingsPanel
+            settings={settings}
+            onChange={updateSettings}
+            onClose={() => setShowSettings(false)}
+          />
+        )}
+      </>
     )
   }
 
@@ -189,6 +218,8 @@ export default function App() {
         onPlace={place}
         onReady={() => setMapReady(true)}
         enabled={!current && !over}
+        carefulMode={settings.carefulMode}
+        holdMs={settings.holdMs}
         overlays={overlays}
       />
 
@@ -233,11 +264,36 @@ export default function App() {
         </Floating>
       )}
 
-      {over && <Results puzzle={puzzle} results={results} stats={stats} />}
+      {over && <Results
+          puzzle={puzzle}
+          results={results}
+          stats={stats}
+          colorblind={settings.colorblind}
+        />}
 
-      <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-full bg-neutral-900/75 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-300">
-        {imageryVariant().label}
-      </p>
+      <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
+        <p className="pointer-events-none rounded-full bg-neutral-900/75 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-300">
+          {imageryVariant().label}
+        </p>
+        {/* Reachable during play, not just from the landing screen: a player who
+            realises on round 1 that they need careful mode would otherwise be
+            stuck without it for the rest of the game. */}
+        <button
+          onClick={() => setShowSettings(true)}
+          aria-label="Settings"
+          className="rounded-full bg-neutral-900/75 px-2 py-1 text-[11px] text-neutral-300"
+        >
+          ⚙
+        </button>
+      </div>
+
+      {showSettings && (
+        <SettingsPanel
+          settings={settings}
+          onChange={updateSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </div>
   )
 }
@@ -303,11 +359,13 @@ function Landing({
   stats,
   resuming,
   onPlay,
+  onSettings,
 }: {
   puzzle: Puzzle
   stats: Stats
   resuming: boolean
   onPlay: () => void
+  onSettings: () => void
 }) {
   const countdown = useCountdown()
   return (
@@ -339,6 +397,12 @@ function Landing({
           </p>
         )}
         <p className="text-xs text-neutral-600">Next puzzle in {countdown}</p>
+        <button
+          onClick={onSettings}
+          className="text-xs text-neutral-400 underline underline-offset-4"
+        >
+          Settings
+        </button>
       </div>
     </Centered>
   )
@@ -348,15 +412,17 @@ function Results({
   puzzle,
   results,
   stats,
+  colorblind,
 }: {
   puzzle: Puzzle
   results: Result[]
   stats: Stats
+  colorblind: boolean
 }) {
   const [copied, setCopied] = useState(false)
   const countdown = useCountdown()
   const total = totalScore(results)
-  const text = shareString(puzzle.puzzleNumber, results)
+  const text = shareString(puzzle.puzzleNumber, results, colorblind)
 
   async function share() {
     track('share', {
@@ -422,6 +488,80 @@ function Floating({
       }}
     >
       <div className="pointer-events-auto">{children}</div>
+    </div>
+  )
+}
+
+function SettingsPanel({
+  settings,
+  onChange,
+  onClose,
+}: {
+  settings: Settings
+  onChange: (patch: Partial<Settings>) => void
+  onClose: () => void
+}) {
+  return (
+    <div className="absolute inset-0 z-40 flex items-end justify-center bg-black/60 p-3 sm:items-center">
+      <div className="w-full max-w-sm space-y-5 rounded-2xl bg-neutral-900 p-5 text-white ring-1 ring-white/10">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Settings</h2>
+          <button onClick={onClose} className="text-sm text-neutral-400">
+            Done
+          </button>
+        </div>
+
+        <label className="flex items-start justify-between gap-4">
+          <span>
+            <span className="block text-sm font-medium">Careful mode</span>
+            <span className="block text-xs text-neutral-400">
+              Press and hold to place, instead of a single tap. Let go early to cancel.
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={settings.carefulMode}
+            onChange={(e) => onChange({ carefulMode: e.target.checked })}
+            className="mt-1 size-5 shrink-0 accent-amber-400"
+          />
+        </label>
+
+        {settings.carefulMode && (
+          <div>
+            <p className="text-sm font-medium">Hold for</p>
+            <div className="mt-2 flex gap-2">
+              {HOLD_OPTIONS.map((ms) => (
+                <button
+                  key={ms}
+                  onClick={() => onChange({ holdMs: ms })}
+                  className={`flex-1 rounded-lg py-2 text-sm ${
+                    settings.holdMs === ms
+                      ? 'bg-white font-semibold text-neutral-900'
+                      : 'bg-neutral-800 text-neutral-300'
+                  }`}
+                >
+                  {ms / 1000}s
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <label className="flex items-start justify-between gap-4">
+          <span>
+            <span className="block text-sm font-medium">Colourblind squares</span>
+            <span className="block text-xs text-neutral-400">
+              Shapes as well as colour in the shared result.
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={settings.colorblind}
+            onChange={(e) => onChange({ colorblind: e.target.checked })}
+            className="mt-1 size-5 shrink-0 accent-amber-400"
+          />
+        </label>
+      </div>
     </div>
   )
 }

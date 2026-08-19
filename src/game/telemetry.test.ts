@@ -18,7 +18,8 @@ vi.stubGlobal('window', { location: { search: '?utm_source=twitter&utm_medium=so
 vi.stubGlobal('navigator', { language: 'en-US' })
 
 const { track, drain } = await import('./telemetry')
-const { loadProgress, saveProgress, loadStats, recordGame } = await import('./storage')
+const { loadProgress, saveProgress, loadStats, recordGame, loadSettings, saveSettings, HOLD_OPTIONS } =
+  await import('./storage')
 const { imageryVariant, VARIANTS } = await import('../map/tiles')
 
 // Two tests below break storage and crypto on purpose; restore them each time
@@ -203,4 +204,19 @@ test('NaN coordinates are rejected, not stored as numbers', () => {
     JSON.stringify({ guesses: [{ lng: null, lat: 40.75 }] }),
   )
   expect(loadProgress('2026-08-19')).toBeNull()
+})
+
+test('settings fall back sanely, including a hold duration off the menu', () => {
+  expect(loadSettings()).toEqual({ carefulMode: false, holdMs: 800, colorblind: false })
+
+  saveSettings({ carefulMode: true, holdMs: 1500, colorblind: true })
+  expect(loadSettings().holdMs).toBe(1500)
+
+  // Hand-edited to something that would make the game unplayable.
+  store.set('nycmap:settings', JSON.stringify({ carefulMode: true, holdMs: 999_999 }))
+  expect(loadSettings().holdMs).toBe(HOLD_OPTIONS[0])
+  expect(loadSettings().carefulMode).toBe(true)
+
+  store.set('nycmap:settings', 'null')
+  expect(() => loadSettings()).not.toThrow()
 })
