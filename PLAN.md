@@ -123,11 +123,28 @@ The spec says Phase 1 ships 30 hand-built days. That is 150 locations, each need
 coordinates, a class, a difficulty tier, `factShort`, `factLong`, and a source — days of
 writing, and it all gates on questions playtesting hasn't answered yet.
 
-**Build 5 days first, playtest, then expand.** The spec's own closing note says the thing to
-learn first is whether round-2 taps improve after round 1's reveal, and how much of the
-`venue` category survives contact with players. If venues turn out to be unfair-hard rather
-than fun-hard, a chunk of 150 hand-written entries gets thrown away. Five days is enough to
-find that out.
+**No further days until deploy** (decided 2026-08-19). One authored day is enough to build and
+test against, and writing more before there are players means writing against guesses. At
+deploy, author the first 50 days in one pass, then use collected play data to build a
+generative engine that keeps at least 10 days queued.
+
+*What the queue depth is actually for:* redundancy if authoring stalls, and beta testers, who
+consume upcoming days rather than replaying today's. That second one sets the arithmetic --
+a 10-day buffer against testers burning five plays a day drains in days, not weeks, unless
+beta days come from a pool that never enters the main rotation. Decide which before the
+engine is built, because it changes what the engine has to produce.
+
+*What "generative" can and cannot learn from play data:* round results measure difficulty
+well -- score distribution and time-to-guess per location are exactly the calibration signal
+the difficulty tiers need, and far better than guessing. They do not measure whether a place
+is *worth* including. Nothing in the telemetry distinguishes a beloved landmark from a
+well-known traffic intersection. So the engine is candidate harvest plus fame ranking plus
+play-calibrated difficulty, with the human pass still in the loop -- the spec's own warning
+stands, that an automated score will confidently rank a random subway station above the
+Stonewall Inn.
+
+Venue freshness stays a manual gate regardless: a generated day can schedule a bar that shut
+in 2024, and no amount of play data will say so.
 
 Keep the borough rule from day one — at least two of five outside Manhattan — since it
 shapes which locations get written at all.
@@ -649,3 +666,36 @@ mean let that single round define the line. A strong game printed `855/1000` nex
 blocks off`, two numbers telling opposite stories about the same play. The median reports the
 game the player actually had. The line is what people quote at each other, so it should not
 contradict the score sitting above it.
+
+---
+
+## 12. M5 — mobile hardening (2026-08-19)
+
+**Careful mode.** Press and hold to commit; release early and nothing is placed. Off by
+default, because a tap that commits is the core of the game and making everyone hold to solve
+a problem only some players have is the wrong trade. 800ms default, with 1.5s and 3s offered
+-- not 3s by default, since three seconds times five rounds times every day is a chore, and a
+standard long-press is about 500ms, so 800 already reads as deliberate.
+
+Drifting more than 12px cancels the hold: on a phone that is a pan, not a placement.
+
+*Bug found by browser test:* the MapLibre `click` path was left unguarded, so a plain tap
+still committed while careful mode was on -- the hold-to-place guarantee was worthless and
+looked fine in code review. Careful mode now suppresses that path entirely.
+
+**Settings reachable during play**, not only from the landing screen. A player who realises on
+round 1 that they need careful mode would otherwise be locked out of it for the rest of the
+game, which is precisely the person the setting exists for.
+
+**Colourblind squares are a different encoding, not a recoloured palette.** Green / yellow /
+orange is exactly the axis red-green colourblindness collapses, so swapping hues would leave
+three of the four bands indistinguishable to the people the setting is for. The alternative
+set varies *fill* -- `○ ◔ ◕ ●` -- which survives being seen in greyscale.
+
+**Verified at 380px with touch emulation:** no horizontal overflow, `touch-action: none` in
+force, hold ring draws, early release cancels, full hold commits.
+
+*Not yet verified, and it cannot be from here:* the hold and drift thresholds on real
+hardware, and that iOS Safari raises no callout on long-press. Chrome's touch emulation does
+not reproduce either. The spec is explicit that these need tuning on a device, so they remain
+open.

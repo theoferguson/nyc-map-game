@@ -72,6 +72,8 @@ export function MapView({
   onPlace,
   onReady,
   enabled = true,
+  carefulMode = false,
+  holdMs = 800,
   overlays = [],
 }: {
   ref?: Ref<MapHandle>
@@ -81,6 +83,9 @@ export function MapView({
   onReady?: () => void
   /** False during a reveal and after the game -- taps must not drop a pin. */
   enabled?: boolean
+  /** Commit on a deliberate press-and-hold instead of a tap. */
+  carefulMode?: boolean
+  holdMs?: number
   overlays?: Overlay[]
 }) {
   const container = useRef<HTMLDivElement>(null)
@@ -91,6 +96,9 @@ export function MapView({
   const resetting = useRef(false)
   const [loaded, setLoaded] = useState<MapLibreMap | null>(null)
   const [moveTick, setMoveTick] = useState(0)
+  /** Screen position of an in-progress hold, for the ring. */
+  const [holding, setHolding] = useState<{ x: number; y: number } | null>(null)
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const cardEls = useRef<Record<string, HTMLDivElement | null>>({})
   const [heights, setHeights] = useState<Record<string, number>>({})
 
@@ -99,10 +107,12 @@ export function MapView({
   const place = useRef(onPlace)
   const canPlace = useRef(enabled)
   const ready = useRef(onReady)
+  const careful = useRef({ on: carefulMode, ms: holdMs })
   useEffect(() => {
     place.current = onPlace
     canPlace.current = enabled
     ready.current = onReady
+    careful.current = { on: carefulMode, ms: holdMs }
   })
 
   const addPin = (m: MapLibreMap, p: LngLat, color: string) => {
@@ -173,7 +183,10 @@ export function MapView({
         // handler, so a guard further downstream leaves a stray pin behind.
         // A tap mid-zoom-out would commit wherever the camera happens to be
         // pointing at that instant, which is not where the player aimed.
-        if (!canPlace.current || resetting.current) return
+        // Careful mode commits from the pointer handlers below instead, so
+        // this path must stay out of the way entirely -- otherwise a tap
+        // commits through it and the hold-to-place guarantee is worthless.
+        if (!canPlace.current || resetting.current || careful.current.on) return
         const p = { lng: e.lngLat.lng, lat: e.lngLat.lat }
         if (pendingPlace.current) clearTimeout(pendingPlace.current)
         pendingPlace.current = setTimeout(() => {
@@ -359,13 +372,88 @@ export function MapView({
 
   const byId = new Map(placed.map((p) => [p.id, p]))
 
+  const cancelHold = () => {
+    if (holdTimer.current) clearTimeout(holdTimer.current)
+    holdTimer.current = null
+    setHolding(null)
+  }
+
+  /**
+   * Careful mode: a press must survive `holdMs` without wandering. Released
+   * early it commits nothing, which is the entire point -- there is no confirm
+   * step anywhere else in the game, so this is the only undo a player gets.
+   */
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!carefulMode || !canPlace.current || !map.current) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const startedAt = { x: e.clientX, y: e.clientY }
+    setHolding({ x, y })
+
+    holdTimer.current = setTimeout(() => {
+      holdTimer.current = null
+      setHolding(null)
+      const m = map.current
+      if (!m || !canPlace.current) return
+      const { lng, lat } = m.unproject([x, y])
+      addPin(m, { lng, lat }, '#fbbf24')
+      place.current({ lng, lat })
+    }, careful.current.ms)
+
+    // Drifting off the point is a pan, not a placement.
+    const watch = (move: PointerEvent) => {
+      if (Math.hypot(move.clientX - startedAt.x, move.clientY - startedAt.y) > 12) {
+        cancelHold()
+        window.removeEventListener('pointermove', watch)
+      }
+    }
+    window.addEventListener('pointermove', watch)
+    window.addEventListener('pointerup', () => window.removeEventListener('pointermove', watch), {
+      once: true,
+    })
+  }
+
   return (
     <div className="relative h-full w-full">
       <div
         ref={container}
         className="map-surface h-full w-full"
         onContextMenu={(e) => e.preventDefault()}
+        onPointerDown={onPointerDown}
+        onPointerUp={cancelHold}
+        onPointerCancel={cancelHold}
+        onPointerLeave={cancelHold}
       />
+      {holding && (
+        <svg
+          className="pointer-events-none absolute z-30"
+          style={{ left: holding.x - 34, top: holding.y - 34 }}
+          width={68}
+          height={68}
+        >
+          <circle cx={34} cy={34} r={28} fill="none" stroke="rgb(255 255 255 / 0.25)" strokeWidth={4} />
+          <circle
+            cx={34}
+            cy={34}
+            r={28}
+            fill="none"
+            stroke="#fbbf24"
+            strokeWidth={4}
+            strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 28}
+            transform="rotate(-90 34 34)"
+          >
+            <animate
+              attributeName="stroke-dashoffset"
+              from={2 * Math.PI * 28}
+              to={0}
+              dur={`${holdMs}ms`}
+              fill="freeze"
+            />
+          </circle>
+        </svg>
+      )}
       {/* Leaders first, so cards paint over them. */}
       {placed.length > 0 && (
         <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full">
