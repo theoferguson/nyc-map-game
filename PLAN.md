@@ -621,3 +621,24 @@ from screens where no game is in progress; and `scoreGuess` is evaluated once pe
 *The pattern across these:* every one is a storage or clock edge that unit tests would pass
 and a player would hit eventually. Storage is untrusted input, and the clock moves while the
 page is open.
+
+---
+
+## 11. Roadmap sources — verified 2026-08-19
+
+Dataset identifiers previously written from memory. Three of the four were wrong, so they
+are recorded here as checked rather than assumed.
+
+| source | status |
+|---|---|
+| LPC Individual Landmark Sites | **`ts56-fkf5`** on data.cityofnewyork.us — 1,532 records, matching the spec's "~1,450" |
+| Wikipedia pageviews API | works, but the host is **`wikimedia.org`**, not `en.wikipedia.org` — the obvious URL 404s |
+| Subway *route* linework | **not located.** data.ny.gov carries stations, complexes and entrances; route geometry did not surface |
+| Historic Districts / Scenic Landmarks | `xbvj-gfnw`, `gi7d-8gt5` — exist, useful for `area` |
+
+**The subway gap matters for the hint feature.** Hints were specced as superimposed subway
+*lines*, which work because they trace the city's shape without naming anything. Station
+points are a weaker hint — a scatter of dots — and a labelled station map would give the
+answer away outright, which the no-labels rule forbids. Either route geometry gets sourced
+elsewhere (OpenStreetMap carries subway route relations) or the hint becomes something else.
+Worth settling before that feature is scheduled, since it changes what is being built.
