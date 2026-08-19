@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run puzzles:build && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "check:tiles": "node scripts/check-tiles.mjs"
+    "check:tiles": "node scripts/check-tiles.mjs",
+    "test": "vitest run",
+    "puzzles:build": "node scripts/build-puzzles.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.4.1",
@@ -24,6 +26,7 @@
     "oxlint": "^1.75.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
-    "vite": "^8.2.0"
+    "vite": "^8.2.0",
+    "vitest": "^4.1.11"
   }
 }
