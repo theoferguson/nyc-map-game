@@ -129,10 +129,17 @@ deploy, author the first 50 days in one pass, then use collected play data to bu
 generative engine that keeps at least 10 days queued.
 
 *What the queue depth is actually for:* redundancy if authoring stalls, and beta testers, who
-consume upcoming days rather than replaying today's. That second one sets the arithmetic --
-a 10-day buffer against testers burning five plays a day drains in days, not weeks, unless
-beta days come from a pool that never enters the main rotation. Decide which before the
-engine is built, because it changes what the engine has to produce.
+consume upcoming days rather than replaying today's.
+
+*No separate beta pool* (decided 2026-08-19). The value of beta access is concentrated in
+bunched early plays -- a tester getting through many rounds in one sitting is exactly the
+feedback density that answers whether `venue` works -- not in sustained daily access. So the
+drain is a burst against a bounded window, not a continuous leak, and a 10-day buffer covers
+it. Beta days come from the ordinary queue.
+
+Two consequences to hold onto: beta access wants to be a bounded cohort window rather than an
+always-on feature, or the burst assumption stops holding; and a tester who burns day 47 early
+cannot play it fresh on the day, which is their trade to make and not a bug to design around.
 
 *What "generative" can and cannot learn from play data:* round results measure difficulty
 well -- score distribution and time-to-guess per location are exactly the calibration signal
@@ -269,9 +276,9 @@ feedback capture path and somewhere to put the results, which is the first thing
 project that genuinely needs a backend -- it should be scoped alongside whatever Phase 3
 account work happens rather than bolted onto the static build.
 
-*Note:* playing tomorrow's locations early means testers cannot play them fresh on the day,
-so either the harvest pipeline stays ahead enough to burn days cheaply, or beta days come
-from a separate pool that never enters the main rotation. Decide before content is scarce.
+*Resolved (2026-08-19):* beta days come from the ordinary queue, no separate pool. The point
+of beta access is bunched early plays rather than sustained daily access, so the draw is a
+burst inside a bounded window that the standing queue absorbs. See section 10.
 
 **Scoring recalibrated (2026-08-19).** The spec's lambdas (area 400, landmark 250, venue
 350) decayed far too fast to match how a miss feels on the ground: a guess half an avenue
