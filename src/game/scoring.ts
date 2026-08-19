@@ -6,21 +6,30 @@ export type LngLat = { lng: number; lat: number }
  * Findability varies enormously by class -- a park is visible from orbit, a deli's
  * roof tells you nothing -- so the decay curve is per class rather than global.
  *
- * Calibrated from play rather than from the spec's original figures, which decayed
- * far too fast: they scored a guess half an avenue from the answer at 58, when that
- * is essentially the right block. The anchor now is that ~15 short blocks out earns
- * a middling score, and a block or two out still reads as a hit.
+ * A plain exponential was the wrong shape here, not just the wrong constant. It is
+ * steepest exactly where players are most accurate, so tightening the far end to
+ * keep blind guessing worthless made near misses feel brutal, and loosening it to
+ * reward near misses made tapping midtown every round a viable strategy.
  *
- *   venue @ 15 blocks (1.2km) -> 58        venue @ 2 blocks (160m) -> 93
+ * Raising the distance to a power > 1 first flattens the head and then falls off
+ * harder, which is what lets both ends be right at once:
+ *
+ *   score = 100 * exp(-(d / lambda) ^ FALLOFF)
+ *
+ *                     5 blocks   15 blocks   1.5 miles   wrong borough
+ *   plain exponential      83          58          34               1
+ *   this curve             94          73          41               0
  *
  * `area` stays the most forgiving because it is scored against a centroid: until
  * polygon containment lands, tapping the south end of Central Park is a kilometre
  * from its middle and must not be punished as a miss.
  */
+const FALLOFF = 1.5
+
 const LAMBDA: Record<LocationClass, number> = {
-  area: 2500,
-  landmark: 1600,
-  venue: 2200,
+  area: 3000,
+  landmark: 2000,
+  venue: 2600,
 }
 
 /** Inside this radius every guess is a bullseye; below it the curve is noise. */
@@ -40,7 +49,7 @@ export function haversine(a: LngLat, b: LngLat): number {
 
 export function roundScore(distanceM: number, cls: LocationClass): number {
   if (distanceM <= BULLSEYE_M) return 100
-  return Math.round(100 * Math.exp(-distanceM / LAMBDA[cls]))
+  return Math.round(100 * Math.exp(-((distanceM / LAMBDA[cls]) ** FALLOFF)))
 }
 
 /* ------------------------------------------------------------------ blocks */

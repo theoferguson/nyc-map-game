@@ -15,6 +15,7 @@ import {
   type GeoJSONSource,
 } from 'maplibre-gl'
 import { pickSource } from './tiles'
+import { deoverlap, CARD_W } from './deoverlap'
 import type { LngLat } from '../game/scoring'
 
 /** [[W,S],[E,N]] -- the player cannot pan out of the city. */
@@ -29,6 +30,14 @@ const NYC_BOUNDS: [[number, number], [number, number]] = [
  */
 const MAX_ZOOM = 18
 const MIN_ZOOM = 9.5
+
+/**
+ * The reveal frames guess and answer together, but a near-perfect guess makes
+ * that box tiny and fitBounds would slam to the zoom cap. Hold it well back:
+ * the round is over, so the detail buys nothing and only costs the player the
+ * pinch-out back to the city.
+ */
+const REVEAL_MAX_ZOOM = 15
 const FRAMING_PADDING = 20
 
 /**
@@ -40,10 +49,6 @@ const DOUBLE_CLICK_WINDOW_MS = 300
 
 const EMPTY = { type: 'FeatureCollection', features: [] } as const
 
-/** Card size used for de-overlapping. Cards are fixed-size so this stays exact. */
-export const CARD_W = 184
-export const CARD_H = 128
-const CARD_GAP = 8
 
 /** A card pinned to a map coordinate -- the end-of-game fact cards. */
 export type Overlay = { id: string; lngLat: LngLat; content: ReactNode }
@@ -57,34 +62,6 @@ export type MapHandle = {
   showAllAnswers: (points: LngLat[]) => void
 }
 
-type Placed = { id: string; x: number; y: number }
-
-/**
- * Cards sit above their pin, but five answers at a citywide framing collide.
- * Push each one down until it clears the cards already placed.
- *
- * ponytail: greedy 1D nudge, no leader lines back to the pin. If real days
- * cluster badly enough that cards drift far from their pins, this wants proper
- * label placement, not a bigger nudge.
- */
-export function deoverlap(points: Placed[]): Placed[] {
-  const done: Placed[] = []
-  for (const p of [...points].sort((a, b) => a.y - b.y)) {
-    let { y } = p
-    let moved = true
-    while (moved) {
-      moved = false
-      for (const q of done) {
-        if (Math.abs(q.x - p.x) < CARD_W && Math.abs(q.y - y) < CARD_H + CARD_GAP) {
-          y = q.y + CARD_H + CARD_GAP
-          moved = true
-        }
-      }
-    }
-    done.push({ ...p, y })
-  }
-  return done
-}
 
 export function MapView({
   ref,
@@ -190,13 +167,21 @@ export function MapView({
 
       map.current = m
 
-      // Computed once and replayed verbatim. Recomputing per round, or easing
-      // into it, lets the previous reveal leak position into the next prompt.
-      m.once('load', () => {
-        standardFraming.current =
-          m.cameraForBounds(NYC_BOUNDS, { padding: FRAMING_PADDING }) ?? null
-        setLoaded(m)
-      })
+      // Captured immediately, and replayed verbatim at the start of every round.
+      // Recomputing per round, or easing into it, lets the previous reveal leak
+      // position into the next prompt.
+      //
+      // Deliberately NOT gated on the 'load' event: cameraForBounds only needs
+      // the container size, which exists as soon as the map is constructed.
+      // Waiting for 'load' meant that if it never fired, the camera reset and
+      // the end-of-game cards both died silently with the map still working.
+      standardFraming.current =
+        m.cameraForBounds(NYC_BOUNDS, { padding: FRAMING_PADDING }) ?? {
+          center: m.getCenter(),
+          zoom: m.getZoom(),
+          bearing: 0,
+        }
+      setLoaded(m)
     })
 
     return () => {
@@ -262,7 +247,7 @@ export function MapView({
           answer.lng,
           answer.lat,
         ]),
-        { padding: 80, maxZoom: MAX_ZOOM - 1, duration: 900 },
+        { padding: 80, maxZoom: REVEAL_MAX_ZOOM, duration: 900 },
       )
     },
 
