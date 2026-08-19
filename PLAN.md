@@ -156,3 +156,58 @@ roofs are blank and leak nothing at any zoom.
 Knob: `MAX_ZOOM` in `src/map/MapView.tsx`. Turn it down for the spec's open "hard mode"
 question; turn it up only if playtests show `venue` rounds are unfair-hard rather than
 fun-hard, since close inspection is the only tool players have on that class.
+
+---
+
+## 7. Design changes from playtest notes (2026-08-19)
+
+**Facts moved out of the per-round reveal to the end of the game.** The spec had put
+`factShort` inline on each reveal card and treated fact length as a pacing constraint
+because of it. Facts now batch to the end instead, so the per-round reveal carries only the
+miss copy and the score, and the pacing constraint it was written to solve goes away.
+`factShort` and `factLong` both survive -- the card shows short, tapping opens long.
+
+**The recap is spatial, not a list.** At game over the camera pulls back to hold all five
+answers and every fact card is anchored to its own pin, so the day reads as a map of where
+you were rather than an accordion. Implemented as one MapLibre `Marker` per location with
+React portalled into it, which keeps the cards tracking their pins through pan and zoom
+without re-rendering on every frame.
+
+*Known ceiling:* five cards at a citywide framing will overlap when locations cluster --
+two Manhattan answers a few blocks apart will sit on top of each other. Panning and zooming
+separates them, and the cards collapse to two lines until tapped. If clustering turns out to
+be common rather than occasional, the fix is collision-aware placement or a leader-line
+offset, not more zoom.
+
+**Results overlay the map rather than replacing it.** Total, share squares, block average
+and the share button sit in a sheet over the live map, so the recap stays visible behind it.
+
+**Double-click to zoom no longer commits a guess.** MapLibre fires click, click, dblclick,
+so with commit-on-tap the first click of a zoom gesture was submitting an answer. Placement
+now waits out a 300ms double-click window before committing; a `dblclick` inside that window
+cancels it. The delay is on the commit only.
+
+*Tune on device (M5):* 300ms matches MapLibre's own double-click window. If placement feels
+laggy on a phone, the honest fix is dropping the guess pin optimistically on click and
+retracting it on `dblclick`, not shortening the window -- shortening it starts letting
+double-clicks through as guesses again.
+
+---
+
+## 8. Roadmap
+
+**Hints — subway overlay.** An "ask for a hint" control that superimposes the subway lines
+on the imagery, for a score penalty. The lines are a strong orientation aid without naming
+anything, so this stays inside the no-labels rule as long as station names are not drawn.
+Source: NYC Open Data subway routes GeoJSON, added as a line layer above the raster and
+toggled. Open: flat penalty per hint, or a multiplier on that round's score.
+
+**Beta mode — playtest codes.** A code that unlocks five plays per day drawn from the *next*
+scheduled days' rounds, so testers burn future content instead of replaying today's. Needs a
+feedback capture path and somewhere to put the results, which is the first thing in this
+project that genuinely needs a backend -- it should be scoped alongside whatever Phase 3
+account work happens rather than bolted onto the static build.
+
+*Note:* playing tomorrow's locations early means testers cannot play them fresh on the day,
+so either the harvest pipeline stays ahead enough to burn days cheaply, or beta days come
+from a separate pool that never enters the main rotation. Decide before content is scarce.
