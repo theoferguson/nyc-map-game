@@ -20,16 +20,23 @@ export const ESRI = {
 }
 
 /**
- * MapLibre's multi-URL `tiles` array shards across hosts, it does not fail over --
- * so pick the source up front with one probe instead.
+ * Returns the raster layers to draw, bottom first.
+ *
+ * DoITT stops at the city line, so anything outside the five boroughs renders as
+ * a void -- very visible at the end-of-game framing, which pulls back further
+ * than the city. Esri goes underneath to fill the surround, with DoITT's sharper
+ * city imagery on top of it wherever DoITT has coverage.
+ *
+ * MapLibre's multi-URL `tiles` array shards across hosts, it does not fail over,
+ * so DoITT's availability is settled up front with one probe instead.
  */
-export async function pickSource(timeoutMs = 1500) {
+export async function resolveSources(timeoutMs = 1500) {
   try {
     const res = await fetch(DOITT.probe, { signal: AbortSignal.timeout(timeoutMs) })
-    if (res.ok) return DOITT
+    if (res.ok) return [ESRI, DOITT]
   } catch {
     // fall through
   }
   console.warn('[tiles] DoITT unreachable, falling back to Esri World Imagery')
-  return ESRI
+  return [ESRI]
 }
