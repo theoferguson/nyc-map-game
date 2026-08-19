@@ -14,19 +14,31 @@ const band = (score: number) =>
   score >= 80 ? '🟩' : score >= 50 ? '🟨' : score >= 20 ? '🟧' : '⬜'
 
 /**
- * The block average is the line people quote at each other, so it uses the short
- * north-south block (~80m) as a plain unit rather than trying to average across
- * two axes of wildly different size.
+ * The block line is the one people quote at each other, so it uses the short
+ * north-south block (~80m) as a plain unit rather than averaging across two axes
+ * of wildly different size.
  */
 const SHORT_BLOCK_M = 80
 
-export function shareString(puzzleNumber: number, results: RoundResult[]): string {
-  const avgBlocks =
-    results.reduce((sum, r) => sum + r.distanceM, 0) / results.length / SHORT_BLOCK_M
+/**
+ * Median, not mean. Distances here are wildly skewed -- four good rounds and one
+ * guess in the wrong borough is a common shape, and the mean lets that single
+ * round define the line. A strong game was printing "855/1000" beside "avg 9.9
+ * blocks off", two numbers telling opposite stories about the same play.
+ */
+function medianBlocks(results: RoundResult[]): number {
+  const sorted = results.map((r) => r.distanceM).sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  const median =
+    sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
+  return median / SHORT_BLOCK_M
+}
 
+export function shareString(puzzleNumber: number, results: RoundResult[]): string {
+  const blocks = medianBlocks(results)
   return [
     `NYC Daily #${puzzleNumber} — ${totalScore(results)}/${MAX_TOTAL}`,
     results.map((r) => band(r.score)).join(''),
-    `avg ${avgBlocks.toFixed(1)} blocks off`,
+    `median ${blocks < 1 ? blocks.toFixed(1) : Math.round(blocks)} blocks off`,
   ].join('\n')
 }

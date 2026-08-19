@@ -17,7 +17,7 @@ test('later rounds are worth more than earlier ones', () => {
 
 test('share string matches the published format', () => {
   expect(shareString(47, perfect)).toBe(
-    'NYC Daily #47 — 1000/1000\n🟩🟩🟩🟩🟩\navg 0.0 blocks off',
+    'NYC Daily #47 — 1000/1000\n🟩🟩🟩🟩🟩\nmedian 0.0 blocks off',
   )
 
   const mixed = [
@@ -30,7 +30,20 @@ test('share string matches the published format', () => {
   const [header, squares, avg] = shareString(1, mixed).split('\n')
   expect(header).toBe('NYC Daily #1 — 440/1000')
   expect(squares).toBe('🟩🟩🟨⬜🟧')
-  expect(avg).toBe('avg 8.1 blocks off')
+  expect(avg).toBe('median 4 blocks off')
+})
+
+test('one disastrous round does not define the line', () => {
+  // Four good guesses and one in the wrong borough. The mean read "9.9 blocks"
+  // beside a strong score; the median reports the game the player actually had.
+  const oneBadRound = [
+    { score: 96, distanceM: 150 },
+    { score: 94, distanceM: 220 },
+    { score: 91, distanceM: 300 },
+    { score: 88, distanceM: 400 },
+    { score: 2, distanceM: 12_000 },
+  ]
+  expect(shareString(1, oneBadRound).split('\n')[2]).toBe('median 4 blocks off')
 })
 
 test('share string is plain text that pastes anywhere', () => {
