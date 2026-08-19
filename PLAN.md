@@ -271,3 +271,17 @@ event unless that state genuinely cannot exist earlier. A silent no-op is worse 
 **Reveal zoom capped at z15.** Framing guess and answer together meant a near-perfect guess
 produced a tiny box and `fitBounds` slammed to the zoom cap, so every good round ended with
 a long pinch back out to the city. The round is over by then, so the detail buys nothing.
+
+**Camera reset eased rather than cut.** Round transitions now run the reveal's zoom-in
+backwards over 900ms instead of snapping to the wide view. The destination is still the
+single camera computed at startup, so the spec's requirement that every round begin from an
+identical framing survives -- only the path to it changed.
+
+Placement is suppressed while the reset is in flight: a tap mid-zoom-out would commit
+wherever the camera happened to be pointing at that instant, which is not where the player
+aimed. Grabbing the map mid-flight aborts the ease and hands control straight back, which
+does mean an interrupted reset can start a round off-framing -- acceptable, since taking the
+map over is deliberate, and the alternative is locking the player out of their own map.
+
+On the final round the recap framing runs instead of the reset, rather than both firing and
+fighting each other.

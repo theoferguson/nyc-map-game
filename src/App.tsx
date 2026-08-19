@@ -56,13 +56,16 @@ export default function App() {
     setResults(finished)
     setCurrent(null)
     map.current?.clearPins()
-    map.current?.resetCamera()
     setRound((r) => r + 1)
 
+    // Two camera moves at once would fight; the recap framing supersedes the
+    // reset, so on the last round only one of them runs.
     if (finished.length === puzzle!.locations.length) {
       map.current?.showAllAnswers(
         puzzle!.locations.map((l) => ({ lng: l.lng, lat: l.lat })),
       )
+    } else {
+      map.current?.resetCamera()
     }
   }
 
