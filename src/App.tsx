@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { MapView, type MapHandle } from './map/MapView'
-import { loadPuzzle, type Puzzle } from './data/loadPuzzle'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { MapView, type MapHandle, type Overlay } from './map/MapView'
+import { loadPuzzle, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
+import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
 
 type Result = { guess: LngLat; distanceM: number; score: number; copy: string }
 
@@ -9,7 +10,8 @@ export default function App() {
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [round, setRound] = useState(0)
-  const [result, setResult] = useState<Result | null>(null)
+  const [current, setCurrent] = useState<Result | null>(null)
+  const [results, setResults] = useState<Result[]>([])
   const map = useRef<MapHandle>(null)
 
   // M4 replaces this with the America/New_York puzzle date.
@@ -17,86 +19,173 @@ export default function App() {
     loadPuzzle('2026-08-19').then(setPuzzle).catch((e) => setError(String(e)))
   }, [])
 
+  const over = !!puzzle && round >= puzzle.locations.length
+
+  // Every answer, each card pinned to its own location, all at once.
+  const overlays = useMemo<Overlay[]>(() => {
+    if (!over || !puzzle) return []
+    return puzzle.locations.map((loc, i) => ({
+      id: loc.id,
+      lngLat: { lng: loc.lng, lat: loc.lat },
+      content: <FactCard location={loc} result={results[i]} index={i} />,
+    }))
+  }, [over, puzzle, results])
+
   if (error) return <Centered>{error}</Centered>
   if (!puzzle) return <Centered>Loading…</Centered>
 
   const location = puzzle.locations[round]
-  const done = round >= puzzle.locations.length
 
   function place(guess: LngLat) {
     // The reveal is showing; taps must not overwrite a committed answer.
-    if (result || done) return
+    if (current || over) return
     const answer = { lng: location.lng, lat: location.lat }
     const distanceM = haversine(guess, answer)
 
-    setResult({
+    setCurrent({
       guess,
       distanceM,
       score: roundScore(distanceM, location.class),
       copy: describeMiss(guess, answer),
     })
-    map.current?.showGuess(guess)
     map.current?.revealAnswer(guess, answer)
   }
 
   function next() {
+    const finished = [...results, current!]
+    setResults(finished)
+    setCurrent(null)
     map.current?.clearPins()
     map.current?.resetCamera()
-    setResult(null)
     setRound((r) => r + 1)
+
+    if (finished.length === puzzle!.locations.length) {
+      map.current?.showAllAnswers(
+        puzzle!.locations.map((l) => ({ lng: l.lng, lat: l.lat })),
+      )
+    }
   }
 
   return (
     <div className="relative h-full w-full bg-neutral-900">
-      <MapView ref={map} onPlace={place} />
+      <MapView ref={map} onPlace={place} overlays={overlays} />
 
-      {done ? (
-        <Centered>
-          <p className="text-lg">That is all five.</p>
-          <p className="mt-2 text-sm text-neutral-400">
-            Scoring multipliers, the results screen and the share string land in M3.
+      {!over && (
+        <header className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/85 to-transparent p-4 pb-10 text-white">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-neutral-300">Find</p>
+            <h1 className="text-xl font-semibold leading-tight">{location.prompt}</h1>
+          </div>
+          <p className="shrink-0 pt-4 text-sm tabular-nums text-neutral-300">
+            {round + 1}/{puzzle.locations.length}
           </p>
-        </Centered>
-      ) : (
-        <>
-          <header className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-4 pb-10 text-white">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-neutral-300">
-                Find
-              </p>
-              <h1 className="text-xl font-semibold leading-tight">
-                {location.prompt}
-              </h1>
-            </div>
-            <p className="shrink-0 pt-4 text-sm tabular-nums text-neutral-300">
-              {round + 1}/{puzzle.locations.length}
-            </p>
-          </header>
-
-          {result && (
-            <div className="absolute inset-x-0 bottom-0 space-y-3 rounded-t-2xl bg-neutral-900/95 p-5 text-white shadow-2xl backdrop-blur">
-              <div className="flex items-baseline justify-between gap-4">
-                <p className="text-lg font-medium">{result.copy}</p>
-                <p className="shrink-0 text-2xl font-semibold tabular-nums">
-                  {result.score}
-                </p>
-              </div>
-
-              <p className="text-sm leading-relaxed text-neutral-300">
-                <span className="font-medium text-white">{location.name}.</span>{' '}
-                {location.factShort}
-              </p>
-
-              <button
-                onClick={next}
-                className="w-full rounded-xl bg-white py-3 font-semibold text-neutral-900 active:bg-neutral-200"
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </>
+        </header>
       )}
+
+      {current && (
+        <div className="absolute inset-x-0 bottom-0 space-y-4 rounded-t-2xl bg-neutral-900/95 p-5 text-white shadow-2xl backdrop-blur">
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="text-lg font-medium">{current.copy}</p>
+            <p className="shrink-0 text-2xl font-semibold tabular-nums">
+              {current.score}
+              {MULTIPLIERS[round] > 1 && (
+                <span className="ml-1 text-sm font-normal text-amber-400">
+                  ×{MULTIPLIERS[round]}
+                </span>
+              )}
+            </p>
+          </div>
+          <button
+            onClick={next}
+            className="w-full rounded-xl bg-white py-3 font-semibold text-neutral-900 active:bg-neutral-200"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {over && <Results puzzle={puzzle} results={results} />}
+    </div>
+  )
+}
+
+/** Pinned beside its answer on the map, all five legible at once. */
+function FactCard({
+  location,
+  result,
+  index,
+}: {
+  location: PuzzleLocation
+  result?: Result
+  index: number
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <button
+      onClick={() => setOpen((o) => !o)}
+      className={`pointer-events-auto block max-w-[15rem] rounded-lg bg-neutral-900/90 p-2.5 text-left text-white shadow-lg ring-1 ring-white/15 backdrop-blur transition-all ${
+        open ? 'z-20' : 'z-10'
+      }`}
+    >
+      <div className="flex items-baseline gap-2">
+        <span className="text-[10px] font-semibold text-neutral-400">{index + 1}</span>
+        <span className="flex-1 text-xs font-semibold leading-tight">{location.name}</span>
+        <span className="text-xs tabular-nums text-amber-400">{result?.score ?? 0}</span>
+      </div>
+      <p className="mt-1 text-[11px] leading-tight text-neutral-400">{result?.copy}</p>
+      <p
+        className={`mt-1.5 text-[11px] leading-snug text-neutral-300 ${
+          open ? '' : 'line-clamp-2'
+        }`}
+      >
+        {open ? location.factLong : location.factShort}
+      </p>
+      <p className="mt-1 text-[10px] text-neutral-500">
+        {open ? location.sourceAttribution : 'Tap for more'}
+      </p>
+    </button>
+  )
+}
+
+function Results({ puzzle, results }: { puzzle: Puzzle; results: Result[] }) {
+  const [copied, setCopied] = useState(false)
+  const total = totalScore(results)
+  const text = shareString(puzzle.puzzleNumber, results)
+
+  async function share() {
+    if (navigator.share) {
+      await navigator.share({ text }).catch(() => {})
+      return
+    }
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3">
+      <div className="pointer-events-auto mx-auto max-w-md space-y-3 rounded-2xl bg-neutral-900/95 p-5 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
+        <div className="flex items-baseline justify-between">
+          <p className="text-sm text-neutral-400">NYC Daily #{puzzle.puzzleNumber}</p>
+          <p className="text-3xl font-semibold tabular-nums">
+            {total}
+            <span className="text-base font-normal text-neutral-500">/{MAX_TOTAL}</span>
+          </p>
+        </div>
+        <p className="text-2xl tracking-wide">
+          {text.split('\n')[1]}
+        </p>
+        <p className="text-sm text-neutral-400">{text.split('\n')[2]}</p>
+        <button
+          onClick={share}
+          className="w-full rounded-xl bg-white py-3 font-semibold text-neutral-900 active:bg-neutral-200"
+        >
+          {copied ? 'Copied' : 'Share'}
+        </button>
+        <p className="text-center text-xs text-neutral-500">
+          Tap any card on the map to read more.
+        </p>
+      </div>
     </div>
   )
 }
