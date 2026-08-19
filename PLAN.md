@@ -427,3 +427,45 @@ throws on write, and telemetry must never break a game.
 once events leave the device, even anonymous ones. Decide the lawful basis and the banner
 before wiring a flush endpoint, not after. `drain()` exists as that seam and is deliberately
 not called anywhere yet.
+
+### Location affinity (planned, not built)
+
+Gameplay reveals which parts of the city a player actually knows. Somebody who drops a pin on
+Katz's in four seconds from a cold start knows the Lower East Side; somebody who lands in the
+East Village knows the neighbourhood but not the block. That is a far better targeting signal
+than anything a form would collect, and it is a by-product of the game rather than something
+extra asked of the player.
+
+**Most of the raw signal is already captured.** `round_complete` carries location id, class,
+borough, difficulty, distance, score and ms-to-guess. No new events are needed to start; what
+is missing is the derivation and one schema addition.
+
+**Raw score is the wrong measure and will mislead.** A high score on Katz's may only mean the
+player is good at the game. Affinity is the *residual*: how far this player's result sits
+above their own average, and above the population's average on that same location. Both
+normalisations matter -- the first separates local knowledge from general skill, the second
+separates genuinely obscure places from ones everybody gets. Ranking on raw score would
+surface the easiest locations to the best players, which is the opposite of useful.
+
+**The hard constraint is sparsity.** A daily game gives at most one observation per player per
+location, ever. One data point on Katz's is weak evidence and there is no second one coming.
+So affinity has to be built at the **category** level and only then attributed back to
+individual places: this player is strong on Lower East Side venues, on pre-war civic
+buildings, on Queens generally. Individual-location affinity is an output of the category
+model, not an input to it.
+
+**That requires tagging locations, which is the one real cost.** `class` and `borough` are too
+coarse -- they cannot distinguish a deli from a nightclub, or SoHo from Inwood. A `tags` array
+on each location (neighbourhood, era, venue type, theme) is what makes the categories exist.
+It is a few words per entry at authoring time, unlike the `factLong` paragraph just dropped,
+and it also feeds themed days and the difficulty tiers. Worth adding to the schema before much
+content is written, since retrofitting tags across accumulated days is the expensive version.
+
+**Consent basis changes here, and this is the part to get right before building it.** Product
+analytics that improve the game are one thing; profiling individuals to target advertising is
+another, and under GDPR/UK GDPR it generally requires opt-in consent rather than legitimate
+interest. Two further points: today's install id is anonymous, but Phase 3 accounts would tie
+these profiles to real identities and make them personal data outright; and inferred
+neighbourhood familiarity is close to a home-location inference, which is sensitive in a way
+raw game scores are not. Decide the consent flow and the retention window before the profiles
+exist, because deleting them afterwards is much harder than not building them yet.
