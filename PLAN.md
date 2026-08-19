@@ -236,3 +236,38 @@ earning a middling score rather than near-zero.
 The far end still has to stay near zero or tapping the middle of Manhattan every round
 becomes a viable strategy -- that is the constraint the tuning is squeezed against, and the
 anchors are pinned in `scoring.test.ts` so a future retune has to be deliberate.
+
+**Scoring reshaped, not just retuned (2026-08-19).** Widening lambda alone could not fix
+"punishing": a plain exponential is steepest exactly where players are most accurate, so
+tightening the tail to keep blind guessing worthless made near misses brutal, and loosening
+it to reward near misses made tapping midtown every round viable. Raising distance to a
+power first flattens the head and then falls off harder, which lets both ends be right:
+
+    score = 100 * exp(-(d / lambda) ^ 1.5)      area 3000, landmark 2000, venue 2600
+
+| miss              | plain exp | now |
+|-------------------|-----------|-----|
+| 5 blocks          | 83        | 94  |
+| 15 blocks         | 58        | 73  |
+| 1.5 miles         | 34        | 41  |
+| blind midtown tap | 20        | 21  |
+| wrong borough     | 1         | 0   |
+
+*Consequence:* the head is now flat enough that anything inside ~75m scores 100, so the
+explicit 40m bullseye is belt-and-braces rather than load-bearing. Precision below a block
+is unrewarded for venues. If tapping the actual door should beat being a block away, that is
+a separate mechanic -- a precision bonus -- not more lambda tuning.
+
+**Two features were dead behind one event.** `standardFraming` and the map instance that
+drives the fact cards were both assigned inside `m.once('load', ...)`. When that never
+fired, the camera never reset between rounds (leaving the player buried at the reveal zoom)
+and the end-of-game cards never rendered -- while the map itself worked fine, so nothing
+looked broken. Neither needed the event: `cameraForBounds` only wants the container size.
+Both are now captured synchronously at construction.
+
+*Rule of thumb this earns:* do not hang state that other features read off a map lifecycle
+event unless that state genuinely cannot exist earlier. A silent no-op is worse than a crash.
+
+**Reveal zoom capped at z15.** Framing guess and answer together meant a near-perfect guess
+produced a tiny box and `fitBounds` slammed to the zoom cap, so every good round ended with
+a long pinch back out to the city. The round is over by then, so the detail buys nothing.

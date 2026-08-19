@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { deoverlap, CARD_W, CARD_H } from './MapView'
+import { deoverlap, CARD_W, CARD_H } from './deoverlap'
 
 const collides = (a: { x: number; y: number }, b: { x: number; y: number }) =>
   Math.abs(a.x - b.x) < CARD_W && Math.abs(a.y - b.y) < CARD_H

@@ -20,7 +20,9 @@ test('haversine matches known NYC distances', () => {
 test('scoring is bullseye inside 40m and decays per class', () => {
   expect(roundScore(0, 'venue')).toBe(100)
   expect(roundScore(40, 'venue')).toBe(100)
-  expect(roundScore(41, 'venue')).toBeLessThan(100)
+  // The curve's head is flat enough to award 100 well past the bullseye radius
+  // on its own; the explicit bullseye now only guarantees it.
+  expect(roundScore(200, 'venue')).toBeLessThan(100)
 
   // A venue is more forgiving than a landmark at the same miss, because a deli
   // roof gives you nothing to aim at. If this inverts, the lambdas got swapped.
@@ -37,16 +39,21 @@ test('scoring is bullseye inside 40m and decays per class', () => {
 test('the curve is calibrated to how a miss actually feels', () => {
   // The anchors the tuning was derived from. If a future retune moves these,
   // it should be a deliberate decision, not a side effect.
-  expect(roundScore(1200, 'venue')).toBe(58)   // ~15 short blocks -> middling
-  expect(roundScore(160, 'venue')).toBe(93)    // ~2 blocks -> still a hit
+  expect(roundScore(1200, 'venue')).toBe(73)   // ~15 short blocks -> still decent
+  expect(roundScore(400, 'venue')).toBe(94)    // ~5 blocks -> a hit
 
-  // Being on the right block must never read as a failure.
-  expect(roundScore(190, 'venue')).toBeGreaterThan(85)
-  expect(roundScore(190, 'landmark')).toBeGreaterThan(85)
+  // Being anywhere near the right block must never read as a failure.
+  expect(roundScore(190, 'venue')).toBeGreaterThan(90)
+  expect(roundScore(190, 'landmark')).toBeGreaterThan(90)
 
-  // ...but the wrong borough must still be worth close to nothing, or tapping
-  // the middle of Manhattan every round becomes a viable strategy.
-  expect(roundScore(10_000, 'venue')).toBeLessThan(5)
+  // ...but the two lazy strategies must stay worthless, or the game plays
+  // itself: tapping midtown every round, and the wrong borough entirely.
+  expect(roundScore(3500, 'venue')).toBeLessThan(25)
+  expect(roundScore(10_000, 'venue')).toBeLessThan(2)
+
+  // The flat head means precision below ~75m is unrewarded, so the explicit
+  // bullseye is now belt-and-braces rather than load-bearing.
+  expect(roundScore(150, 'venue')).toBeLessThan(100)
 })
 
 test('miss copy follows the dominant axis and names it correctly', () => {
