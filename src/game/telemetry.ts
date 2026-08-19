@@ -19,6 +19,31 @@ const QUEUE_KEY = 'nycmap:events'
 /** Roughly a month of daily play. Oldest go first; this is not a ledger. */
 const QUEUE_CAP = 400
 
+/**
+ * Coarse region, with no third party and no IP leaving the device.
+ *
+ * True IP geolocation belongs on the server, which sees the request IP anyway
+ * and can resolve it to a city without shipping anything to a lookup vendor.
+ * Doing it from the browser instead means handing every player's IP to a third
+ * party, on a call ad blockers routinely block. So this captures what the
+ * platform already knows, and the real thing lands with the backend.
+ *
+ * Read it for what it is: timezone answers "which part of the world", not
+ * "which neighbourhood" -- America/New_York covers Maine to Florida, so it
+ * cannot tell a local from a visitor, which is the question that actually
+ * explains scores.
+ */
+function coarseRegion(): Record<string, string> {
+  try {
+    return {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      locale: navigator.language,
+    }
+  } catch {
+    return {}
+  }
+}
+
 /** Safari in private mode throws on write. Telemetry must never break a game. */
 export const storage = {
   get(key: string): string | null {
@@ -80,7 +105,10 @@ export function track(name: string, props: Record<string, unknown> = {}): void {
     ts: Date.now(),
     installId: installId(),
     imagery: imageryVariant().id,
-    props: name === 'game_start' ? { ...props, ...attribution() } : props,
+    props:
+      name === 'game_start'
+        ? { ...props, ...attribution(), ...coarseRegion() }
+        : props,
   }
 
   const queue: TrackedEvent[] = JSON.parse(storage.get(QUEUE_KEY) ?? '[]')

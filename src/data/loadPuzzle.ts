@@ -9,6 +9,14 @@ export type PuzzleLocation = {
   class: LocationClass
   borough: string
   difficulty: number
+  /**
+   * Neighbourhood, type, era, theme. Finer than `class` and `borough`, which
+   * cannot distinguish a deli from a nightclub or SoHo from Inwood. Feeds
+   * themed days, difficulty tiering, and the category-level affinity model --
+   * a daily game only ever yields one observation per player per location, so
+   * affinity has to be learned across tags rather than per place.
+   */
+  tags: string[]
   factShort: string
   sourceUrl: string
   sourceAttribution: string

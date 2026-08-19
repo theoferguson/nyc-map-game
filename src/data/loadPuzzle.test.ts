@@ -43,6 +43,10 @@ test('puzzle content obeys the rules that make a day playable', () => {
     expect(l.lat).toBeLessThan(40.93)
     expect(['area', 'landmark', 'venue']).toContain(l.class)
     expect(l.factShort.length).toBeGreaterThan(40)
+    // Retrofitting tags across accumulated days is the expensive version, so
+    // every location carries them from the first day onward.
+    expect(l.tags.length).toBeGreaterThanOrEqual(3)
+    for (const tag of l.tags) expect(tag).toMatch(/^[a-z0-9-]+$/)
     expect(l.sourceAttribution).toBeTruthy()
   }
 })
