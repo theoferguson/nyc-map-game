@@ -3,6 +3,8 @@ import { MapView, type MapHandle, type Overlay } from './map/MapView'
 import { loadPuzzle, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
+import { track } from './game/telemetry'
+import { imageryVariant } from './map/tiles'
 
 type Result = { guess: LngLat; distanceM: number; score: number; copy: string }
 
@@ -13,10 +15,25 @@ export default function App() {
   const [current, setCurrent] = useState<Result | null>(null)
   const [results, setResults] = useState<Result[]>([])
   const map = useRef<MapHandle>(null)
+  // Time-to-guess is the clearest signal of whether a round is fun-hard or
+  // unfair-hard, and it cannot be reconstructed after the fact.
+  const roundStarted = useRef(0)
+  const gameStarted = useRef(0)
 
   // M4 replaces this with the America/New_York puzzle date.
   useEffect(() => {
-    loadPuzzle('2026-08-19').then(setPuzzle).catch((e) => setError(String(e)))
+    loadPuzzle('2026-08-19')
+      .then((p) => {
+        setPuzzle(p)
+        gameStarted.current = Date.now()
+        roundStarted.current = Date.now()
+        track('game_start', {
+          puzzleNumber: p.puzzleNumber,
+          date: p.date,
+          viewport: `${window.innerWidth}x${window.innerHeight}`,
+        })
+      })
+      .catch((e) => setError(String(e)))
   }, [])
 
   const over = !!puzzle && round >= puzzle.locations.length
@@ -42,25 +59,42 @@ export default function App() {
     const answer = { lng: location.lng, lat: location.lat }
     const distanceM = haversine(guess, answer)
 
-    setCurrent({
-      guess,
-      distanceM,
-      score: roundScore(distanceM, location.class),
-      copy: describeMiss(guess, answer),
-    })
+    const score = roundScore(distanceM, location.class)
+    setCurrent({ guess, distanceM, score, copy: describeMiss(guess, answer) })
     map.current?.revealAnswer(guess, answer)
+
+    track('round_complete', {
+      round: round + 1,
+      locationId: location.id,
+      class: location.class,
+      borough: location.borough,
+      difficulty: location.difficulty,
+      distanceM: Math.round(distanceM),
+      score,
+      msToGuess: Date.now() - roundStarted.current,
+    })
   }
 
   function next() {
     const finished = [...results, current!]
     setResults(finished)
     setCurrent(null)
+    roundStarted.current = Date.now()
     map.current?.clearPins()
     setRound((r) => r + 1)
 
     // Two camera moves at once would fight; the recap framing supersedes the
     // reset, so on the last round only one of them runs.
     if (finished.length === puzzle!.locations.length) {
+      track('game_complete', {
+        puzzleNumber: puzzle!.puzzleNumber,
+        total: totalScore(finished),
+        scores: finished.map((r) => r.score),
+        avgDistanceM: Math.round(
+          finished.reduce((sum, r) => sum + r.distanceM, 0) / finished.length,
+        ),
+        durationMs: Date.now() - gameStarted.current,
+      })
       map.current?.showAllAnswers(
         puzzle!.locations.map((l) => ({ lng: l.lng, lat: l.lat })),
       )
@@ -120,6 +154,10 @@ export default function App() {
       )}
 
       {over && <Results puzzle={puzzle} results={results} />}
+
+      <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-full bg-neutral-900/75 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-300">
+        {imageryVariant().label}
+      </p>
     </div>
   )
 }
@@ -167,7 +205,12 @@ function Results({ puzzle, results }: { puzzle: Puzzle; results: Result[] }) {
   const text = shareString(puzzle.puzzleNumber, results)
 
   async function share() {
-    if (navigator.share) {
+    track('share', {
+      method: typeof navigator.share === 'function' ? 'web_share' : 'clipboard',
+      total,
+      puzzleNumber: puzzle.puzzleNumber,
+    })
+    if (typeof navigator.share === 'function') {
       await navigator.share({ text }).catch(() => {})
       return
     }

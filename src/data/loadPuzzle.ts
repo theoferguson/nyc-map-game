@@ -10,7 +10,6 @@ export type PuzzleLocation = {
   borough: string
   difficulty: number
   factShort: string
-  factLong: string
   sourceUrl: string
   sourceAttribution: string
 }
