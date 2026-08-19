@@ -14,3 +14,19 @@ html, body, #root {
   user-select: none;
   touch-action: none;
 }
+
+/* MapLibre's attribution docks itself to the canvas corner; float it to match
+   the rest of the UI. Attribution is required by both tile providers, so it is
+   restyled rather than removed. */
+.maplibregl-ctrl-bottom-right {
+  margin: 0 0.75rem 0.75rem 0;
+}
+.maplibregl-ctrl-attrib {
+  border-radius: 9999px !important;
+  background: rgb(23 23 23 / 0.75) !important;
+  backdrop-filter: blur(4px);
+}
+.maplibregl-ctrl-attrib a,
+.maplibregl-ctrl-attrib {
+  color: rgb(212 212 212) !important;
+}
