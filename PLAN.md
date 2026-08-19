@@ -141,6 +141,11 @@ Two consequences to hold onto: beta access wants to be a bounded cohort window r
 always-on feature, or the burst assumption stops holding; and a tester who burns day 47 early
 cannot play it fresh on the day, which is their trade to make and not a bug to design around.
 
+**Parked until after go-live** (2026-08-19). The engine is not to be designed or evaluated
+before there is real play data -- designing it against guesses about what the data will show
+is how you end up with a model fitted to assumptions. The notes below exist so the telemetry
+already captures what it will need, not as a brief to start work.
+
 *What "generative" can and cannot learn from play data:* round results measure difficulty
 well -- score distribution and time-to-guess per location are exactly the calibration signal
 the difficulty tiers need, and far better than guessing. They do not measure whether a place
