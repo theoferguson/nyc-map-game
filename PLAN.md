@@ -285,3 +285,23 @@ map over is deliberate, and the alternative is locking the player out of their o
 
 On the final round the recap framing runs instead of the reset, rather than both firing and
 fighting each other.
+
+**Recap cards made inert, and joined to their pins by leaders (2026-08-19).** Two reported
+problems, one cause: five 184x128 cards, each capturing pointer events, formed a wall over
+the map, so any drag starting on a card did nothing and the map could not be panned to reach
+cards near the edges.
+
+Cards are now `pointer-events-none` throughout. They are read, not operated, so they have no
+business consuming gestures aimed at the map underneath. Tap-to-expand went with it, which
+leaves `factLong` with no home in the UI -- it belongs in the results sheet as an accordion,
+which is where the spec always had it.
+
+Displaced cards are joined to their pin by a leader line and a dot. Without one, a card
+nudged clear of a neighbour is just floating near several pins with no way to tell which one
+it describes -- the de-overlap was working and still read as broken. `deoverlap` now returns
+`anchorX/anchorY` alongside the card position so the leader lands on the pin rather than on
+wherever the card drifted to, and a test pins that.
+
+Recap framing now derives its padding from the card size rather than using round numbers.
+Cards hang above their pins and are wider than them, so the camera has to frame the cards,
+not the answers; the previous 150px top padding cut the northernmost card off the screen.

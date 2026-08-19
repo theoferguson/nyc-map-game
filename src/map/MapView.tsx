@@ -15,7 +15,7 @@ import {
   type GeoJSONSource,
 } from 'maplibre-gl'
 import { pickSource } from './tiles'
-import { deoverlap, CARD_W } from './deoverlap'
+import { deoverlap, CARD_W, CARD_H } from './deoverlap'
 import type { LngLat } from '../game/scoring'
 
 /** [[W,S],[E,N]] -- the player cannot pan out of the city. */
@@ -285,9 +285,16 @@ export function MapView({
         (b, p) => b.extend([p.lng, p.lat]),
         new LngLatBounds([points[0].lng, points[0].lat], [points[0].lng, points[0].lat]),
       )
-      // Leave room down the sides for the cards, which sit above their pins.
+      // Cards hang above their pins and are wider than them, so the framing has
+      // to hold the cards, not just the answers. Too little padding here and the
+      // northernmost card is simply cut off the top of the screen.
       m.fitBounds(bounds, {
-        padding: { top: 150, bottom: 200, left: 100, right: 100 },
+        padding: {
+          top: CARD_H + 60,
+          bottom: 240, // clears the results sheet
+          left: CARD_W / 2 + 12,
+          right: CARD_W / 2 + 12,
+        },
         maxZoom: 13,
         duration: 1200,
       })
@@ -303,10 +310,31 @@ export function MapView({
         className="map-surface h-full w-full"
         onContextMenu={(e) => e.preventDefault()}
       />
+      {/* Leaders first, so cards paint over them. */}
+      {placed.length > 0 && (
+        <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full">
+          {placed.map((p) => (
+            <g key={p.id}>
+              <line
+                x1={p.anchorX}
+                y1={p.anchorY}
+                x2={p.x}
+                y2={p.y}
+                stroke="rgb(251 191 36 / 0.7)"
+                strokeWidth={1.5}
+              />
+              <circle cx={p.anchorX} cy={p.anchorY} r={2.5} fill="rgb(251 191 36)" />
+            </g>
+          ))}
+        </svg>
+      )}
       {overlays.map((o) => {
         const p = byId.get(o.id)
         if (!p) return null
         return (
+          // pointer-events-none throughout: the cards are read, not operated,
+          // and a wall of five of them would otherwise swallow every pan and
+          // pinch aimed at the map underneath.
           <div
             key={o.id}
             className="pointer-events-none absolute z-20"
@@ -314,10 +342,10 @@ export function MapView({
               left: p.x,
               top: p.y,
               width: CARD_W,
-              transform: `translate(-50%, calc(-100% - 34px))`,
+              transform: 'translate(-50%, -100%)',
             }}
           >
-            <div className="pointer-events-auto">{o.content}</div>
+            {o.content}
           </div>
         )
       })}
