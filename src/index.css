@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+/* Long-press on the map must not raise the iOS callout or the Android context
+   menu -- careful mode (M5) is a press-and-hold and the native UI eats it. */
+.map-surface {
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: none;
+}
