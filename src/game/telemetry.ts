@@ -1,4 +1,5 @@
 import { imageryVariant } from '../map/tiles'
+import { storage } from './storage'
 
 /**
  * Local event capture. Nothing is transmitted -- there is no backend yet -- so
@@ -44,39 +45,6 @@ function coarseRegion(): Record<string, string> {
   }
 }
 
-/** Safari in private mode throws on write. Telemetry must never break a game. */
-export const storage = {
-  get(key: string): string | null {
-    try {
-      return localStorage.getItem(key)
-    } catch {
-      return null
-    }
-  },
-  set(key: string, value: string): void {
-    try {
-      localStorage.setItem(key, value)
-    } catch {
-      // no-op
-    }
-  },
-}
-
-/**
- * Storage is attacker-adjacent: anything in it can be corrupted, truncated by a
- * quota error, or hand-edited in devtools. An unguarded JSON.parse on that would
- * throw on every load and leave the player with a permanently broken game they
- * could only fix by clearing site data.
- */
-function parse<T>(raw: string | null, fallback: T): T {
-  if (!raw) return fallback
-  try {
-    return JSON.parse(raw) as T
-  } catch {
-    return fallback
-  }
-}
-
 export type TrackedEvent = {
   name: string
   ts: number
@@ -102,7 +70,7 @@ function installId(): string {
  * the marketing question; the referrer on their fortieth visit is not.
  */
 function attribution(): Record<string, string> {
-  const stored = parse<Record<string, string> | null>(storage.get(ATTRIBUTION_KEY), null)
+  const stored = storage.parse<Record<string, string> | null>(ATTRIBUTION_KEY, null)
   if (stored) return stored
 
   const params = new URLSearchParams(window.location.search)
@@ -139,14 +107,14 @@ export function track(name: string, props: Record<string, unknown> = {}): void {
         : props,
   }
 
-  const queue = parse<TrackedEvent[]>(storage.get(QUEUE_KEY), [])
+  const queue = storage.parse<TrackedEvent[]>(QUEUE_KEY, [])
   queue.push(event)
   storage.set(QUEUE_KEY, JSON.stringify(queue.slice(-QUEUE_CAP)))
 }
 
 /** Returns buffered events and clears them. For whenever there is somewhere to send them. */
 export function drain(): TrackedEvent[] {
-  const queue = parse<TrackedEvent[]>(storage.get(QUEUE_KEY), [])
+  const queue = storage.parse<TrackedEvent[]>(QUEUE_KEY, [])
   storage.set(QUEUE_KEY, '[]')
   return queue
 }

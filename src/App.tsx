@@ -5,13 +5,34 @@ import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
 import { track } from './game/telemetry'
 import { imageryVariant } from './map/tiles'
+import { puzzleDate, msUntilRollover, formatCountdown } from './game/date'
+import { loadProgress, saveProgress, recordGame, loadStats, type Stats } from './game/storage'
 
 type Result = { guess: LngLat; distanceM: number; score: number; copy: string }
+
+/**
+ * The one place a guess becomes a result. Resume replays saved taps through
+ * this, so a restored game and a live one cannot drift apart.
+ */
+function scoreGuess(guess: LngLat, location: PuzzleLocation): Result {
+  const answer = { lng: location.lng, lat: location.lat }
+  const distanceM = haversine(guess, answer)
+  return {
+    guess,
+    distanceM,
+    score: roundScore(distanceM, location.class),
+    copy: describeMiss(guess, answer),
+  }
+}
 
 export default function App() {
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [round, setRound] = useState(0)
+  const [started, setStarted] = useState(false)
+  const [mapReady, setMapReady] = useState(false)
+  const [stats, setStats] = useState<Stats>(loadStats)
+  const today = puzzleDate()
   const [current, setCurrent] = useState<Result | null>(null)
   const [results, setResults] = useState<Result[]>([])
   const map = useRef<MapHandle>(null)
@@ -20,23 +41,50 @@ export default function App() {
   const roundStarted = useRef(0)
   const gameStarted = useRef(0)
 
-  // M4 replaces this with the America/New_York puzzle date.
   useEffect(() => {
-    loadPuzzle('2026-08-19')
+    loadPuzzle(today)
       .then((p) => {
         setPuzzle(p)
         gameStarted.current = Date.now()
         roundStarted.current = Date.now()
-        track('game_start', {
-          puzzleNumber: p.puzzleNumber,
-          date: p.date,
-          viewport: `${window.innerWidth}x${window.innerHeight}`,
-        })
+
+        // Replay the saved taps through the live scoring rules rather than
+        // restoring stored numbers, so a resumed game and a fresh one can never
+        // disagree about what a guess was worth.
+        const saved = loadProgress(today)
+        if (saved) {
+          const replayed = saved.guesses.map((guess, i) => scoreGuess(guess, p.locations[i]))
+          setResults(replayed)
+          setRound(replayed.length)
+          track('game_resumed', { round: replayed.length + 1, date: today })
+          // Deliberately not skipping the landing: a player who refreshes wants
+          // to be told their progress survived, not dropped back onto the map
+          // wondering. A finished game bypasses it anyway, via `over`.
+        } else {
+          track('game_start', {
+            puzzleNumber: p.puzzleNumber,
+            date: p.date,
+            viewport: `${window.innerWidth}x${window.innerHeight}`,
+          })
+        }
       })
-      .catch((e) => setError(String(e)))
-  }, [])
+      .catch((e: Error) => setError(e.message))
+  }, [today])
 
   const over = !!puzzle && round >= puzzle.locations.length
+  // One path into the recap, whether the fifth round just ended or the page was
+  // reloaded on a finished game. Running it from `next` as well would add a
+  // second set of pins over the first.
+  const recapShown = useRef(false)
+  useEffect(() => {
+    // `mapReady` is load-bearing on a reload into a finished game: the map is
+    // built behind an async tile probe, so without it this fires first and the
+    // answer pins are silently never added.
+    if (!puzzle || !over || !mapReady || recapShown.current) return
+    recapShown.current = true
+    setStats(recordGame(today, totalScore(results)))
+    map.current?.showAllAnswers(puzzle.locations.map((l) => ({ lng: l.lng, lat: l.lat })))
+  }, [puzzle, over, mapReady, results, today])
 
   // Every answer, each card pinned to its own location, all at once.
   const overlays = useMemo<Overlay[]>(() => {
@@ -51,17 +99,34 @@ export default function App() {
   if (error) return <Centered>{error}</Centered>
   if (!puzzle) return <Centered>Loading…</Centered>
 
+  if (!started && !over) {
+    return (
+      <Landing
+        puzzle={puzzle}
+        stats={stats}
+        resuming={results.length > 0}
+        onPlay={() => {
+          setStarted(true)
+          roundStarted.current = Date.now()
+          gameStarted.current = Date.now()
+        }}
+      />
+    )
+  }
+
   const location = puzzle.locations[round]
 
   function place(guess: LngLat) {
     // The reveal is showing; taps must not overwrite a committed answer.
     if (current || over) return
     const answer = { lng: location.lng, lat: location.lat }
-    const distanceM = haversine(guess, answer)
-
-    const score = roundScore(distanceM, location.class)
-    setCurrent({ guess, distanceM, score, copy: describeMiss(guess, answer) })
+    const { distanceM, score } = scoreGuess(guess, location)
+    setCurrent(scoreGuess(guess, location))
     map.current?.revealAnswer(guess, answer)
+
+    // Written on commit, not on Next. A refresh during the reveal must not cost
+    // the player the round they have already played.
+    saveProgress(today, { guesses: [...results.map((r) => r.guess), guess] })
 
     track('round_complete', {
       round: round + 1,
@@ -96,9 +161,6 @@ export default function App() {
         ),
         durationMs: Date.now() - gameStarted.current,
       })
-      map.current?.showAllAnswers(
-        puzzle!.locations.map((l) => ({ lng: l.lng, lat: l.lat })),
-      )
     } else {
       map.current?.resetCamera()
     }
@@ -109,6 +171,7 @@ export default function App() {
       <MapView
         ref={map}
         onPlace={place}
+        onReady={() => setMapReady(true)}
         enabled={!current && !over}
         overlays={overlays}
       />
@@ -154,7 +217,7 @@ export default function App() {
         </Floating>
       )}
 
-      {over && <Results puzzle={puzzle} results={results} />}
+      {over && <Results puzzle={puzzle} results={results} stats={stats} />}
 
       <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-full bg-neutral-900/75 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-300">
         {imageryVariant().label}
@@ -200,8 +263,73 @@ function FactCard({
   )
 }
 
-function Results({ puzzle, results }: { puzzle: Puzzle; results: Result[] }) {
+/** Ticks once a second, but only where a countdown is actually on screen. */
+function useCountdown(): string {
+  const [ms, setMs] = useState(msUntilRollover)
+  useEffect(() => {
+    const id = setInterval(() => setMs(msUntilRollover()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  return formatCountdown(ms)
+}
+
+function Landing({
+  puzzle,
+  stats,
+  resuming,
+  onPlay,
+}: {
+  puzzle: Puzzle
+  stats: Stats
+  resuming: boolean
+  onPlay: () => void
+}) {
+  const countdown = useCountdown()
+  return (
+    <Centered>
+      <div className="w-full max-w-xs space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold">NYC Daily</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            #{puzzle.puzzleNumber} · {puzzle.date}
+          </p>
+        </div>
+
+        <p className="text-sm leading-relaxed text-neutral-300">
+          Five New York places. Find each one on the map and tap it. No labels, no
+          search — just how well you know the city.
+        </p>
+
+        <button
+          onClick={onPlay}
+          className="w-full rounded-xl bg-white py-3 font-semibold text-neutral-900 active:bg-neutral-200"
+        >
+          {resuming ? 'Resume' : 'Play'}
+        </button>
+
+        {stats.played > 0 && (
+          <p className="text-xs text-neutral-500">
+            {stats.played} played · {stats.streak} day streak · best{' '}
+            {stats.maxStreak}
+          </p>
+        )}
+        <p className="text-xs text-neutral-600">Next puzzle in {countdown}</p>
+      </div>
+    </Centered>
+  )
+}
+
+function Results({
+  puzzle,
+  results,
+  stats,
+}: {
+  puzzle: Puzzle
+  results: Result[]
+  stats: Stats
+}) {
   const [copied, setCopied] = useState(false)
+  const countdown = useCountdown()
   const total = totalScore(results)
   const text = shareString(puzzle.puzzleNumber, results)
 
@@ -241,7 +369,7 @@ function Results({ puzzle, results }: { puzzle: Puzzle; results: Result[] }) {
           {copied ? 'Copied' : 'Share'}
         </button>
         <p className="text-center text-xs text-neutral-500">
-          Tap any card on the map to read more.
+          {stats.streak > 1 && `${stats.streak} day streak · `}Next puzzle in {countdown}
         </p>
       </div>
     </Floating>
