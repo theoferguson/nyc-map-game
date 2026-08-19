@@ -1,5 +1,12 @@
-import { useEffect, useImperativeHandle, useRef, useState, type Ref, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
+import {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  type Ref,
+  type ReactNode,
+} from 'react'
 import {
   Map as MapLibreMap,
   Marker,
@@ -27,14 +34,18 @@ const FRAMING_PADDING = 20
 /**
  * MapLibre fires click, click, dblclick -- so a double-click to zoom would commit
  * the first click as a guess. Placement therefore waits out the double-click
- * window before committing. The guess pin drops immediately so the tap still
- * feels instant; only the irreversible part is deferred.
+ * window before committing.
  */
 const DOUBLE_CLICK_WINDOW_MS = 300
 
 const EMPTY = { type: 'FeatureCollection', features: [] } as const
 
-/** A card pinned to a map coordinate -- used for the end-of-game fact cards. */
+/** Card size used for de-overlapping. Cards are fixed-size so this stays exact. */
+export const CARD_W = 184
+export const CARD_H = 128
+const CARD_GAP = 8
+
+/** A card pinned to a map coordinate -- the end-of-game fact cards. */
 export type Overlay = { id: string; lngLat: LngLat; content: ReactNode }
 
 export type MapHandle = {
@@ -46,13 +57,45 @@ export type MapHandle = {
   showAllAnswers: (points: LngLat[]) => void
 }
 
+type Placed = { id: string; x: number; y: number }
+
+/**
+ * Cards sit above their pin, but five answers at a citywide framing collide.
+ * Push each one down until it clears the cards already placed.
+ *
+ * ponytail: greedy 1D nudge, no leader lines back to the pin. If real days
+ * cluster badly enough that cards drift far from their pins, this wants proper
+ * label placement, not a bigger nudge.
+ */
+export function deoverlap(points: Placed[]): Placed[] {
+  const done: Placed[] = []
+  for (const p of [...points].sort((a, b) => a.y - b.y)) {
+    let { y } = p
+    let moved = true
+    while (moved) {
+      moved = false
+      for (const q of done) {
+        if (Math.abs(q.x - p.x) < CARD_W && Math.abs(q.y - y) < CARD_H + CARD_GAP) {
+          y = q.y + CARD_H + CARD_GAP
+          moved = true
+        }
+      }
+    }
+    done.push({ ...p, y })
+  }
+  return done
+}
+
 export function MapView({
   ref,
   onPlace,
+  enabled = true,
   overlays = [],
 }: {
   ref?: Ref<MapHandle>
   onPlace: (p: LngLat) => void
+  /** False during a reveal and after the game -- taps must not drop a pin. */
+  enabled?: boolean
   overlays?: Overlay[]
 }) {
   const container = useRef<HTMLDivElement>(null)
@@ -60,14 +103,16 @@ export function MapView({
   const standardFraming = useRef<CenterZoomBearing | null>(null)
   const pins = useRef<Marker[]>([])
   const pendingPlace = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [ready, setReady] = useState(false)
-  const [hosts, setHosts] = useState<Record<string, HTMLElement>>({})
+  const [loaded, setLoaded] = useState<MapLibreMap | null>(null)
+  const [moveTick, setMoveTick] = useState(0)
 
-  // onPlace changes as the round advances, but the map listener is registered
-  // once -- read the current one through a ref instead of rebuilding the map.
+  // These change as the round advances, but the map listener is registered once,
+  // so read the current values through refs rather than rebuilding the map.
   const place = useRef(onPlace)
+  const canPlace = useRef(enabled)
   useEffect(() => {
     place.current = onPlace
+    canPlace.current = enabled
   })
 
   const addPin = (m: MapLibreMap, p: LngLat, color: string) => {
@@ -124,15 +169,10 @@ export function MapView({
       m.touchZoomRotate.disableRotation()
       m.keyboard.disableRotation()
 
-      // Computed once and replayed verbatim. Recomputing per round, or easing
-      // into it, lets the previous reveal leak position into the next prompt.
-      m.once('load', () => {
-        standardFraming.current =
-          m.cameraForBounds(NYC_BOUNDS, { padding: FRAMING_PADDING }) ?? null
-        setReady(true)
-      })
-
       m.on('click', (e) => {
+        // Gated here rather than in the caller: the pin is dropped from this
+        // handler, so a guard further downstream leaves a stray pin behind.
+        if (!canPlace.current) return
         const p = { lng: e.lngLat.lng, lat: e.lngLat.lat }
         if (pendingPlace.current) clearTimeout(pendingPlace.current)
         pendingPlace.current = setTimeout(() => {
@@ -149,6 +189,14 @@ export function MapView({
       })
 
       map.current = m
+
+      // Computed once and replayed verbatim. Recomputing per round, or easing
+      // into it, lets the previous reveal leak position into the next prompt.
+      m.once('load', () => {
+        standardFraming.current =
+          m.cameraForBounds(NYC_BOUNDS, { padding: FRAMING_PADDING }) ?? null
+        setLoaded(m)
+      })
     })
 
     return () => {
@@ -159,29 +207,30 @@ export function MapView({
     }
   }, [])
 
-  // Anchor one Marker per overlay and portal React into it, so the cards track
-  // their pins through pan and zoom without re-rendering on every frame.
+  // The camera is the external system; subscribing is all the effect does.
   useEffect(() => {
-    const m = map.current
-    if (!m || !ready) return
-
-    const markers = overlays.map((o) => {
-      const el = document.createElement('div')
-      return {
-        id: o.id,
-        el,
-        marker: new Marker({ element: el, anchor: 'bottom', offset: [0, -34] })
-          .setLngLat([o.lngLat.lng, o.lngLat.lat])
-          .addTo(m),
-      }
-    })
-
-    setHosts(Object.fromEntries(markers.map((x) => [x.id, x.el])))
+    if (!loaded) return
+    const bump = () => setMoveTick((t) => t + 1)
+    loaded.on('move', bump)
     return () => {
-      markers.forEach((x) => x.marker.remove())
-      setHosts({})
+      loaded.off('move', bump)
     }
-  }, [overlays, ready])
+  }, [loaded])
+
+  // Card positions are derived, not stored: project each coordinate to screen
+  // space and re-derive whenever the camera moves. Only five cards, and only at
+  // game over, so this is cheaper than the marker-plus-portal lifecycle it
+  // replaces -- and it cannot fall out of sync with the map.
+  const placed = useMemo(() => {
+    void moveTick // re-project on every camera move; map.project() is not reactive
+    if (!loaded || !overlays.length) return []
+    return deoverlap(
+      overlays.map((o) => {
+        const { x, y } = loaded.project([o.lngLat.lng, o.lngLat.lat])
+        return { id: o.id, x, y }
+      }),
+    )
+  }, [loaded, overlays, moveTick])
 
   useImperativeHandle(ref, () => ({
     resetCamera: () => {
@@ -233,20 +282,42 @@ export function MapView({
         (b, p) => b.extend([p.lng, p.lat]),
         new LngLatBounds([points[0].lng, points[0].lat], [points[0].lng, points[0].lat]),
       )
-      m.fitBounds(bounds, { padding: 70, maxZoom: 14, duration: 1200 })
+      // Leave room down the sides for the cards, which sit above their pins.
+      m.fitBounds(bounds, {
+        padding: { top: 150, bottom: 200, left: 100, right: 100 },
+        maxZoom: 13,
+        duration: 1200,
+      })
     },
   }), [])
 
+  const byId = new Map(placed.map((p) => [p.id, p]))
+
   return (
-    <>
+    <div className="relative h-full w-full">
       <div
         ref={container}
         className="map-surface h-full w-full"
         onContextMenu={(e) => e.preventDefault()}
       />
-      {overlays.map((o) =>
-        hosts[o.id] ? createPortal(o.content, hosts[o.id]) : null,
-      )}
-    </>
+      {overlays.map((o) => {
+        const p = byId.get(o.id)
+        if (!p) return null
+        return (
+          <div
+            key={o.id}
+            className="pointer-events-none absolute z-20"
+            style={{
+              left: p.x,
+              top: p.y,
+              width: CARD_W,
+              transform: `translate(-50%, calc(-100% - 34px))`,
+            }}
+          >
+            <div className="pointer-events-auto">{o.content}</div>
+          </div>
+        )
+      })}
+    </div>
   )
 }

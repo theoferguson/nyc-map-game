@@ -68,7 +68,12 @@ export default function App() {
 
   return (
     <div className="relative h-full w-full bg-neutral-900">
-      <MapView ref={map} onPlace={place} overlays={overlays} />
+      <MapView
+        ref={map}
+        onPlace={place}
+        enabled={!current && !over}
+        overlays={overlays}
+      />
 
       {!over && (
         <Floating className="top-3">
@@ -116,7 +121,11 @@ export default function App() {
   )
 }
 
-/** Pinned beside its answer on the map, all five legible at once. */
+/**
+ * Pinned beside its answer, all five readable at once with no tap required --
+ * the recap is the payoff, so nothing in it is hidden behind an interaction.
+ * Tapping expands to the longer write-up.
+ */
 function FactCard({
   location,
   result,
@@ -130,26 +139,24 @@ function FactCard({
   return (
     <button
       onClick={() => setOpen((o) => !o)}
-      className={`pointer-events-auto block max-w-[15rem] rounded-lg bg-neutral-900/90 p-2.5 text-left text-white shadow-lg ring-1 ring-white/15 backdrop-blur transition-all ${
-        open ? 'z-20' : 'z-10'
+      className={`block w-full rounded-lg bg-neutral-900/92 p-2.5 text-left text-white shadow-xl ring-1 ring-white/15 backdrop-blur ${
+        open ? 'relative z-30' : ''
       }`}
     >
-      <div className="flex items-baseline gap-2">
-        <span className="text-[10px] font-semibold text-neutral-400">{index + 1}</span>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-[10px] font-semibold tabular-nums text-neutral-500">
+          {index + 1}
+        </span>
         <span className="flex-1 text-xs font-semibold leading-tight">{location.name}</span>
-        <span className="text-xs tabular-nums text-amber-400">{result?.score ?? 0}</span>
+        <span className="text-xs font-semibold tabular-nums text-amber-400">
+          {result?.score ?? 0}
+        </span>
       </div>
-      <p className="mt-1 text-[11px] leading-tight text-neutral-400">{result?.copy}</p>
-      <p
-        className={`mt-1.5 text-[11px] leading-snug text-neutral-300 ${
-          open ? '' : 'line-clamp-2'
-        }`}
-      >
+      <p className="mt-0.5 text-[10px] leading-tight text-neutral-400">{result?.copy}</p>
+      <p className="mt-1.5 text-[11px] leading-snug text-neutral-200">
         {open ? location.factLong : location.factShort}
       </p>
-      <p className="mt-1 text-[10px] text-neutral-500">
-        {open ? location.sourceAttribution : 'Tap for more'}
-      </p>
+      <p className="mt-1 text-[9px] text-neutral-500">{location.sourceAttribution}</p>
     </button>
   )
 }

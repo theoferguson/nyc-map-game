@@ -173,11 +173,17 @@ you were rather than an accordion. Implemented as one MapLibre `Marker` per loca
 React portalled into it, which keeps the cards tracking their pins through pan and zoom
 without re-rendering on every frame.
 
-*Known ceiling:* five cards at a citywide framing will overlap when locations cluster --
-two Manhattan answers a few blocks apart will sit on top of each other. Panning and zooming
-separates them, and the cards collapse to two lines until tapped. If clustering turns out to
-be common rather than occasional, the fix is collision-aware placement or a leader-line
-offset, not more zoom.
+Every card is readable outright at game over -- nothing in the recap hides behind a tap,
+since the recap is the payoff. Tapping a card swaps `factShort` for `factLong`.
+
+Cards are de-overlapped with a greedy vertical nudge (`deoverlap` in `MapView.tsx`), so
+clustered answers stack rather than covering each other. Positions are derived from
+`map.project()` on every camera move rather than stored, which means they cannot drift out
+of sync with the map.
+
+*Known ceiling:* a nudged card sits away from its own pin with no leader line joining them.
+Five cards is fine; if days routinely cluster four answers in lower Manhattan, this wants
+real label placement rather than a bigger nudge.
 
 **Results overlay the map rather than replacing it.** Total, share squares, block average
 and the share button sit in a sheet over the live map, so the recap stays visible behind it.
