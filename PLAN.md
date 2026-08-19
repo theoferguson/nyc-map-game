@@ -235,18 +235,16 @@ Per-question point scaling is the cheap part: `MULTIPLIERS` moves from a module 
 field on each question. `MAX_TOTAL` is already derived rather than hardcoded to 1000, so the
 share string and results survive that unchanged.
 
-**Sharing may not need a backend.** A quiz is small -- five locations with prompts and short
-facts is a few kilobytes -- so compressing it into a URL fragment would make custom quizzes
-entirely client-side and shippable against the current static build. That is worth testing
-before assuming this waits on server work, because it is the difference between a Phase 2
-feature and a Phase 3 one. Codes backed by a server buy discoverability, editing after
-sharing, and play counts; a fragment buys shipping now.
+**Server-backed, Phase 3.** Decided 2026-08-19 against the fragment-encoded alternative, which
+would have shipped sooner and touched no infrastructure. The server buys discoverability,
+editing after sharing, and play counts -- and it puts custom quizzes alongside beta codes and
+accounts, all of which need the same backend, rather than building a delivery mechanism twice.
 
-*Two things to settle before building, not after:* a server-stored quiz means hosting
-user-generated content, which brings moderation, reporting and takedown with it -- a
-fragment-encoded quiz never touches your infrastructure and carries none of that. And custom
-quiz results must be segregated from daily telemetry, or the affinity model and the imagery
-experiment both get polluted by scopes and scoring curves they were never calibrated against.
+*Two consequences that follow from that choice:* hosting quizzes means hosting user-generated
+content, so moderation, reporting and takedown are in scope from the start rather than
+discovered later. And custom quiz results must be segregated from daily telemetry, or the
+affinity model and the imagery experiment are both polluted by scopes and scoring curves they
+were never calibrated against.
 
 **Beta mode — playtest codes.** A code that unlocks five plays per day drawn from the *next*
 scheduled days' rounds, so testers burn future content instead of replaying today's. Needs a
@@ -421,10 +419,12 @@ visibly changing mid-game. A test pins it.
 A small wordmark in the bottom-left names the survey the player is on -- honest about what
 they are looking at, and it makes the variant visible in any screenshot they share.
 
-**Before this can answer anything, decide the success metric.** The hypothesis is that fresher
-imagery makes `venue` rounds fairer, so the candidate measures are venue-round score,
-time-to-guess on venue rounds, and abandonment before round 5. Pick one as primary before
-looking at the data, or the result is whatever the first slice happens to say.
+**Primary metric: venue-round score.** Chosen 2026-08-19, before any data existed, which is
+the only time such a choice is worth anything. It is the measure most sensitive to the thing
+actually being changed -- fresher rooftops should help most where the target is a shopfront
+rather than a stadium. Time-to-guess on venue rounds and completion rate are secondary and
+descriptive; if the primary shows nothing, a secondary that does is a hypothesis for the next
+experiment, not a result from this one.
 
 *Statistical caveat worth stating up front:* five rounds a day against an early player base
 will not power a real test for a long while. Treat the first weeks as directional only. It
@@ -642,3 +642,10 @@ points are a weaker hint — a scatter of dots — and a labelled station map wo
 answer away outright, which the no-labels rule forbids. Either route geometry gets sourced
 elsewhere (OpenStreetMap carries subway route relations) or the hint becomes something else.
 Worth settling before that feature is scheduled, since it changes what is being built.
+
+**Share line switched from mean to median (2026-08-19).** Distances across five rounds are
+wildly skewed -- four good guesses and one in the wrong borough is a common shape -- and the
+mean let that single round define the line. A strong game printed `855/1000` next to `avg 9.9
+blocks off`, two numbers telling opposite stories about the same play. The median reports the
+game the player actually had. The line is what people quote at each other, so it should not
+contradict the score sitting above it.
