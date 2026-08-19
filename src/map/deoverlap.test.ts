@@ -6,7 +6,7 @@ const collides = (a: { x: number; y: number }, b: { x: number; y: number }) =>
 
 test('five clustered answers all end up readable', () => {
   // Worst realistic case: every answer within a few pixels, as when Manhattan
-  // locations cluster at a citywide framing.
+  // locations cluster at the recap framing.
   const stacked = Array.from({ length: 5 }, (_, i) => ({
     id: `l${i}`,
     x: 200 + i * 3,
@@ -22,11 +22,30 @@ test('five clustered answers all end up readable', () => {
       expect(collides(out[i], out[j])).toBe(false)
 })
 
-test('answers that are already far apart are left where they are', () => {
-  const spread = [
-    { id: 'a', x: 100, y: 100 },
-    { id: 'b', x: 100, y: 100 + CARD_H * 2 },
-    { id: 'c', x: 100 + CARD_W * 2, y: 100 },
+test('every card keeps the pin it was displaced from', () => {
+  const pins = [
+    { id: 'a', x: 100, y: 400 },
+    { id: 'b', x: 104, y: 402 },
   ]
-  expect(deoverlap(spread).sort((p, q) => p.id.localeCompare(q.id))).toEqual(spread)
+  const out = deoverlap(pins)
+
+  for (const pin of pins) {
+    const card = out.find((c) => c.id === pin.id)!
+    // The leader line has to land on the pin, not on where the card drifted to.
+    expect(card.anchorX).toBe(pin.x)
+    expect(card.anchorY).toBe(pin.y)
+  }
+})
+
+test('answers that are already far apart are not displaced', () => {
+  const spread = [
+    { id: 'a', x: 100, y: 400 },
+    { id: 'b', x: 100, y: 400 + CARD_H * 2 },
+    { id: 'c', x: 100 + CARD_W * 2, y: 400 },
+  ]
+  // Each card sits directly above its own pin: same x, no vertical drift.
+  for (const card of deoverlap(spread)) {
+    expect(card.x).toBe(card.anchorX)
+    expect(card.anchorY - card.y).toBe(36)
+  }
 })

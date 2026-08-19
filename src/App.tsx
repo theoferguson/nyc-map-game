@@ -125,9 +125,9 @@ export default function App() {
 }
 
 /**
- * Pinned beside its answer, all five readable at once with no tap required --
- * the recap is the payoff, so nothing in it is hidden behind an interaction.
- * Tapping expands to the longer write-up.
+ * Pinned beside its answer, all five readable at once. Deliberately inert: the
+ * recap is read, not operated, and making five cards interactive turned them
+ * into a wall that swallowed every attempt to pan the map behind them.
  */
 function FactCard({
   location,
@@ -138,14 +138,8 @@ function FactCard({
   result?: Result
   index: number
 }) {
-  const [open, setOpen] = useState(false)
   return (
-    <button
-      onClick={() => setOpen((o) => !o)}
-      className={`block w-full rounded-lg bg-neutral-900/92 p-2.5 text-left text-white shadow-xl ring-1 ring-white/15 backdrop-blur ${
-        open ? 'relative z-30' : ''
-      }`}
-    >
+    <div className="w-full rounded-lg bg-neutral-900/92 p-2.5 text-left text-white shadow-xl ring-1 ring-white/15 backdrop-blur">
       <div className="flex items-baseline gap-1.5">
         <span className="text-[10px] font-semibold tabular-nums text-neutral-500">
           {index + 1}
@@ -157,10 +151,10 @@ function FactCard({
       </div>
       <p className="mt-0.5 text-[10px] leading-tight text-neutral-400">{result?.copy}</p>
       <p className="mt-1.5 text-[11px] leading-snug text-neutral-200">
-        {open ? location.factLong : location.factShort}
+        {location.factShort}
       </p>
       <p className="mt-1 text-[9px] text-neutral-500">{location.sourceAttribution}</p>
-    </button>
+    </div>
   )
 }
 
