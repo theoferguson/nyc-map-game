@@ -62,6 +62,21 @@ export const storage = {
   },
 }
 
+/**
+ * Storage is attacker-adjacent: anything in it can be corrupted, truncated by a
+ * quota error, or hand-edited in devtools. An unguarded JSON.parse on that would
+ * throw on every load and leave the player with a permanently broken game they
+ * could only fix by clearing site data.
+ */
+function parse<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    return fallback
+  }
+}
+
 export type TrackedEvent = {
   name: string
   ts: number
@@ -73,7 +88,11 @@ export type TrackedEvent = {
 function installId(): string {
   const existing = storage.get(ID_KEY)
   if (existing) return existing
-  const id = crypto.randomUUID()
+  // randomUUID needs a secure context; on plain http, and on Safari before
+  // 15.4, it is simply absent. This id is a bucket label, not a credential.
+  const id =
+    globalThis.crypto?.randomUUID?.() ??
+    `anon-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
   storage.set(ID_KEY, id)
   return id
 }
@@ -83,12 +102,12 @@ function installId(): string {
  * the marketing question; the referrer on their fortieth visit is not.
  */
 function attribution(): Record<string, string> {
-  const stored = storage.get(ATTRIBUTION_KEY)
-  if (stored) return JSON.parse(stored)
+  const stored = parse<Record<string, string> | null>(storage.get(ATTRIBUTION_KEY), null)
+  if (stored) return stored
 
   const params = new URLSearchParams(window.location.search)
   const first: Record<string, string> = {
-    referrer: document.referrer ? new URL(document.referrer).hostname : 'direct',
+    referrer: referrerHost(),
     landedAt: new Date().toISOString().slice(0, 10),
   }
   for (const key of ['utm_source', 'utm_medium', 'utm_campaign']) {
@@ -97,6 +116,15 @@ function attribution(): Record<string, string> {
   }
   storage.set(ATTRIBUTION_KEY, JSON.stringify(first))
   return first
+}
+
+/** Hostname only -- a full referrer URL can carry search terms and session ids. */
+function referrerHost(): string {
+  try {
+    return document.referrer ? new URL(document.referrer).hostname : 'direct'
+  } catch {
+    return 'unknown'
+  }
 }
 
 export function track(name: string, props: Record<string, unknown> = {}): void {
@@ -111,14 +139,14 @@ export function track(name: string, props: Record<string, unknown> = {}): void {
         : props,
   }
 
-  const queue: TrackedEvent[] = JSON.parse(storage.get(QUEUE_KEY) ?? '[]')
+  const queue = parse<TrackedEvent[]>(storage.get(QUEUE_KEY), [])
   queue.push(event)
   storage.set(QUEUE_KEY, JSON.stringify(queue.slice(-QUEUE_CAP)))
 }
 
 /** Returns buffered events and clears them. For whenever there is somewhere to send them. */
 export function drain(): TrackedEvent[] {
-  const queue: TrackedEvent[] = JSON.parse(storage.get(QUEUE_KEY) ?? '[]')
+  const queue = parse<TrackedEvent[]>(storage.get(QUEUE_KEY), [])
   storage.set(QUEUE_KEY, '[]')
   return queue
 }

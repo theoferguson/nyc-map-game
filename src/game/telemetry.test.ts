@@ -2,10 +2,11 @@ import { test, expect, beforeEach, vi } from 'vitest'
 
 // jsdom is not installed; a minimal localStorage is all telemetry touches.
 const store = new Map<string, string>()
-vi.stubGlobal('localStorage', {
+const workingStorage = {
   getItem: (k: string) => store.get(k) ?? null,
   setItem: (k: string, v: string) => void store.set(k, v),
-})
+}
+vi.stubGlobal('localStorage', workingStorage)
 vi.stubGlobal('crypto', { randomUUID: () => 'test-uuid' })
 vi.stubGlobal('document', { referrer: '' })
 vi.stubGlobal('window', { location: { search: '?utm_source=twitter&utm_medium=social' } })
@@ -14,7 +15,13 @@ vi.stubGlobal('navigator', { language: 'en-US' })
 const { track, drain } = await import('./telemetry')
 const { imageryVariant, VARIANTS } = await import('../map/tiles')
 
-beforeEach(() => store.clear())
+// Two tests below break storage and crypto on purpose; restore them each time
+// so the damage cannot leak into whichever test happens to run next.
+beforeEach(() => {
+  store.clear()
+  vi.stubGlobal('localStorage', workingStorage)
+  vi.stubGlobal('crypto', { randomUUID: () => 'test-uuid' })
+})
 
 test('imagery assignment is sticky, or the experiment measures nothing', () => {
   const first = imageryVariant()
@@ -75,4 +82,22 @@ test('a browser that refuses storage does not break the game', () => {
   })
   expect(() => track('game_start', {})).not.toThrow()
   expect(() => imageryVariant()).not.toThrow()
+})
+
+test('corrupted storage does not permanently break the game', () => {
+  // Anyone can hand-edit localStorage, and a quota error can truncate it. An
+  // unguarded parse would then throw on every load, and the only fix available
+  // to the player would be clearing site data.
+  store.set('nycmap:events', '{not json')
+  store.set('nycmap:attribution', 'null}')
+  expect(() => track('game_start', { puzzleNumber: 1 })).not.toThrow()
+  expect(drain()).toHaveLength(1)
+})
+
+test('an install id is still issued without a secure context', () => {
+  // crypto.randomUUID is absent over plain http and on Safari before 15.4.
+  vi.stubGlobal('crypto', {})
+  store.clear()
+  expect(() => track('game_start', {})).not.toThrow()
+  expect(drain()[0].installId).toMatch(/^anon-/)
 })
