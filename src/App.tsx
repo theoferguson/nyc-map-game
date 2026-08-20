@@ -394,6 +394,7 @@ function Results({
 }) {
   const [copied, setCopied] = useState(false)
   const [step, setStep] = useState(0)
+  const [expanded, setExpanded] = useState(true)
   const panel = useRef<HTMLDivElement>(null)
   const countdown = useCountdown()
   const location = puzzle.locations[step]
@@ -407,14 +408,16 @@ function Results({
     onFocus(next, panel.current?.offsetHeight ?? 0)
   }
 
-  // The opening move belongs here rather than in the recap effect: only this
-  // component knows how tall its panel has rendered.
-  const opened = useRef(false)
+  // Re-frames on open and whenever the panel changes height. Collapsing frees
+  // map, but the camera has to move into it -- the pin does not rise on its own.
+  // Only this component can measure the panel, which is why the focus call
+  // lives here rather than in the recap effect.
+  const focus = useRef(onFocus)
+  focus.current = onFocus
   useEffect(() => {
-    if (opened.current) return
-    opened.current = true
-    onFocus(0, panel.current?.offsetHeight ?? 0)
-  })
+    focus.current(step, panel.current?.offsetHeight ?? 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded])
   const total = totalScore(results)
   const text = shareString(puzzle.puzzleNumber, results, colorblind)
 
@@ -470,8 +473,23 @@ function Results({
             </span>
           </div>
 
-          <p className="text-[11px] leading-snug text-neutral-200">{location.factShort}</p>
-          <p className="text-[9px] text-neutral-500">{location.sourceAttribution}</p>
+          {expanded && (
+            <>
+              <p className="text-[11px] leading-snug text-neutral-200">{location.factShort}</p>
+              <p className="text-[9px] text-neutral-500">{location.sourceAttribution}</p>
+            </>
+          )}
+
+          {/* Collapsing keeps the arrows and the score, so the player can still
+              step between answers while watching the map rather than the text. */}
+          <button
+            onClick={() => setExpanded((e) => !e)}
+            aria-label={expanded ? 'Collapse fact' : 'Expand fact'}
+            aria-expanded={expanded}
+            className="mx-auto block w-full pt-0.5 text-center text-[10px] leading-none text-neutral-500 active:text-neutral-300"
+          >
+            {expanded ? '⌃' : '⌄'}
+          </button>
         </div>
 
         <div className="flex items-baseline justify-between">
