@@ -30,6 +30,13 @@ const MIN_ZOOM = 9.5
  */
 const REVEAL_MAX_ZOOM = 15
 
+/**
+ * Where the recap sits when stepping between answers. Half a level back from
+ * the reveal: close enough to read the block, far enough that the answer has
+ * some neighbourhood around it rather than filling the frame.
+ */
+const RECAP_ZOOM = 14.5
+
 /** Mirrors the reveal's zoom-in, so the round ends by running it backwards. */
 const RESET_MS = 900
 const FRAMING_PADDING = 20
@@ -287,7 +294,7 @@ export function MapView({
       // it. This lifts it into the visible strip above.
       m.flyTo({
         center: [p.lng, p.lat],
-        zoom: 15,
+        zoom: RECAP_ZOOM,
         padding: { top: 0, left: 0, right: 0, bottom: bottomInset },
         duration: 900,
         essential: true,

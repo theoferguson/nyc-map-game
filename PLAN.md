@@ -1042,3 +1042,15 @@ silent no-op behind an unfired event, and a wall that swallowed every pan. MapVi
 interaction did not have. Three separate bugs came out of positioning five variable-height
 cards against a moving camera, and none of them would have existed if the recap had stepped
 through answers from the start.
+
+**Collapse, and a slightly wider recap zoom (2026-08-20).** The fact panel collapses to its
+header -- location, step, arrows and score -- hiding only the fact text and attribution. The
+arrows survive deliberately, so a player can keep stepping between answers while watching the
+map rather than reading. Measured: panel 431px to 345px, map strip 357px to 443px.
+
+Collapsing has to re-frame the camera, which is not obvious. The `flyTo` padding is derived
+from the panel's height, so freeing 86px at the bottom does nothing on its own -- the pin does
+not rise to fill it. The focus call therefore re-runs on collapse as well as on open.
+
+Recap zoom eased from 15 to 14.5, so an answer sits in some neighbourhood rather than filling
+the frame.
