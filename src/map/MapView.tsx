@@ -15,14 +15,14 @@ import {
   type CenterZoomBearing,
   type GeoJSONSource,
 } from 'maplibre-gl'
-import { resolveSources } from './tiles'
+import { resolveSources, NYC_BOUNDS as NYC } from './tiles'
 import { deoverlap, CARD_W } from './deoverlap'
 import type { LngLat } from '../game/scoring'
 
-/** [[W,S],[E,N]] -- the player cannot pan out of the city. */
+/** [[W,S],[E,N]] for the camera APIs -- the player cannot pan out of the city. */
 const NYC_BOUNDS: [[number, number], [number, number]] = [
-  [-74.30, 40.47],
-  [-73.68, 40.93],
+  [NYC[0], NYC[1]],
+  [NYC[2], NYC[3]],
 ]
 
 /**
@@ -137,7 +137,12 @@ export function MapView({
                   type: 'raster',
                   tiles: [s.url],
                   tileSize: 256,
-                  maxzoom: MAX_ZOOM,
+                  // Per source, not per map: each service has its own coverage
+                  // and its own useful zoom range, and asking outside either is
+                  // a round trip for nothing.
+                  ...(s.bounds ? { bounds: s.bounds } : {}),
+                  minzoom: s.minzoom ?? 0,
+                  maxzoom: s.maxzoom ?? MAX_ZOOM,
                   attribution: s.attribution,
                 },
               ]),
