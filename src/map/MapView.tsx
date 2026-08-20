@@ -432,7 +432,7 @@ export function MapView({
       />
       {holding && (
         <svg
-          className="pointer-events-none absolute z-30"
+          className="pointer-events-none absolute z-40"
           style={{ left: holding.x - 34, top: holding.y - 34 }}
           width={68}
           height={68}

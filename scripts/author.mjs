@@ -152,7 +152,7 @@ if (!check) {
           date: d,
           puzzleNumber: 0,
           theme: preview.theme ?? null,
-          locations: preview.locations.map(({ query, ...keep }) => keep),
+          locations: preview.locations.map(({ query: _q, ...keep }) => keep),
         },
         null,
         2,
@@ -165,7 +165,7 @@ if (!check) {
       date: date(START, i),
       puzzleNumber: i + 1,
       theme: day.theme ?? null,
-      locations: day.locations.map(({ query, ...keep }) => keep),
+      locations: day.locations.map(({ query: _q, ...keep }) => keep),
     }
     await writeFile(new URL(`${puzzle.date}.json`, OUT), JSON.stringify(puzzle, null, 2) + '\n')
   }

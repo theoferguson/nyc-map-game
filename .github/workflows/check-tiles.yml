@@ -1,0 +1,32 @@
+# The imagery services are third party and fail silently. NYC dropped every
+# survey after 2018 from one host without notice, and a dead endpoint takes the
+# whole game with it while the page still loads and looks fine. This is the
+# alarm for that.
+name: check tiles
+
+on:
+  schedule:
+    # 13:00 UTC daily — mid-morning in New York, so a failure lands somewhere
+    # it will actually be read rather than overnight.
+    - cron: '0 13 * * *'
+  # Imagery URLs live in src/map/tiles.ts, so a change to it should be checked
+  # immediately rather than waiting for the next nightly run.
+  push:
+    paths:
+      - 'src/map/tiles.ts'
+      - 'scripts/check-tiles.mjs'
+      - '.github/workflows/check-tiles.yml'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # No install step: the checker depends on nothing but node built-ins, and
+      # keeping it that way means this alarm cannot be broken by the dependency
+      # tree it is meant to outlive.
+      - run: node scripts/check-tiles.mjs
