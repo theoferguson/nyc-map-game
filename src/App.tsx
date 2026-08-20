@@ -274,7 +274,7 @@ export default function App() {
           colorblind={settings.colorblind}
         />}
 
-      <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
+      <div className="absolute bottom-3 left-3 z-30 flex items-center gap-2">
         <p className="pointer-events-none rounded-full bg-neutral-900/75 px-2.5 py-1 text-[10px] font-medium tracking-wide text-neutral-300">
           {imageryVariant().label}
         </p>
@@ -484,7 +484,7 @@ function Floating({
 }) {
   return (
     <div
-      className={`pointer-events-none absolute inset-x-3 z-10 mx-auto max-w-md ${className}`}
+      className={`pointer-events-none absolute inset-x-3 z-30 mx-auto max-w-md ${className}`}
       style={{
         marginBottom: 'env(safe-area-inset-bottom)',
         marginTop: 'env(safe-area-inset-top)',

@@ -1003,3 +1003,46 @@ the first build from a git checkout produces a site with no puzzles at all.
 
 `vercel.json` pins the build command in the repository rather than leaving it to a dashboard
 setting, so it cannot drift or be lost when the project is relinked.
+
+---
+
+## 17. Tile caching, monitoring and layering (2026-08-20)
+
+**`check:tiles` runs nightly in GitHub Actions**, plus on any change to `src/map/tiles.ts` or
+the checker itself. 13:00 UTC, so a failure lands mid-morning in New York where it will be
+read rather than overnight.
+
+The workflow installs nothing. The checker depends only on node built-ins, which keeps the
+alarm from being broken by the dependency tree it exists to outlive -- verified by running it
+in a clean clone with no `node_modules`. The failure path was verified too, by pointing a URL
+at a year that does not exist: exit code 1. An alarm that cannot fire is worse than no alarm.
+
+**A service worker now caches city tiles across sessions.** Tiles are immutable -- a 2018
+aerial survey does not change -- so serving them from cache is free correctness, and the
+standard framing is identical every round of every game.
+
+Measured against a production build: every city tile on every visit is served by the service
+worker, none from the network.
+
+*Only the city surveys are cached, deliberately.* Esri's World Imagery item states it "is not
+intended to be used to export tiles for offline", and a service worker retaining tiles across
+sessions is arguably exactly that. The cache was checked to contain city tiles only and no
+Esri entries at all. That constraint is the reason the caching is scoped rather than global,
+and it should survive any later rewrite.
+
+Entries are trimmed FIFO at 900, roughly a fortnight of daily play; the Cache API imposes no
+limit of its own. Registration is production-only -- in development the worker would sit
+between Vite and the browser for no benefit.
+
+**Layering corrected.** The results panel painted *below* the fact cards, so on a phone the
+score, share squares and Share button were hidden behind cards that did not even accept the
+taps. The rule now is that map content sits below UI chrome:
+
+    leaders 10 · fact cards 20 · results panel and wordmark 30 · hold ring and settings 40
+
+Verified on a 390px viewport by asking the browser what is actually painted at the centre of
+the Share button, rather than by looking at a screenshot and believing it.
+
+This fixes only the layering half of the mobile recap problem in section 8. The density half
+-- five cards needing about 1,000px of height on an 800px screen -- is untouched and still
+wants a design decision.
