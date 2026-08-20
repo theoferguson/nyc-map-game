@@ -887,3 +887,27 @@ Esri only as the fallback when city imagery is unreachable. That removes roughly
 remaining tile requests as a side effect, and arguably reads better -- flat colour states the
 play boundary, where satellite imagery invites players to study somewhere they cannot be
 scored. Roughly an hour's work if it is ever needed.
+
+---
+
+## 16. Content pipeline (2026-08-20)
+
+Authoring moved from hand-written `puzzles/*.json` to `content/days.json` plus
+`scripts/author.mjs`. Three stages, and only the middle one is committed:
+
+    content/days.json  --author.mjs-->  puzzles/*.json  --puzzles:build-->  public/puzzles/
+    (source, no coords)   (network)      (committed)       (deploy)          (gitignored)
+
+`author.mjs` needs Nominatim, so it cannot run on a deploy host -- which is why `puzzles/`
+stays in the repository rather than being generated at build time.
+
+**Authors never type coordinates.** Each location carries a `query` that is geocoded and
+cached back into the source. Across 250 locations, hand-entered latitudes are a guarantee of
+silent errors, and a wrong coordinate does not look wrong -- it just marks correct answers
+wrong. Two of the first fifteen queries failed outright and a third would have needed
+checking, which is three errors that would otherwise have shipped.
+
+The script also enforces the content rules before writing anything: five locations a day,
+difficulty climbing, at least two outside Manhattan, coordinates inside the map's bounds,
+valid class and borough, three or more tags, a fact of reasonable length, a source, and no
+location repeated across the whole run. It prints the borough mix so drift is visible.

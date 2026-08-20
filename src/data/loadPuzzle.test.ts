@@ -9,7 +9,7 @@ import { decodePuzzle } from './loadPuzzle'
  * a synthetic fixture.
  */
 test('built puzzle decodes back to its plain source', () => {
-  const date = '2026-08-19'
+  const date = '2026-08-20'
   const plain = JSON.parse(readFileSync(`puzzles/${date}.json`, 'utf8'))
   const built = JSON.parse(readFileSync(`public/puzzles/${date}.json`, 'utf8'))
 
@@ -21,7 +21,7 @@ test('built puzzle decodes back to its plain source', () => {
 })
 
 test('puzzle content obeys the rules that make a day playable', () => {
-  const p = JSON.parse(readFileSync('puzzles/2026-08-19.json', 'utf8'))
+  const p = JSON.parse(readFileSync('puzzles/2026-08-20.json', 'utf8'))
   expect(p.locations).toHaveLength(5)
 
   // Difficulty must climb: round 1 near-unmissable, round 5 genuinely hard.
