@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-22",
+  "puzzleNumber": 28,
+  "theme": null,
+  "locations": [
+    {
+      "id": "charging-bull",
+      "name": "The Charging Bull",
+      "prompt": "The Charging Bull",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "financial-district",
+        "sculpture",
+        "1980s",
+        "guerrilla-art"
+      ],
+      "factShort": "Arturo Di Modica made it at his own expense and dumped it outside the Stock Exchange one night in December 1989 without permission. The city removed it within hours, then put it back two blocks away after public protest.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Charging_Bull",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.705564,
+      "lng": -74.013446
+    },
+    {
+      "id": "erasmus-hall",
+      "name": "Erasmus Hall",
+      "prompt": "Erasmus Hall",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "flatbush",
+        "school",
+        "1780s",
+        "gothic-quadrangle"
+      ],
+      "factShort": "Founded in 1786 as the first secondary school chartered in New York State, with Alexander Hamilton and Aaron Burr both among its early donors. Barbra Streisand and Neil Diamond were in its choir at the same time.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Erasmus_Hall_High_School",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.649594,
+      "lng": -73.957151
+    },
+    {
+      "id": "maple-grove-cemetery",
+      "name": "Maple Grove Cemetery",
+      "prompt": "Maple Grove Cemetery",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "kew-gardens",
+        "cemetery",
+        "1870s",
+        "victorian"
+      ],
+      "factShort": "Opened in 1875 with its own railway station so mourners could arrive by train from Manhattan. The neighbourhood of Kew Gardens grew up around it afterwards.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Maple_Grove_Cemetery_(Queens)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.708687,
+      "lng": -73.823548
+    },
+    {
+      "id": "hall-of-fame-great-americans",
+      "name": "The Hall of Fame for Great Americans",
+      "prompt": "The Hall of Fame for Great Americans",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "university-heights",
+        "colonnade",
+        "1900s",
+        "stanford-white"
+      ],
+      "factShort": "America's first hall of fame, a 630-foot open-air colonnade by Stanford White holding bronze busts elected by a national vote. Nobody has been added since 1976.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hall_of_Fame_for_Great_Americans",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.858762,
+      "lng": -73.914306
+    },
+    {
+      "id": "national-lighthouse-museum",
+      "name": "The National Lighthouse Museum",
+      "prompt": "The National Lighthouse Museum",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "st-george",
+        "lighthouse-depot",
+        "1860s",
+        "maritime"
+      ],
+      "factShort": "Built as the Lighthouse Service's national depot, where every lens and lamp in American waters was tested and maintained. The site supplied lighthouses from Maine to the Gulf for nearly a century.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/National_Lighthouse_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.640726,
+      "lng": -74.073411
+    }
+  ]
+}

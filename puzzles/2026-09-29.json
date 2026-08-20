@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-29",
+  "puzzleNumber": 35,
+  "theme": null,
+  "locations": [
+    {
+      "id": "little-island",
+      "name": "Little Island",
+      "prompt": "Little Island",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "chelsea",
+        "park",
+        "2020s",
+        "tulip-piles"
+      ],
+      "factShort": "An artificial park on 132 concrete tulip-shaped piles in the Hudson, built where Pier 54 stood — the pier where the Carpathia landed Titanic survivors. Its hills were shaped to hide the city from certain angles.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Little_Island_(park)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.742004,
+      "lng": -74.01061
+    },
+    {
+      "id": "bushwick-collective",
+      "name": "The Bushwick Collective",
+      "prompt": "The Bushwick Collective",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "bushwick",
+        "street-art",
+        "2010s",
+        "murals"
+      ],
+      "factShort": "A few blocks of warehouse walls turned into an open-air mural gallery, started in 2011 by a local man after his mother died. Artists are invited from around the world and the work is repainted continually.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bushwick_Collective",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.706031,
+      "lng": -73.92362
+    },
+    {
+      "id": "flushing-main-street",
+      "name": "Flushing Main Street",
+      "prompt": "Flushing Main Street",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing",
+        "commercial-street",
+        "chinatown",
+        "transit"
+      ],
+      "factShort": "Flushing's Main Street is the heart of one of the largest Chinese communities outside Asia and among the busiest bus corridors in the country. Its subway terminus is the eastern end of the 7 line.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Flushing,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.756031,
+      "lng": -73.828535
+    },
+    {
+      "id": "tenement-museum",
+      "name": "The Tenement Museum",
+      "prompt": "The Tenement Museum",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "lower-east-side",
+        "museum",
+        "1860s",
+        "immigrant-history"
+      ],
+      "factShort": "The building at 97 Orchard Street housed around seven thousand people from over twenty countries before its landlord sealed the upper floors in 1935 rather than meet new fire codes. They stayed shut for fifty years and were found essentially intact.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Tenement_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.718784,
+      "lng": -73.990027
+    },
+    {
+      "id": "great-kills-park",
+      "name": "Great Kills Park",
+      "prompt": "Great Kills Park",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "great-kills",
+        "park",
+        "harbor",
+        "marina"
+      ],
+      "factShort": "A peninsula built largely from landfill in the 1940s, now part of a national recreation area with a marina and salt marsh. Parts remain fenced off after radium was found in the soil.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Great_Kills_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.543651,
+      "lng": -74.126147
+    }
+  ]
+}

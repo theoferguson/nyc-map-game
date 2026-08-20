@@ -1,6 +1,4 @@
 {
-  "date": "2026-08-20",
-  "puzzleNumber": 0,
   "theme": null,
   "locations": [
     {
@@ -21,7 +19,8 @@
         "art-deco",
         "1930s",
         "observation-deck"
-      ]
+      ],
+      "query": "Empire State Building, New York"
     },
     {
       "id": "yankee-stadium",
@@ -41,7 +40,8 @@
         "baseball",
         "2000s",
         "sports"
-      ]
+      ],
+      "query": "Yankee Stadium, Bronx, New York"
     },
     {
       "id": "wonder-wheel",
@@ -61,7 +61,8 @@
         "waterfront",
         "1920s",
         "landmark-ride"
-      ]
+      ],
+      "query": "Wonder Wheel, Coney Island, Brooklyn"
     },
     {
       "id": "katzs-delicatessen",
@@ -81,7 +82,8 @@
         "jewish-new-york",
         "1880s",
         "film-location"
-      ]
+      ],
+      "query": "Katz's Delicatessen, Manhattan, New York"
     },
     {
       "id": "louis-armstrong-house",
@@ -101,7 +103,8 @@
         "jazz",
         "music-history",
         "1940s"
-      ]
+      ],
+      "query": "Louis Armstrong House Museum, Queens, New York"
     }
   ]
 }

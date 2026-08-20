@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-11",
+  "puzzleNumber": 17,
+  "theme": null,
+  "locations": [
+    {
+      "id": "union-square",
+      "name": "Union Square",
+      "prompt": "Union Square",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "union-square",
+        "public-square",
+        "1830s",
+        "protest"
+      ],
+      "factShort": "Named not for the Union but for the union of two roads, it has been the city's default protest ground since the first American Labor Day march passed through in 1882. After 9/11 it became a spontaneous shrine of candles and notes.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Union_Square,_Manhattan",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.736072,
+      "lng": -73.990189
+    },
+    {
+      "id": "peter-luger",
+      "name": "Peter Luger Steak House",
+      "prompt": "Peter Luger Steak House",
+      "class": "venue",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "williamsburg",
+        "steakhouse",
+        "1880s",
+        "cash-only"
+      ],
+      "factShort": "Open since 1887 under the Williamsburg Bridge, it grades and dry-ages its own beef and for most of its history took no credit cards at all. There is effectively one thing on the menu and the waiters will tell you so.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Peter_Luger_Steak_House",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.709866,
+      "lng": -73.962556
+    },
+    {
+      "id": "fort-tilden",
+      "name": "Fort Tilden",
+      "prompt": "Fort Tilden",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "rockaways",
+        "fortification",
+        "cold-war",
+        "beach"
+      ],
+      "factShort": "A coastal battery that ended its life holding Nike missiles aimed at Soviet bombers, now a beach where concrete bunkers sit in the dunes. It has no lifeguards and a long walk from the road, which is why it stays quiet.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Tilden",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.561448,
+      "lng": -73.895521
+    },
+    {
+      "id": "cooper-union",
+      "name": "The Cooper Union",
+      "prompt": "The Cooper Union",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "east-village",
+        "college",
+        "1850s",
+        "free-tuition"
+      ],
+      "factShort": "Peter Cooper, who had almost no schooling himself, founded it in 1859 to be free and open to all regardless of race or sex. Lincoln's speech in its Great Hall in 1860 is widely credited with making him president.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Cooper_Union",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.729454,
+      "lng": -73.990459
+    },
+    {
+      "id": "staten-island-ferry-terminal",
+      "name": "The St. George Ferry Terminal",
+      "prompt": "The St. George Ferry Terminal",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "st-george",
+        "ferry",
+        "transport",
+        "waterfront"
+      ],
+      "factShort": "The Staten Island Ferry carries around twenty million passengers a year and has been free since 1997, making it the busiest free ferry route in the world. The terminal burned down in 1946 and was rebuilt, then rebuilt again in 2005.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/St._George_Terminal",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.643963,
+      "lng": -74.073442
+    }
+  ]
+}

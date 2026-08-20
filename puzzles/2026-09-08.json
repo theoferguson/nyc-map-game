@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-08",
+  "puzzleNumber": 14,
+  "theme": null,
+  "locations": [
+    {
+      "id": "new-york-public-library",
+      "name": "The New York Public Library",
+      "prompt": "The New York Public Library",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "beaux-arts",
+        "1910s",
+        "library"
+      ],
+      "factShort": "It stands on the drained bed of the Croton Reservoir, whose Egyptian-style walls held the city's water supply until 1900. The lions were named Patience and Fortitude by La Guardia during the Depression, for the qualities he thought New Yorkers needed.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/New_York_Public_Library_Main_Branch",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.753344,
+      "lng": -73.982152
+    },
+    {
+      "id": "kings-theatre",
+      "name": "Kings Theatre",
+      "prompt": "Kings Theatre",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "flatbush",
+        "movie-palace",
+        "1920s",
+        "restoration"
+      ],
+      "factShort": "A 1929 Loew's Wonder Theatre that sat derelict for thirty-eight years with rain coming through the roof onto its plasterwork. A ninety-five million dollar restoration reopened it in 2015, matching the original French Baroque interior from photographs.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Kings_Theatre",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.64601,
+      "lng": -73.957356
+    },
+    {
+      "id": "steinway-factory",
+      "name": "The Steinway & Sons Factory",
+      "prompt": "The Steinway & Sons Factory",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "astoria",
+        "piano-making",
+        "1870s",
+        "manufacturing"
+      ],
+      "factShort": "Steinway built not just a factory here but a company town with housing, a school and a fire station, on farmland far from Manhattan's labour unrest. Each concert grand still takes about a year to build, much of it by hand.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Steinway_%26_Sons",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.780232,
+      "lng": -73.899829
+    },
+    {
+      "id": "grand-concourse",
+      "name": "The Grand Concourse",
+      "prompt": "The Grand Concourse",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "concourse",
+        "boulevard",
+        "art-deco",
+        "1900s"
+      ],
+      "factShort": "Modelled on the Champs-Élysées and opened in 1909, its four-and-a-half miles hold one of the largest concentrations of Art Deco apartment buildings anywhere. It was cut through farmland years before the subway that would fill it arrived.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Grand_Concourse_(Bronx)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.866944,
+      "lng": -73.893485
+    },
+    {
+      "id": "lemon-ice-king-of-corona",
+      "name": "The Lemon Ice King of Corona",
+      "prompt": "The Lemon Ice King of Corona",
+      "class": "venue",
+      "borough": "queens",
+      "difficulty": 5,
+      "tags": [
+        "corona",
+        "italian-ice",
+        "1940s",
+        "neighborhood-institution"
+      ],
+      "factShort": "Selling Italian ices on the same corner since 1944, in around thirty flavours, and famously refusing to put them in a cup with ice cream. The corner park outside appears in the opening credits of King of Queens.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Corona,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.743096,
+      "lng": -73.855153
+    }
+  ]
+}

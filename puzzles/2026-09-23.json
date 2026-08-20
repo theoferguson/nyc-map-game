@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-23",
+  "puzzleNumber": 29,
+  "theme": null,
+  "locations": [
+    {
+      "id": "grand-central-oyster-bar",
+      "name": "The Grand Central Oyster Bar",
+      "prompt": "The Grand Central Oyster Bar",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "restaurant",
+        "1910s",
+        "guastavino-tile"
+      ],
+      "factShort": "It opened with the terminal in 1913 beneath Guastavino tile vaults, and the whispering gallery outside carries a murmur clean across the arch. It went bankrupt in 1972 and was revived by a Long Island restaurateur.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Grand_Central_Oyster_Bar_%26_Restaurant",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.752419,
+      "lng": -73.977343
+    },
+    {
+      "id": "gravesend-cemetery",
+      "name": "Gravesend Cemetery",
+      "prompt": "Gravesend Cemetery",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "gravesend",
+        "cemetery",
+        "1650s",
+        "colonial"
+      ],
+      "factShort": "Gravesend was chartered in 1645 under Lady Deborah Moody, the only colonial American settlement founded by a woman. Its original sixteen-square street plan is still legible in the blocks around the graveyard.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Gravesend,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.594738,
+      "lng": -73.97435
+    },
+    {
+      "id": "poppenhusen-institute",
+      "name": "The Poppenhusen Institute",
+      "prompt": "The Poppenhusen Institute",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "college-point",
+        "institute",
+        "1860s",
+        "free-kindergarten"
+      ],
+      "factShort": "A rubber manufacturer built it in 1868 as a free school for his workers, and it housed the first free kindergarten in the United States. It also served as the local courthouse and jail.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Poppenhusen_Institute",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.784444,
+      "lng": -73.853056
+    },
+    {
+      "id": "fort-schuyler",
+      "name": "Fort Schuyler",
+      "prompt": "Fort Schuyler",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "throgs-neck",
+        "fortification",
+        "1830s",
+        "maritime-college"
+      ],
+      "factShort": "A granite fort finished in 1856 to cover the eastern approach to New York, never fired on in anger, and now the campus of a maritime college. Its walls are up to eight feet thick.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Schuyler",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.805276,
+      "lng": -73.792054
+    },
+    {
+      "id": "bialystoker-synagogue",
+      "name": "The Bialystoker Synagogue",
+      "prompt": "The Bialystoker Synagogue",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "lower-east-side",
+        "synagogue",
+        "1820s",
+        "fieldstone"
+      ],
+      "factShort": "Built in 1826 as a Methodist church from fieldstone quarried on the block, and bought by immigrants from Bialystok in 1905. A hidden attic above the women's balcony is said to have sheltered people on the Underground Railroad.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bialystoker_Synagogue",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.71554,
+      "lng": -73.983309
+    }
+  ]
+}

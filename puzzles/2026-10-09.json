@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-09",
+  "puzzleNumber": 45,
+  "theme": null,
+  "locations": [
+    {
+      "id": "governors-island",
+      "name": "Governors Island",
+      "prompt": "Governors Island",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "upper-bay",
+        "island",
+        "park",
+        "former-army-post"
+      ],
+      "factShort": "An army post for nearly two centuries and a Coast Guard base after that, sold to the people of New York in 2003 for one dollar. Its southern half is landfill from digging the Lexington Avenue subway.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Governors_Island",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.688654,
+      "lng": -74.018276
+    },
+    {
+      "id": "di-fara-pizza",
+      "name": "Di Fara Pizza",
+      "prompt": "Di Fara Pizza",
+      "class": "venue",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "midwood",
+        "pizzeria",
+        "1960s",
+        "domenico-de-marco"
+      ],
+      "factShort": "Domenico De Marco made every pie himself from 1965 until shortly before his death in 2022, which is why the queues ran for hours. He snipped basil over each one with scissors.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Di_Fara_Pizza",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.625047,
+      "lng": -73.961495
+    },
+    {
+      "id": "newtown-creek-nature-walk",
+      "name": "The Newtown Creek Nature Walk",
+      "prompt": "The Newtown Creek Nature Walk",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "greenpoint",
+        "superfund",
+        "industrial",
+        "nature-walk"
+      ],
+      "factShort": "A landscaped path beside one of the most polluted waterways in America, alongside a sewage plant whose digester eggs are lit blue at night. Beneath the creek lies an oil spill larger than the Exxon Valdez.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Newtown_Creek",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.734603,
+      "lng": -73.945935
+    },
+    {
+      "id": "fraunces-tavern",
+      "name": "Fraunces Tavern",
+      "prompt": "Fraunces Tavern",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "financial-district",
+        "tavern",
+        "1710s",
+        "revolutionary-war"
+      ],
+      "factShort": "Washington said farewell to his officers in the Long Room here in December 1783, weeping as he embraced them. Its proprietor Samuel Fraunces, a man of colour from the West Indies, later ran the presidential household.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fraunces_Tavern",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.703394,
+      "lng": -74.011335
+    },
+    {
+      "id": "staten-island-zoo",
+      "name": "The Staten Island Zoo",
+      "prompt": "The Staten Island Zoo",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "west-brighton",
+        "zoo",
+        "1930s",
+        "reptile-collection"
+      ],
+      "factShort": "Opened in 1936 as the country's first zoo built specifically for education rather than display, on eight acres. Its rattlesnake collection was for years the most complete anywhere.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Staten_Island_Zoo",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.625394,
+      "lng": -74.115591
+    }
+  ]
+}

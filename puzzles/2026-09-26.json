@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-26",
+  "puzzleNumber": 32,
+  "theme": null,
+  "locations": [
+    {
+      "id": "central-park-zoo",
+      "name": "The Central Park Zoo",
+      "prompt": "The Central Park Zoo",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "central-park",
+        "zoo",
+        "1860s",
+        "sea-lions"
+      ],
+      "factShort": "It grew from a stray menagerie of donated animals dumped at the Arsenal in the 1860s, making it the second oldest public zoo in the country. Its 1930s cages were replaced entirely in 1988.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Central_Park_Zoo",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.767601,
+      "lng": -73.971846
+    },
+    {
+      "id": "fort-hamilton",
+      "name": "Fort Hamilton",
+      "prompt": "Fort Hamilton",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "bay-ridge",
+        "fortification",
+        "1820s",
+        "narrows"
+      ],
+      "factShort": "An active army post since 1831, guarding the Narrows opposite Fort Wadsworth. Robert E. Lee served here as an engineer, and Stonewall Jackson was baptised in the chapel.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Hamilton",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.6088,
+      "lng": -74.029569
+    },
+    {
+      "id": "flushing-town-hall",
+      "name": "Flushing Town Hall",
+      "prompt": "Flushing Town Hall",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing",
+        "romanesque-revival",
+        "1860s",
+        "concert-hall"
+      ],
+      "factShort": "Built in 1862 and used for everything from courtroom to jail to opera house — Tom Thumb performed here and Frederick Douglass spoke. It was condemned and nearly demolished in the 1970s.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Flushing_Town_Hall",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.763914,
+      "lng": -73.830071
+    },
+    {
+      "id": "pelham-bay-park",
+      "name": "Pelham Bay Park",
+      "prompt": "Pelham Bay Park",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "pelham-bay",
+        "park",
+        "1880s",
+        "largest-park"
+      ],
+      "factShort": "At more than 2,700 acres it is over three times the size of Central Park, making it the largest park in the city. It contains salt marsh, forest, a golf course and a lagoon.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Pelham_Bay_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.852548,
+      "lng": -73.827938
+    },
+    {
+      "id": "nom-wah-tea-parlor",
+      "name": "Nom Wah Tea Parlor",
+      "prompt": "Nom Wah Tea Parlor",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "chinatown",
+        "dim-sum",
+        "1920s",
+        "doyers-street"
+      ],
+      "factShort": "Open on the bend of Doyers Street since 1920, which makes it the oldest dim sum parlour in the city. The street's sharp angle was notorious enough in the tong wars to be called the Bloody Angle.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Nom_Wah_Tea_Parlor",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.714459,
+      "lng": -73.998197
+    }
+  ]
+}

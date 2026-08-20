@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-06",
+  "puzzleNumber": 12,
+  "theme": null,
+  "locations": [
+    {
+      "id": "september-11-memorial",
+      "name": "The 9/11 Memorial",
+      "prompt": "The 9/11 Memorial",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "financial-district",
+        "memorial",
+        "2010s",
+        "reflecting-pools"
+      ],
+      "factShort": "The two pools sit exactly in the footprints of the towers, and the names around them are arranged by what the designers called meaningful adjacency — colleagues, friends and those who died together, placed together at families' request. One pear tree that survived the collapse was nursed back and replanted.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/National_September_11_Memorial_%26_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.711368,
+      "lng": -74.01327
+    },
+    {
+      "id": "fort-greene-park",
+      "name": "Fort Greene Park",
+      "prompt": "Fort Greene Park",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "fort-greene",
+        "park",
+        "olmsted-vaux",
+        "monument"
+      ],
+      "factShort": "Beneath its central monument lie the remains of some 11,500 people who died on British prison ships in Wallabout Bay — more American deaths than in all the war's battles combined. Walt Whitman campaigned for the park while editing the Brooklyn Eagle.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Greene_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.691476,
+      "lng": -73.975622
+    },
+    {
+      "id": "socrates-sculpture-park",
+      "name": "Socrates Sculpture Park",
+      "prompt": "Socrates Sculpture Park",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "long-island-city",
+        "sculpture",
+        "1980s",
+        "waterfront"
+      ],
+      "factShort": "An illegal dumping ground on the East River until the sculptor Mark di Suvero and local artists cleared it themselves in 1986 and started showing work on it. The city only made it an official park in 1998.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Socrates_Sculpture_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.768254,
+      "lng": -73.936712
+    },
+    {
+      "id": "grants-tomb",
+      "name": "Grant's Tomb",
+      "prompt": "Grant's Tomb",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "morningside-heights",
+        "mausoleum",
+        "1890s",
+        "granite"
+      ],
+      "factShort": "The largest mausoleum in North America, paid for by ninety thousand small donations after Grant asked to be buried where his wife could join him. Its dedication in 1897 drew a million people.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Grant's_Tomb",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.813454,
+      "lng": -73.963051
+    },
+    {
+      "id": "fort-wadsworth",
+      "name": "Fort Wadsworth",
+      "prompt": "Fort Wadsworth",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "narrows",
+        "fortification",
+        "harbor-defense",
+        "1660s"
+      ],
+      "factShort": "Fortified continuously from the 1660s until 1994, which makes it one of the longest continuously garrisoned military sites in the country. The Verrazzano-Narrows Bridge now springs directly over it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Wadsworth",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.608993,
+      "lng": -74.062641
+    }
+  ]
+}

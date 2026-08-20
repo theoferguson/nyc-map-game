@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-16",
+  "puzzleNumber": 22,
+  "theme": null,
+  "locations": [
+    {
+      "id": "cathedral-st-john-divine",
+      "name": "The Cathedral of St. John the Divine",
+      "prompt": "The Cathedral of St. John the Divine",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "morningside-heights",
+        "cathedral",
+        "1890s",
+        "unfinished"
+      ],
+      "factShort": "Begun in 1892 and still unfinished, which has earned it the nickname St. John the Unfinished. It is among the largest church buildings in the world and its stonework halted for decades at a time.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.803766,
+      "lng": -73.961784
+    },
+    {
+      "id": "coney-island-boardwalk",
+      "name": "The Riegelmann Boardwalk",
+      "prompt": "The Riegelmann Boardwalk",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "coney-island",
+        "boardwalk",
+        "1920s",
+        "atlantic"
+      ],
+      "factShort": "Two and a half miles of boardwalk opened in 1923, built after the city seized the beachfront from private owners who had been charging for access. Most of its planks are now recycled plastic rather than tropical hardwood.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Riegelmann_Boardwalk",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.572707,
+      "lng": -73.983828
+    },
+    {
+      "id": "ps1",
+      "name": "MoMA PS1",
+      "prompt": "MoMA PS1",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "long-island-city",
+        "contemporary-art",
+        "1970s",
+        "school-building"
+      ],
+      "factShort": "A derelict Victorian public school taken over by artists in 1976 as one of the first institutions anywhere devoted to installation work made on site. James Turrell cut a hole in its roof that frames nothing but sky.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/MoMA_PS1",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.745582,
+      "lng": -73.947467
+    },
+    {
+      "id": "crotona-park",
+      "name": "Crotona Park",
+      "prompt": "Crotona Park",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "crotona",
+        "park",
+        "1880s",
+        "recreation"
+      ],
+      "factShort": "Its lake is a natural glacial kettle pond, and the park holds over two dozen tree species on land the Bathgate family sold to the city under protest. Its pool was one of eleven Robert Moses opened in a single Depression summer.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Crotona_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.838813,
+      "lng": -73.892398
+    },
+    {
+      "id": "wolfes-pond-park",
+      "name": "Wolfe's Pond Park",
+      "prompt": "Wolfe's Pond Park",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "prince-bay",
+        "park",
+        "beach",
+        "freshwater-pond"
+      ],
+      "factShort": "A freshwater pond separated from Raritan Bay by nothing but a sand bar, on land once owned by an oysterman named Wolfe. Its woods are among the quietest in the city.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Wolfe's_Pond_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.524751,
+      "lng": -74.194617
+    }
+  ]
+}

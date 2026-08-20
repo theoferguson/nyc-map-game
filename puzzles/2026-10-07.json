@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-07",
+  "puzzleNumber": 43,
+  "theme": null,
+  "locations": [
+    {
+      "id": "fort-tryon-park",
+      "name": "Fort Tryon Park",
+      "prompt": "Fort Tryon Park",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "washington-heights",
+        "park",
+        "1930s",
+        "hudson-view"
+      ],
+      "factShort": "Rockefeller bought the estate, had Olmsted's son landscape it and gave it to the city in 1935. It was the site of the last stand at Fort Washington in 1776, defended in part by Margaret Corbin after her husband was killed at his gun.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Tryon_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.86181,
+      "lng": -73.932387
+    },
+    {
+      "id": "vinegar-hill",
+      "name": "Vinegar Hill",
+      "prompt": "Vinegar Hill",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "vinegar-hill",
+        "cobblestone",
+        "1800s",
+        "irish"
+      ],
+      "factShort": "A few surviving blocks of Belgian block and Greek Revival houses beside the Navy Yard, named after a battle in the 1798 Irish rebellion to attract Irish buyers. Most of the neighbourhood was demolished for power plants and housing.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Vinegar_Hill,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.701519,
+      "lng": -73.982636
+    },
+    {
+      "id": "aqueduct-racetrack",
+      "name": "Aqueduct Racetrack",
+      "prompt": "Aqueduct Racetrack",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "ozone-park",
+        "racetrack",
+        "1890s",
+        "thoroughbred"
+      ],
+      "factShort": "Named for the Brooklyn water conduit that ran beside the original 1894 course, it is the only thoroughbred track within New York City limits. Winter racing here continues in weather that closes most other tracks.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Aqueduct_Racetrack",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.672094,
+      "lng": -73.835938
+    },
+    {
+      "id": "stone-street",
+      "name": "Stone Street",
+      "prompt": "Stone Street",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "financial-district",
+        "cobblestone",
+        "1600s",
+        "historic-district"
+      ],
+      "factShort": "One of the first paved streets in New Amsterdam, cobbled in 1658 reportedly after a brewer's wife complained about the mud. The buildings on it now date mostly from after the 1835 fire.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Stone_Street_(Manhattan)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.704432,
+      "lng": -74.010198
+    },
+    {
+      "id": "spuyten-duyvil",
+      "name": "Spuyten Duyvil",
+      "prompt": "Spuyten Duyvil",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "spuyten-duyvil",
+        "creek",
+        "harlem-river",
+        "rail-bridge"
+      ],
+      "factShort": "The name is Dutch, roughly spouting devil, for the treacherous tidal currents where the Harlem River meets the Hudson. The channel was straightened in 1895, cutting Marble Hill off from Manhattan and leaving it physically attached to the Bronx.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Spuyten_Duyvil,_Bronx",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.878869,
+      "lng": -73.922173
+    }
+  ]
+}

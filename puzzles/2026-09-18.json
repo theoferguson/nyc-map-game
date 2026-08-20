@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-18",
+  "puzzleNumber": 24,
+  "theme": null,
+  "locations": [
+    {
+      "id": "washington-square-park",
+      "name": "Washington Square Park",
+      "prompt": "Washington Square Park",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "greenwich-village",
+        "park",
+        "fountain",
+        "1820s"
+      ],
+      "factShort": "It was a potter's field before it was a park, and an estimated twenty thousand people are still buried beneath it — bones surface whenever the city digs. Jane Jacobs stopped Robert Moses running a road through the middle of it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Washington_Square_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.730896,
+      "lng": -73.9976
+    },
+    {
+      "id": "sunset-park",
+      "name": "Sunset Park",
+      "prompt": "Sunset Park",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "sunset-park",
+        "park",
+        "harbor-view",
+        "1890s"
+      ],
+      "factShort": "The hill gives one of the best free views in the city, taking in the harbour, both bridges and the Manhattan skyline at once. Its pool is a Robert Moses original from 1936.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Sunset_Park,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.644222,
+      "lng": -74.007591
+    },
+    {
+      "id": "voelker-orth-museum",
+      "name": "The Voelker Orth Museum",
+      "prompt": "The Voelker Orth Museum",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing",
+        "victorian",
+        "house-museum",
+        "bird-sanctuary"
+      ],
+      "factShort": "A Victorian house kept by three generations of one family and left to the public as a museum, garden and bird sanctuary. Its owner published a German-language newspaper from Flushing.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Flushing,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.764736,
+      "lng": -73.816204
+    },
+    {
+      "id": "bronx-museum",
+      "name": "The Bronx Museum of the Arts",
+      "prompt": "The Bronx Museum of the Arts",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "concourse",
+        "museum",
+        "1970s",
+        "free-admission"
+      ],
+      "factShort": "Founded in 1971 in a synagogue on the Grand Concourse, it has been free to enter since 2012 and collects work by artists of African, Asian and Latin American descent. Its folded aluminium facade opened in 2006.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bronx_Museum_of_the_Arts",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.831091,
+      "lng": -73.919947
+    },
+    {
+      "id": "sandy-ground",
+      "name": "Sandy Ground",
+      "prompt": "Sandy Ground",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "rossville",
+        "african-american-history",
+        "1830s",
+        "oystering"
+      ],
+      "factShort": "One of the oldest continuously settled free Black communities in the United States, founded in the 1830s by oystermen from Maryland who came north where they could own their boats. Descendants of the founding families still live there.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Sandy_Ground,_Staten_Island",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.540978,
+      "lng": -74.216501
+    }
+  ]
+}

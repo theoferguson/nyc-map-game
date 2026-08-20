@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-25",
+  "puzzleNumber": 31,
+  "theme": null,
+  "locations": [
+    {
+      "id": "vessel-hudson-yards",
+      "name": "The Vessel",
+      "prompt": "The Vessel",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "hudson-yards",
+        "sculpture",
+        "2010s",
+        "staircase"
+      ],
+      "factShort": "A climbable lattice of 154 interconnecting flights, some 2,500 steps that lead nowhere in particular. It closed for over a year after a series of deaths and reopened with floor-to-ceiling netting.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Vessel_(structure)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.753799,
+      "lng": -74.002003
+    },
+    {
+      "id": "l-and-b-spumoni-gardens",
+      "name": "L&B Spumoni Gardens",
+      "prompt": "L&B Spumoni Gardens",
+      "class": "venue",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "gravesend",
+        "pizzeria",
+        "1930s",
+        "sicilian-square"
+      ],
+      "factShort": "Selling Sicilian squares with the cheese under the sauce since 1939, from a cart that became a restaurant. The spumoni is made on the premises to the founder's recipe.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/L%26B_Spumoni_Gardens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.594724,
+      "lng": -73.981313
+    },
+    {
+      "id": "queens-botanical-garden",
+      "name": "The Queens Botanical Garden",
+      "prompt": "The Queens Botanical Garden",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing",
+        "garden",
+        "worlds-fair",
+        "1930s"
+      ],
+      "factShort": "It began as a five-acre exhibit at the 1939 World's Fair called Gardens on Parade and was kept when the fair closed. Its visitor centre was the first building in the city to earn a platinum green rating.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Queens_Botanical_Garden",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.749938,
+      "lng": -73.830059
+    },
+    {
+      "id": "1520-sedgwick-avenue",
+      "name": "1520 Sedgwick Avenue",
+      "prompt": "1520 Sedgwick Avenue",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "morris-heights",
+        "hip-hop",
+        "1970s",
+        "apartment-building"
+      ],
+      "factShort": "DJ Kool Herc threw a back-to-school party in this building's recreation room on 11 August 1973, extending the breaks between records so dancers could keep going. It is widely treated as the birthplace of hip-hop.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/1520_Sedgwick_Avenue",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.847055,
+      "lng": -73.924486
+    },
+    {
+      "id": "st-marks-church-bowery",
+      "name": "St. Mark's Church in-the-Bowery",
+      "prompt": "St. Mark's Church in-the-Bowery",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "east-village",
+        "church",
+        "1790s",
+        "peter-stuyvesant"
+      ],
+      "factShort": "The second oldest church building in Manhattan, standing on Peter Stuyvesant's farm chapel site with the man himself buried in the vault. It has hosted avant-garde poetry and dance since the 1960s.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/St._Mark's_Church_in-the-Bowery",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.730341,
+      "lng": -73.987116
+    }
+  ]
+}

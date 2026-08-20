@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-13",
+  "puzzleNumber": 19,
+  "theme": null,
+  "locations": [
+    {
+      "id": "carnegie-hall",
+      "name": "Carnegie Hall",
+      "prompt": "Carnegie Hall",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "concert-hall",
+        "1890s",
+        "acoustics"
+      ],
+      "factShort": "Tchaikovsky conducted at its opening in 1891. It was nearly demolished for an office tower in 1960 until the violinist Isaac Stern led a campaign that got the city to buy it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Carnegie_Hall",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.76503,
+      "lng": -73.979887
+    },
+    {
+      "id": "jane-carousel",
+      "name": "Jane's Carousel",
+      "prompt": "Jane's Carousel",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "dumbo",
+        "carousel",
+        "1920s",
+        "waterfront"
+      ],
+      "factShort": "A 1922 Ohio carousel bought at auction and restored horse by horse over twenty-odd years by the woman it is named for. Its glass pavilion sat in floodwater during Sandy with the carousel dry inside.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Jane's_Carousel",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.704434,
+      "lng": -73.992385
+    },
+    {
+      "id": "king-manor",
+      "name": "King Manor",
+      "prompt": "King Manor",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "jamaica",
+        "house-museum",
+        "federal-style",
+        "1750s"
+      ],
+      "factShort": "Rufus King signed the Constitution, was one of the first senators from New York, and argued against slavery's extension from this farmhouse. His son later became governor of the state.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/King_Manor",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.703159,
+      "lng": -73.80375
+    },
+    {
+      "id": "hunts-point-market",
+      "name": "The Hunts Point Market",
+      "prompt": "The Hunts Point Market",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "hunts-point",
+        "food-distribution",
+        "1960s",
+        "wholesale"
+      ],
+      "factShort": "The largest food distribution centre in the world by some measures, moving several billion dollars of produce, meat and fish a year across three hundred acres. Most of what New York eats passes through here overnight.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hunts_Point,_Bronx",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.806051,
+      "lng": -73.874702
+    },
+    {
+      "id": "floyd-bennett-field",
+      "name": "Floyd Bennett Field",
+      "prompt": "Floyd Bennett Field",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 5,
+      "tags": [
+        "marine-park",
+        "airfield",
+        "1930s",
+        "aviation-history"
+      ],
+      "factShort": "New York's first municipal airport, which failed commercially because it was too far from Manhattan, then became a record-setting field — Howard Hughes and Wiley Post both flew from it. Its runways are now cracked and grassed over inside a national park.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Floyd_Bennett_Field",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.594529,
+      "lng": -73.888035
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-30",
+  "puzzleNumber": 36,
+  "theme": null,
+  "locations": [
+    {
+      "id": "whitney-museum",
+      "name": "The Whitney Museum",
+      "prompt": "The Whitney Museum",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "meatpacking",
+        "museum",
+        "2010s",
+        "renzo-piano"
+      ],
+      "factShort": "Gertrude Vanderbilt Whitney founded it after the Met refused her gift of five hundred works by living American artists. It has moved four times and landed at the foot of the High Line in 2015.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Whitney_Museum_of_American_Art",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.739645,
+      "lng": -74.008921
+    },
+    {
+      "id": "junior-s",
+      "name": "Junior's",
+      "prompt": "Junior's",
+      "class": "venue",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "downtown-brooklyn",
+        "cheesecake",
+        "1950s",
+        "diner"
+      ],
+      "factShort": "Opened on Flatbush Avenue in 1950 and known almost entirely for one thing, a cheesecake with a sponge base rather than a crust. A 1981 fire gutted it and it reopened within the year.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Junior's_Restaurant",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.690145,
+      "lng": -73.981989
+    },
+    {
+      "id": "gramercy-park",
+      "name": "Gramercy Park",
+      "prompt": "Gramercy Park",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 3,
+      "tags": [
+        "gramercy",
+        "private-park",
+        "1830s",
+        "locked-gate"
+      ],
+      "factShort": "The only private park in Manhattan, opened in 1831 and still accessible solely to keyholders in the surrounding buildings. There are said to be fewer than four hundred keys, and they are changed every year.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Gramercy_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.73795,
+      "lng": -73.985915
+    },
+    {
+      "id": "throgs-neck-bridge",
+      "name": "The Throgs Neck Bridge",
+      "prompt": "The Throgs Neck Bridge",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "throgs-neck",
+        "suspension-bridge",
+        "1960s",
+        "east-river"
+      ],
+      "factShort": "Robert Moses built it in 1961 to relieve the Bronx-Whitestone a mile west, and it was among the last of his great river crossings. Its towers rise 360 feet over the entrance to Long Island Sound.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Throgs_Neck_Bridge",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.809016,
+      "lng": -73.793773
+    },
+    {
+      "id": "sheepshead-bay",
+      "name": "Sheepshead Bay",
+      "prompt": "Sheepshead Bay",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 5,
+      "tags": [
+        "sheepshead-bay",
+        "fishing",
+        "waterfront",
+        "footbridge"
+      ],
+      "factShort": "Named for a fish that has largely vanished from local waters, it kept a working fishing fleet long after the rest of the city's disappeared. The wooden Ocean Avenue footbridge across the bay dates to 1880.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Sheepshead_Bay,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.591216,
+      "lng": -73.944582
+    }
+  ]
+}

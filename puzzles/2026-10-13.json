@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-13",
+  "puzzleNumber": 49,
+  "theme": null,
+  "locations": [
+    {
+      "id": "waldorf-astoria",
+      "name": "The Waldorf Astoria",
+      "prompt": "The Waldorf Astoria",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "hotel",
+        "1930s",
+        "art-deco"
+      ],
+      "factShort": "The original stood where the Empire State Building now does; the hotel moved to Park Avenue in 1931 and became the largest in the world. It has a private railway platform beneath it that Franklin Roosevelt used.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Waldorf_Astoria_New_York",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.756502,
+      "lng": -73.973362
+    },
+    {
+      "id": "coney-island-creek",
+      "name": "Coney Island Creek Park",
+      "prompt": "Coney Island Creek Park",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "coney-island",
+        "creek",
+        "shipwreck",
+        "tidal"
+      ],
+      "factShort": "A half-sunk yellow submarine sits in the mud here, built in the 1960s by a shipyard worker hoping to salvage treasure and never finished. Coney Island was a genuine island until the creek was partly filled.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Coney_Island_Creek",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.581249,
+      "lng": -74.003356
+    },
+    {
+      "id": "creedmoor",
+      "name": "Creedmoor",
+      "prompt": "Creedmoor",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "queens-village",
+        "psychiatric-hospital",
+        "1910s",
+        "rifle-range"
+      ],
+      "factShort": "The site was a rifle range where the National Rifle Association held its first matches in the 1870s before becoming a psychiatric hospital. At its peak in the 1950s it held around seven thousand patients.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Creedmoor_Psychiatric_Center",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.741081,
+      "lng": -73.730705
+    },
+    {
+      "id": "grace-church",
+      "name": "Grace Church",
+      "prompt": "Grace Church",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "noho",
+        "gothic-revival",
+        "1840s",
+        "james-renwick"
+      ],
+      "factShort": "James Renwick was twenty-three when he designed it, and it made his name well before St. Patrick's. Broadway bends around it because the farmer who owned the land refused to sell a straight route through.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Grace_Church_(Manhattan)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.731968,
+      "lng": -73.990896
+    },
+    {
+      "id": "postcards-memorial",
+      "name": "Postcards",
+      "prompt": "Postcards",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "st-george",
+        "memorial",
+        "2000s",
+        "waterfront"
+      ],
+      "factShort": "Two white wing-like forms framing the gap in the skyline where the towers stood, holding profiles of the 274 Staten Islanders who died. They are angled so the sun aligns with the site each September 11.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Postcards_(memorial)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.646785,
+      "lng": -74.076493
+    }
+  ]
+}

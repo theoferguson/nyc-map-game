@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-09",
+  "puzzleNumber": 15,
+  "theme": null,
+  "locations": [
+    {
+      "id": "roosevelt-island-tramway",
+      "name": "The Roosevelt Island Tramway",
+      "prompt": "The Roosevelt Island Tramway",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "roosevelt-island",
+        "aerial-tram",
+        "1970s",
+        "east-river"
+      ],
+      "factShort": "Built in 1976 as a stopgap until the subway reached the island, and kept because people liked it — the first commuter aerial tram in North America. It runs on a MetroCard swipe.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Roosevelt_Island_Tramway",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.757322,
+      "lng": -73.954088
+    },
+    {
+      "id": "brooklyn-botanic-garden",
+      "name": "The Brooklyn Botanic Garden",
+      "prompt": "The Brooklyn Botanic Garden",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "crown-heights",
+        "garden",
+        "1910s",
+        "cherry-blossom"
+      ],
+      "factShort": "Built on a former ash dump beside Prospect Park, it opened in 1911 with the first Japanese garden created for an American public park. Its cherry esplanade draws crowds each spring that rival the Washington tidal basin.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Botanic_Garden",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.667662,
+      "lng": -73.963626
+    },
+    {
+      "id": "orchard-beach",
+      "name": "Orchard Beach",
+      "prompt": "Orchard Beach",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 3,
+      "tags": [
+        "pelham-bay",
+        "beach",
+        "1930s",
+        "robert-moses"
+      ],
+      "factShort": "Robert Moses joined two islands to the mainland with landfill and barged in sand from Queens and New Jersey to build the Bronx its only public beach. Locals call it the Bronx Riviera.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Orchard_Beach,_Bronx",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.865768,
+      "lng": -73.793315
+    },
+    {
+      "id": "chelsea-hotel",
+      "name": "The Chelsea Hotel",
+      "prompt": "The Chelsea Hotel",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "chelsea",
+        "hotel",
+        "1880s",
+        "bohemian"
+      ],
+      "factShort": "Dylan Thomas drank himself to death from here, Arthur C. Clarke wrote 2001 in it, and Leonard Cohen wrote a song about a night in one of its rooms. It was the tallest building in New York when it opened in 1884.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hotel_Chelsea",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.744374,
+      "lng": -73.996818
+    },
+    {
+      "id": "alley-pond-giant",
+      "name": "The Queens Giant",
+      "prompt": "The Queens Giant",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 5,
+      "tags": [
+        "douglaston",
+        "tulip-tree",
+        "old-growth",
+        "natural-landmark"
+      ],
+      "factShort": "A tulip tree in Alley Pond Park estimated at 350 to 450 years old, the oldest living thing in New York City — already standing when the Dutch arrived. Its location is kept vague to protect it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Alley_Pond_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.750321,
+      "lng": -73.742118
+    }
+  ]
+}

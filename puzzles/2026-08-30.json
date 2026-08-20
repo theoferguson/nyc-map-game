@@ -1,0 +1,102 @@
+{
+  "date": "2026-08-30",
+  "puzzleNumber": 5,
+  "theme": null,
+  "locations": [
+    {
+      "id": "chrysler-building",
+      "name": "The Chrysler Building",
+      "prompt": "The Chrysler Building",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "art-deco",
+        "1930s",
+        "skyscraper"
+      ],
+      "factShort": "Its architect kept a 125-foot spire hidden inside the building and raised it in ninety minutes to beat a rival tower downtown, holding the world's-tallest title for eleven months before the Empire State opened. The eagles at the corners are modelled on Chrysler hood ornaments.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Chrysler_Building",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.751603,
+      "lng": -73.975344
+    },
+    {
+      "id": "brooklyn-heights-promenade",
+      "name": "The Brooklyn Heights Promenade",
+      "prompt": "The Brooklyn Heights Promenade",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "brooklyn-heights",
+        "esplanade",
+        "1950s",
+        "waterfront"
+      ],
+      "factShort": "Robert Moses wanted an expressway through Brooklyn Heights; residents fought him to a compromise where the road runs beneath a cantilevered public walkway. The neighbourhood got the view, and the traffic runs invisibly under their feet.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Heights_Promenade",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.697371,
+      "lng": -73.997389
+    },
+    {
+      "id": "rockaway-beach",
+      "name": "Rockaway Beach",
+      "prompt": "Rockaway Beach",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "rockaways",
+        "beach",
+        "atlantic",
+        "surfing"
+      ],
+      "factShort": "It is the largest urban beach in the United States and the only legal surfing beach in the city, reachable by subway. Sandy destroyed much of the boardwalk in 2012, and the rebuilt one doubles as a sea wall.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Rockaway_Beach,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.580982,
+      "lng": -73.822925
+    },
+    {
+      "id": "poe-cottage",
+      "name": "The Edgar Allan Poe Cottage",
+      "prompt": "The Edgar Allan Poe Cottage",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "fordham",
+        "house-museum",
+        "1840s",
+        "literary"
+      ],
+      "factShort": "Poe moved his dying wife here in 1846 hoping country air would help; she died that winter under his old army coat, and he wrote Annabel Lee and The Bells in the rooms that remain. The farmland around it is now the Grand Concourse.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Edgar_Allan_Poe_Cottage",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.865508,
+      "lng": -73.894264
+    },
+    {
+      "id": "kingsland-homestead",
+      "name": "Kingsland Homestead",
+      "prompt": "Kingsland Homestead",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 5,
+      "tags": [
+        "flushing",
+        "colonial",
+        "1780s",
+        "house-museum"
+      ],
+      "factShort": "The house has been moved twice to escape demolition, most recently in 1968, and now sits beside the stump of a weeping beech that was a landmark in its own right. Its Quaker owner freed his slaves decades before New York required it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Kingsland_Homestead",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.763631,
+      "lng": -73.824149
+    }
+  ]
+}

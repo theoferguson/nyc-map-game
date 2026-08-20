@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-15",
+  "puzzleNumber": 21,
+  "theme": null,
+  "locations": [
+    {
+      "id": "battery-park",
+      "name": "The Battery",
+      "prompt": "The Battery",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "financial-district",
+        "park",
+        "waterfront",
+        "castle-clinton"
+      ],
+      "factShort": "Named for the gun batteries that once faced the harbour, and the point from which most of Manhattan's later shoreline was landfilled outward. Castle Clinton inside it processed eight million immigrants before Ellis Island opened.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/The_Battery_(Manhattan)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.702786,
+      "lng": -74.015773
+    },
+    {
+      "id": "red-hook-valentino-pier",
+      "name": "Valentino Pier",
+      "prompt": "Valentino Pier",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "red-hook",
+        "pier",
+        "waterfront",
+        "harbor-view"
+      ],
+      "factShort": "A short pier in Red Hook with one of the only street-level views of the Statue of Liberty from land. It is named for a firefighter who died in a Brooklyn blaze in 1996.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Red_Hook,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.678419,
+      "lng": -74.018423
+    },
+    {
+      "id": "queens-county-farm",
+      "name": "The Queens County Farm Museum",
+      "prompt": "The Queens County Farm Museum",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "floral-park",
+        "farm",
+        "1690s",
+        "working-farm"
+      ],
+      "factShort": "Farmed continuously since 1697, which makes it the longest continuously farmed site in New York State, on forty-seven acres inside the city. It keeps livestock and grows a maze of corn each autumn.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Queens_County_Farm_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.747748,
+      "lng": -73.722249
+    },
+    {
+      "id": "kingsbridge-armory",
+      "name": "The Kingsbridge Armory",
+      "prompt": "The Kingsbridge Armory",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "kingsbridge",
+        "armory",
+        "1910s",
+        "drill-hall"
+      ],
+      "factShort": "Its drill hall is one of the largest unobstructed interior spaces in the world, big enough to hold a full city block. Empty since 1996, it has outlasted two decades of redevelopment plans.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Kingsbridge_Armory",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.868394,
+      "lng": -73.898168
+    },
+    {
+      "id": "eldridge-street-synagogue",
+      "name": "The Eldridge Street Synagogue",
+      "prompt": "The Eldridge Street Synagogue",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "lower-east-side",
+        "synagogue",
+        "1880s",
+        "moorish-revival"
+      ],
+      "factShort": "The first great synagogue built in America by Eastern European Jews, opened in 1887 and grand enough to seat a thousand. Its congregation shrank so far that the main sanctuary was sealed off for decades and only reopened after a twenty-year restoration.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Eldridge_Street_Synagogue",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.714729,
+      "lng": -73.993461
+    }
+  ]
+}

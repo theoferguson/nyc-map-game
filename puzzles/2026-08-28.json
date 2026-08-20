@@ -1,0 +1,102 @@
+{
+  "date": "2026-08-28",
+  "puzzleNumber": 3,
+  "theme": null,
+  "locations": [
+    {
+      "id": "statue-of-liberty",
+      "name": "The Statue of Liberty",
+      "prompt": "The Statue of Liberty",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "liberty-island",
+        "monument",
+        "1880s",
+        "french-gift"
+      ],
+      "factShort": "The arm and torch were exhibited in Madison Square for six years to raise money for a pedestal New York was reluctant to pay for. Joseph Pulitzer eventually shamed the city into it by printing the name of every small donor in his newspaper.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.689253,
+      "lng": -74.044548
+    },
+    {
+      "id": "coney-island-cyclone",
+      "name": "The Cyclone",
+      "prompt": "The Cyclone",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "coney-island",
+        "roller-coaster",
+        "1920s",
+        "wooden-coaster"
+      ],
+      "factShort": "The wooden coaster has run since 1927 on a first drop of eighty-five feet at a slope steeper than most modern steel rides manage. Charles Lindbergh reportedly said riding it was more frightening than flying the Atlantic.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Cyclone_(roller_coaster)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.574568,
+      "lng": -73.977703
+    },
+    {
+      "id": "new-york-botanical-garden",
+      "name": "The New York Botanical Garden",
+      "prompt": "The New York Botanical Garden",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 3,
+      "tags": [
+        "bronx-park",
+        "garden",
+        "1890s",
+        "herbarium"
+      ],
+      "factShort": "Fifty acres of it are old-growth forest that has never been logged, the last uncut remnant of the woodland that covered the whole city. Its herbarium holds around eight million preserved plant specimens.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/New_York_Botanical_Garden",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.862243,
+      "lng": -73.877154
+    },
+    {
+      "id": "stonewall-inn",
+      "name": "The Stonewall Inn",
+      "prompt": "The Stonewall Inn",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "greenwich-village",
+        "bar",
+        "1960s",
+        "lgbtq-history"
+      ],
+      "factShort": "It was a mafia-run bar without running water behind the counter, which is partly why it was raided so often. The June 1969 raid met resistance instead of compliance, and the bar became the first LGBTQ site named a national monument.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Stonewall_Inn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.733816,
+      "lng": -74.002161
+    },
+    {
+      "id": "weeksville-heritage-center",
+      "name": "Weeksville Heritage Center",
+      "prompt": "Weeksville Heritage Center",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 5,
+      "tags": [
+        "crown-heights",
+        "african-american-history",
+        "1830s",
+        "free-black-community"
+      ],
+      "factShort": "James Weeks, a free Black longshoreman, bought land here in 1838 and built one of the largest free Black communities in pre-Civil War America, with its own school, church and newspaper. It was forgotten entirely until a 1968 flight over Brooklyn spotted four surviving houses on a forgotten lane.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Weeksville,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.674227,
+      "lng": -73.925234
+    }
+  ]
+}

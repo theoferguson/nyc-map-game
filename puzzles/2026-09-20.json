@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-20",
+  "puzzleNumber": 26,
+  "theme": null,
+  "locations": [
+    {
+      "id": "columbus-circle",
+      "name": "Columbus Circle",
+      "prompt": "Columbus Circle",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "traffic-circle",
+        "1890s",
+        "monument"
+      ],
+      "factShort": "Every distance from New York City is officially measured from this point. The Columbus monument was funded by Italian-Americans through a newspaper appeal after the city declined to pay.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Columbus_Circle",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.768074,
+      "lng": -73.981895
+    },
+    {
+      "id": "industry-city",
+      "name": "Industry City",
+      "prompt": "Industry City",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "sunset-park",
+        "warehouses",
+        "1900s",
+        "waterfront"
+      ],
+      "factShort": "Sixteen buildings built as Bush Terminal, once the largest multi-tenant industrial complex in the country, with its own rail and shipping piers. It employed twenty-five thousand people at its peak.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Industry_City",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.656683,
+      "lng": -74.007265
+    },
+    {
+      "id": "court-square-clock-tower",
+      "name": "The Court Square Clock Tower",
+      "prompt": "The Court Square Clock Tower",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "long-island-city",
+        "clock-tower",
+        "1920s",
+        "skyscraper"
+      ],
+      "factShort": "For sixty years this was the tallest building in Queens and the only tower on the skyline east of the river. Its four clock faces were dark for decades before being relit.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/One_Court_Square",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.750018,
+      "lng": -73.936353
+    },
+    {
+      "id": "concrete-plant-park",
+      "name": "Concrete Plant Park",
+      "prompt": "Concrete Plant Park",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "west-farms",
+        "park",
+        "bronx-river",
+        "industrial-reuse"
+      ],
+      "factShort": "A derelict concrete batching plant on the Bronx River, whose rusted hoppers and conveyor frames were kept and painted as the centrepiece of a park. The river beside it was called an open sewer in the 1970s; beavers returned to it in 2007, the first seen in New York in two hundred years.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bronx_River",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.825404,
+      "lng": -73.88519
+    },
+    {
+      "id": "todt-hill",
+      "name": "Todt Hill",
+      "prompt": "Todt Hill",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "todt-hill",
+        "summit",
+        "serpentine",
+        "highest-point"
+      ],
+      "factShort": "At about 401 feet it is the highest natural point on the eastern seaboard south of Maine. Its bedrock is serpentine, a greenish rock rare enough in the region to be a geological curiosity.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Todt_Hill",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.595789,
+      "lng": -74.108919
+    }
+  ]
+}

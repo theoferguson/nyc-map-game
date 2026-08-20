@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-05",
+  "puzzleNumber": 11,
+  "theme": null,
+  "locations": [
+    {
+      "id": "guggenheim-museum",
+      "name": "The Guggenheim Museum",
+      "prompt": "The Guggenheim Museum",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "upper-east-side",
+        "frank-lloyd-wright",
+        "1950s",
+        "spiral"
+      ],
+      "factShort": "Wright spent sixteen years on it and died six months before it opened. Twenty-one artists signed a letter protesting that the sloping spiral walls were a hostile place to hang a painting.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Solomon_R._Guggenheim_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.782993,
+      "lng": -73.958925
+    },
+    {
+      "id": "gantry-plaza-state-park",
+      "name": "Gantry Plaza State Park",
+      "prompt": "Gantry Plaza State Park",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 2,
+      "tags": [
+        "long-island-city",
+        "waterfront",
+        "gantries",
+        "east-river"
+      ],
+      "factShort": "The two black gantries were used to lift rail carriages on and off barges crossing the East River, back when no tunnel carried freight into Manhattan. They were kept as sculpture when the rail yard became a park.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Gantry_Plaza_State_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.746347,
+      "lng": -73.958003
+    },
+    {
+      "id": "hamilton-grange",
+      "name": "Hamilton Grange",
+      "prompt": "Hamilton Grange",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 3,
+      "tags": [
+        "hamilton-heights",
+        "federal-style",
+        "1800s",
+        "house-museum"
+      ],
+      "factShort": "Alexander Hamilton's only owned home, finished two years before Burr killed him. It has been moved twice, most recently in 2008, when it was lifted over a church and rolled into St. Nicholas Park.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hamilton_Grange_National_Memorial",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.821359,
+      "lng": -73.947301
+    },
+    {
+      "id": "fort-totten",
+      "name": "Fort Totten",
+      "prompt": "Fort Totten",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 4,
+      "tags": [
+        "bayside",
+        "fortification",
+        "civil-war",
+        "waterfront"
+      ],
+      "factShort": "A Civil War fort begun in 1862 to guard the eastern approach to New York, made obsolete before completion by rifled artillery that its granite could not withstand. Robert E. Lee surveyed the site years before the war he would fight on the other side of.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fort_Totten_(Queens)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.793418,
+      "lng": -73.778797
+    },
+    {
+      "id": "bartow-pell-mansion",
+      "name": "The Bartow-Pell Mansion",
+      "prompt": "The Bartow-Pell Mansion",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "pelham-bay",
+        "greek-revival",
+        "1840s",
+        "house-museum"
+      ],
+      "factShort": "A Greek Revival house on land the Pell family bought from the Siwanoy in 1654, in what is now the city's largest park. Fiorello La Guardia used it as a summer City Hall.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bartow-Pell_Mansion",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.871781,
+      "lng": -73.80564
+    }
+  ]
+}

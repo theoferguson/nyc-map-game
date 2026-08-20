@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-12",
+  "puzzleNumber": 18,
+  "theme": null,
+  "locations": [
+    {
+      "id": "american-museum-natural-history",
+      "name": "The American Museum of Natural History",
+      "prompt": "The American Museum of Natural History",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "upper-west-side",
+        "museum",
+        "1870s",
+        "dioramas"
+      ],
+      "factShort": "Its blue whale hangs from the ceiling at ninety-four feet, modelled in 1969 from a carcass photographed off South America because nobody had measured a living one. The dinosaur halls hold the largest fossil collection anywhere.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/American_Museum_of_Natural_History",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.781101,
+      "lng": -73.974236
+    },
+    {
+      "id": "williamsburg-bridge",
+      "name": "The Williamsburg Bridge",
+      "prompt": "The Williamsburg Bridge",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "williamsburg",
+        "suspension-bridge",
+        "1900s",
+        "east-river"
+      ],
+      "factShort": "When it opened in 1903 it took the longest-suspension-span title from the Brooklyn Bridge, and it was built cheap and steel-heavy rather than beautiful. It carried so many Lower East Side families across that it was nicknamed the Jews' Highway.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Williamsburg_Bridge",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.713581,
+      "lng": -73.972136
+    },
+    {
+      "id": "ridgewood-reservoir",
+      "name": "The Ridgewood Reservoir",
+      "prompt": "The Ridgewood Reservoir",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "highland-park",
+        "reservoir",
+        "1850s",
+        "rewilding"
+      ],
+      "factShort": "Drained in 1989 after a century supplying Brooklyn with water, its three empty basins were left alone and grew into genuine forest and wetland inside the city. Birders now record over 130 species in it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ridgewood_Reservoir",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.689123,
+      "lng": -73.886464
+    },
+    {
+      "id": "high-bridge",
+      "name": "The High Bridge",
+      "prompt": "The High Bridge",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "highbridge",
+        "aqueduct",
+        "1840s",
+        "pedestrian-bridge"
+      ],
+      "factShort": "The oldest surviving bridge in New York, built in 1848 to carry Croton water into Manhattan on Roman-style stone arches. Closed for over forty years, it reopened as a footbridge in 2015.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/High_Bridge_(New_York_City)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.842043,
+      "lng": -73.927188
+    },
+    {
+      "id": "garibaldi-meucci-museum",
+      "name": "The Garibaldi-Meucci Museum",
+      "prompt": "The Garibaldi-Meucci Museum",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "rosebank",
+        "house-museum",
+        "1840s",
+        "italian-history"
+      ],
+      "factShort": "Antonio Meucci, who demonstrated a working telephone years before Bell's patent, sheltered Giuseppe Garibaldi here between Italian revolutions. Garibaldi worked in Meucci's candle factory while waiting to go back and unify Italy.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Garibaldi-Meucci_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.615193,
+      "lng": -74.07381
+    }
+  ]
+}

@@ -1,102 +1,107 @@
 {
   "date": "2026-08-23",
-  "puzzleNumber": 4,
+  "puzzleNumber": 0,
   "theme": null,
   "locations": [
     {
-      "id": "statue-of-liberty",
-      "name": "The Statue of Liberty",
-      "prompt": "The Statue of Liberty",
+      "id": "empire-state-building",
+      "name": "Empire State Building",
+      "prompt": "Empire State Building",
+      "lat": 40.748442,
+      "lng": -73.985659,
       "class": "landmark",
       "borough": "manhattan",
       "difficulty": 1,
-      "tags": [
-        "liberty-island",
-        "monument",
-        "1880s",
-        "french-gift"
-      ],
-      "factShort": "The arm and torch were exhibited in Madison Square for six years to raise money for a pedestal New York was reluctant to pay for. Joseph Pulitzer eventually shamed the city into it by printing the name of every small donor in his newspaper.",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+      "factShort": "It went up in 410 days during the depths of the Depression, a pace helped along by the fact that most of its floors were identical. It then sat mostly empty for years, earning the nickname the Empty State Building.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Empire_State_Building",
       "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
-      "lat": 40.689253,
-      "lng": -74.044548
+      "tags": [
+        "midtown",
+        "skyscraper",
+        "art-deco",
+        "1930s",
+        "observation-deck"
+      ]
     },
     {
-      "id": "coney-island-cyclone",
-      "name": "The Cyclone",
-      "prompt": "The Cyclone",
-      "class": "landmark",
-      "borough": "brooklyn",
-      "difficulty": 2,
-      "tags": [
-        "coney-island",
-        "roller-coaster",
-        "1920s",
-        "wooden-coaster"
-      ],
-      "factShort": "The wooden coaster has run since 1927 on a first drop of eighty-five feet at a slope steeper than most modern steel rides manage. Charles Lindbergh reportedly said riding it was more frightening than flying the Atlantic.",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Cyclone_(roller_coaster)",
-      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
-      "lat": 40.574568,
-      "lng": -73.977703
-    },
-    {
-      "id": "new-york-botanical-garden",
-      "name": "The New York Botanical Garden",
-      "prompt": "The New York Botanical Garden",
+      "id": "yankee-stadium",
+      "name": "Yankee Stadium",
+      "prompt": "Yankee Stadium",
+      "lat": 40.829583,
+      "lng": -73.926521,
       "class": "area",
       "borough": "bronx",
-      "difficulty": 3,
-      "tags": [
-        "bronx-park",
-        "garden",
-        "1890s",
-        "herbarium"
-      ],
-      "factShort": "Fifty acres of it are old-growth forest that has never been logged, the last uncut remnant of the woodland that covered the whole city. Its herbarium holds around eight million preserved plant specimens.",
-      "sourceUrl": "https://en.wikipedia.org/wiki/New_York_Botanical_Garden",
+      "difficulty": 2,
+      "factShort": "The current stadium opened in 2009 across the street from the 1923 original, which was demolished and turned into a public park. The old field's home plate is marked in the grass where it stood.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Yankee_Stadium",
       "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
-      "lat": 40.862243,
-      "lng": -73.877154
+      "tags": [
+        "south-bronx",
+        "stadium",
+        "baseball",
+        "2000s",
+        "sports"
+      ]
     },
     {
-      "id": "stonewall-inn",
-      "name": "The Stonewall Inn",
-      "prompt": "The Stonewall Inn",
+      "id": "wonder-wheel",
+      "name": "The Wonder Wheel",
+      "prompt": "The Wonder Wheel, Coney Island",
+      "lat": 40.574041,
+      "lng": -73.979145,
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 3,
+      "factShort": "Built in 1920 and never once shut down for mechanical failure, the Wonder Wheel carries 24 cars, 16 of which slide along curved tracks as the wheel turns. It kept running through the decades when the rest of Coney Island was falling apart.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Wonder_Wheel",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "tags": [
+        "coney-island",
+        "amusement-park",
+        "waterfront",
+        "1920s",
+        "landmark-ride"
+      ]
+    },
+    {
+      "id": "katzs-delicatessen",
+      "name": "Katz's Delicatessen",
+      "prompt": "Katz's Delicatessen",
+      "lat": 40.722343,
+      "lng": -73.987353,
       "class": "venue",
       "borough": "manhattan",
       "difficulty": 4,
-      "tags": [
-        "greenwich-village",
-        "bar",
-        "1960s",
-        "lgbtq-history"
-      ],
-      "factShort": "It was a mafia-run bar without running water behind the counter, which is partly why it was raided so often. The June 1969 raid met resistance instead of compliance, and the bar became the first LGBTQ site named a national monument.",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Stonewall_Inn",
+      "factShort": "Open on Houston Street since 1888, Katz's still hands you a paper ticket at the door that you surrender on the way out. During the Second World War it mailed salami to soldiers overseas under the slogan it still hangs on the wall.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Katz%27s_Delicatessen",
       "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
-      "lat": 40.733816,
-      "lng": -74.002161
+      "tags": [
+        "lower-east-side",
+        "deli",
+        "jewish-new-york",
+        "1880s",
+        "film-location"
+      ]
     },
     {
-      "id": "weeksville-heritage-center",
-      "name": "Weeksville Heritage Center",
-      "prompt": "Weeksville Heritage Center",
-      "class": "landmark",
-      "borough": "brooklyn",
+      "id": "louis-armstrong-house",
+      "name": "The Louis Armstrong House",
+      "prompt": "The house where Louis Armstrong lived for 28 years",
+      "lat": 40.754568,
+      "lng": -73.861543,
+      "class": "venue",
+      "borough": "queens",
       "difficulty": 5,
-      "tags": [
-        "crown-heights",
-        "african-american-history",
-        "1830s",
-        "free-black-community"
-      ],
-      "factShort": "James Weeks, a free Black longshoreman, bought land here in 1838 and built one of the largest free Black communities in pre-Civil War America, with its own school, church and newspaper. It was forgotten entirely until a 1968 flight over Brooklyn spotted four surviving houses on a forgotten lane.",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Weeksville,_Brooklyn",
+      "factShort": "Armstrong could have lived anywhere and chose a modest brick house in Corona, Queens, staying from 1943 until his death in 1971. His wife Lucille bought it while he was on tour; he saw it for the first time by taxi at night.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Louis_Armstrong_House",
       "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
-      "lat": 40.674227,
-      "lng": -73.925234
+      "tags": [
+        "corona",
+        "house-museum",
+        "jazz",
+        "music-history",
+        "1940s"
+      ]
     }
   ]
 }

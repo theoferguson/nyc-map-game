@@ -1,0 +1,102 @@
+{
+  "date": "2026-08-31",
+  "puzzleNumber": 6,
+  "theme": null,
+  "locations": [
+    {
+      "id": "washington-square-arch",
+      "name": "The Washington Square Arch",
+      "prompt": "The Washington Square Arch",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "greenwich-village",
+        "arch",
+        "1890s",
+        "marble"
+      ],
+      "factShort": "A temporary plaster arch put up for Washington's inaugural centenary proved so popular it was rebuilt in marble. In 1917 a group of artists picnicked on top and declared Greenwich Village a free and independent republic.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Washington_Square_Arch",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.731235,
+      "lng": -73.997102
+    },
+    {
+      "id": "barclays-center",
+      "name": "Barclays Center",
+      "prompt": "Barclays Center",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "prospect-heights",
+        "arena",
+        "2010s",
+        "weathering-steel"
+      ],
+      "factShort": "Its rusted steel skin is deliberate — weathering steel that corrodes into a protective layer and then stops. Building it required one of the most contested uses of eminent domain in modern New York.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Barclays_Center",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.682511,
+      "lng": -73.975252
+    },
+    {
+      "id": "museum-of-the-moving-image",
+      "name": "The Museum of the Moving Image",
+      "prompt": "The Museum of the Moving Image",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "astoria",
+        "museum",
+        "film-history",
+        "1980s"
+      ],
+      "factShort": "It occupies part of Kaufman Astoria Studios, where Paramount made films before the industry left for California. The Marx Brothers and W. C. Fields worked on the lot; Sesame Street still does.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Museum_of_the_Moving_Image",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.756195,
+      "lng": -73.924007
+    },
+    {
+      "id": "wave-hill",
+      "name": "Wave Hill",
+      "prompt": "Wave Hill",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "riverdale",
+        "garden",
+        "hudson-river",
+        "estate"
+      ],
+      "factShort": "Mark Twain rented the house one winter and built a treehouse in the grounds; Toscanini and Theodore Roosevelt's family also lived here at different times. The city took it over in 1960 and turned twenty-eight acres above the Hudson into a public garden.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Wave_Hill",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.898654,
+      "lng": -73.912258
+    },
+    {
+      "id": "historic-richmond-town",
+      "name": "Historic Richmond Town",
+      "prompt": "Historic Richmond Town",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "richmondtown",
+        "living-museum",
+        "colonial",
+        "village"
+      ],
+      "factShort": "Thirty buildings across a hundred acres, including the Voorlezer's House of about 1695 — the oldest surviving schoolhouse in the country. Some were built here; others were moved in from around the island to save them.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Historic_Richmond_Town",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.570877,
+      "lng": -74.145896
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-05",
+  "puzzleNumber": 41,
+  "theme": null,
+  "locations": [
+    {
+      "id": "belvedere-castle",
+      "name": "Belvedere Castle",
+      "prompt": "Belvedere Castle",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "central-park",
+        "folly",
+        "1860s",
+        "weather-station"
+      ],
+      "factShort": "Calvert Vaux built it in 1869 as a folly with no interior purpose, a viewing platform disguised as a Gothic castle. The National Weather Service has taken Central Park's official readings from it since 1919.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Belvedere_Castle",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.779321,
+      "lng": -73.968864
+    },
+    {
+      "id": "marine-park",
+      "name": "Marine Park",
+      "prompt": "Marine Park",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "marine-park",
+        "salt-marsh",
+        "1930s",
+        "largest-brooklyn-park"
+      ],
+      "factShort": "Brooklyn's largest park, most of it a salt marsh that was nearly turned into a deepwater port in the 1920s. Its grasslands hold species found almost nowhere else in the city.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Marine_Park,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.605579,
+      "lng": -73.934197
+    },
+    {
+      "id": "rufus-king-park",
+      "name": "Rufus King Park",
+      "prompt": "Rufus King Park",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "jamaica",
+        "park",
+        "1750s",
+        "king-manor"
+      ],
+      "factShort": "Eleven acres of what was Rufus King's farm, kept as a park in the middle of downtown Jamaica when the rest was built over. Its oaks predate the American Revolution.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/King_Manor",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.703593,
+      "lng": -73.803944
+    },
+    {
+      "id": "jefferson-market-library",
+      "name": "Jefferson Market Library",
+      "prompt": "Jefferson Market Library",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "greenwich-village",
+        "victorian-gothic",
+        "1870s",
+        "courthouse"
+      ],
+      "factShort": "Built as a courthouse in 1877 and voted one of the ten most beautiful buildings in America at the time, it was slated for demolition in the 1950s. Villagers led by e. e. cummings fought to save it and it became a library in 1967.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Jefferson_Market_Library",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.734588,
+      "lng": -73.999192
+    },
+    {
+      "id": "ferry-point-park",
+      "name": "Ferry Point Park",
+      "prompt": "Ferry Point Park",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "throgs-neck",
+        "park",
+        "landfill",
+        "golf-course"
+      ],
+      "factShort": "A former landfill under the Whitestone Bridge, capped and turned into a public golf course that took nearly twenty years and hundreds of millions of dollars to finish. The salt marsh along its edge was restored at the same time.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ferry_Point_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.810814,
+      "lng": -73.837528
+    }
+  ]
+}

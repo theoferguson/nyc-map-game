@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-11",
+  "puzzleNumber": 47,
+  "theme": null,
+  "locations": [
+    {
+      "id": "bowling-green",
+      "name": "Bowling Green",
+      "prompt": "Bowling Green",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "financial-district",
+        "park",
+        "1730s",
+        "oldest-park"
+      ],
+      "factShort": "The oldest public park in the city, leased in 1733 for one peppercorn a year. A mob pulled down a statue of George III here in 1776 and melted it into musket balls.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bowling_Green_(New_York_City)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.705041,
+      "lng": -74.013648
+    },
+    {
+      "id": "plumb-beach",
+      "name": "Plumb Beach",
+      "prompt": "Plumb Beach",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "sheepshead-bay",
+        "beach",
+        "horseshoe-crabs",
+        "dunes"
+      ],
+      "factShort": "One of the last horseshoe crab spawning beaches in the city, where thousands come ashore each spring on the high tides around the full moon. It is reachable only from the Belt Parkway.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Plumb_Beach",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.582648,
+      "lng": -73.920323
+    },
+    {
+      "id": "queensbridge-park",
+      "name": "Queensbridge Park",
+      "prompt": "Queensbridge Park",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "long-island-city",
+        "park",
+        "1930s",
+        "public-housing"
+      ],
+      "factShort": "It sits beside Queensbridge Houses, the largest public housing development in North America, and under the Queensboro Bridge. Nas, Mobb Deep and MC Shan all came out of the blocks around it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Queensbridge,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.756537,
+      "lng": -73.948548
+    },
+    {
+      "id": "schomburg-center",
+      "name": "The Schomburg Center",
+      "prompt": "The Schomburg Center",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "harlem",
+        "library",
+        "1920s",
+        "archive"
+      ],
+      "factShort": "Built around the private collection of Arturo Schomburg, a Puerto Rican of African descent told as a schoolboy that Black people had no history. He is buried nearby and his ashes are interred in the centre's floor.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Schomburg_Center_for_Research_in_Black_Culture",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.814648,
+      "lng": -73.940987
+    },
+    {
+      "id": "longwood-historic-district",
+      "name": "The Longwood Historic District",
+      "prompt": "The Longwood Historic District",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "longwood",
+        "rowhouses",
+        "1900s",
+        "historic-district"
+      ],
+      "factShort": "Rows of near-identical speculative houses built between 1897 and 1901 for workers arriving with the new subway. Their intact stoops and bays make it one of the best-preserved streetscapes in the borough.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Longwood_Historic_District",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.817323,
+      "lng": -73.899303
+    }
+  ]
+}

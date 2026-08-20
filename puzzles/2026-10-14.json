@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-14",
+  "puzzleNumber": 50,
+  "theme": null,
+  "locations": [
+    {
+      "id": "tudor-city",
+      "name": "Tudor City",
+      "prompt": "Tudor City",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "turtle-bay",
+        "apartment-complex",
+        "1920s",
+        "tudor-revival"
+      ],
+      "factShort": "The first residential skyscraper complex in the world, built in 1927 on a bluff above slaughterhouses — which is why its big apartments face away from the river. The land below is now the United Nations.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Tudor_City",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.748623,
+      "lng": -73.971389
+    },
+    {
+      "id": "old-stone-house",
+      "name": "The Old Stone House",
+      "prompt": "The Old Stone House",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "park-slope",
+        "dutch-colonial",
+        "1690s",
+        "battle-of-brooklyn"
+      ],
+      "factShort": "Four hundred Maryland troops held this farmhouse against overwhelming British numbers in August 1776, buying time for Washington's army to escape across the East River. The building was reconstructed in 1934 from its own excavated stones.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Old_Stone_House_(Brooklyn)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.67301,
+      "lng": -73.984602
+    },
+    {
+      "id": "elmhurst",
+      "name": "Elmhurst",
+      "prompt": "Elmhurst",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "elmhurst",
+        "neighborhood",
+        "1650s",
+        "diversity"
+      ],
+      "factShort": "Founded by the Dutch in 1652 as Middleburgh and renamed Newtown by the English, it is now among the most ethnically diverse neighbourhoods on earth. St. James Church, built in 1734, still stands on Broadway.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Elmhurst,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.73658,
+      "lng": -73.878393
+    },
+    {
+      "id": "seagram-building",
+      "name": "The Seagram Building",
+      "prompt": "The Seagram Building",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "midtown",
+        "international-style",
+        "1950s",
+        "mies-van-der-rohe"
+      ],
+      "factShort": "Mies van der Rohe set it back ninety feet from Park Avenue to create a public plaza, an unheard-of surrender of buildable land that later zoning turned into a citywide incentive. Its bronze skin was left to weather without polishing.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Seagram_Building",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.758407,
+      "lng": -73.971984
+    },
+    {
+      "id": "smallpox-hospital",
+      "name": "The Smallpox Hospital",
+      "prompt": "The Smallpox Hospital",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "roosevelt-island",
+        "ruin",
+        "1850s",
+        "james-renwick"
+      ],
+      "factShort": "A Gothic Revival hospital of 1856 built to isolate smallpox patients on what was then Blackwell's Island, abandoned in the 1950s and left to collapse. It is the only ruin with landmark status in New York City.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Renwick_Smallpox_Hospital",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.751589,
+      "lng": -73.959612
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-02",
+  "puzzleNumber": 8,
+  "theme": null,
+  "locations": [
+    {
+      "id": "st-patricks-cathedral",
+      "name": "St. Patrick's Cathedral",
+      "prompt": "St. Patrick's Cathedral",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "gothic-revival",
+        "1870s",
+        "cathedral"
+      ],
+      "factShort": "When begun in 1858 it stood well outside the built city and was mocked as Hughes's Folly, a cathedral in a cow pasture. Construction paused for the Civil War and the spires were not finished until 1888.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/St._Patrick's_Cathedral_(Manhattan)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.758558,
+      "lng": -73.976364
+    },
+    {
+      "id": "grand-army-plaza",
+      "name": "Grand Army Plaza",
+      "prompt": "Grand Army Plaza",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "park-slope",
+        "memorial-arch",
+        "1890s",
+        "olmsted-vaux"
+      ],
+      "factShort": "The Soldiers' and Sailors' Memorial Arch honours the Union dead, and its interior once held bronze reliefs of Lincoln and Grant by a young sculptor named Frederick MacMonnies. Olmsted and Vaux designed the oval as a formal entrance to Prospect Park.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Grand_Army_Plaza",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.676201,
+      "lng": -73.971671
+    },
+    {
+      "id": "noguchi-museum",
+      "name": "The Noguchi Museum",
+      "prompt": "The Noguchi Museum",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "long-island-city",
+        "museum",
+        "sculpture",
+        "1980s"
+      ],
+      "factShort": "Isamu Noguchi bought a photo-engraving plant across from his studio and converted it himself, designing every gallery around his own work. He was interned at Poston during the war, having volunteered to enter the camp.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Noguchi_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.76699,
+      "lng": -73.937607
+    },
+    {
+      "id": "morris-jumel-mansion",
+      "name": "The Morris-Jumel Mansion",
+      "prompt": "The Morris-Jumel Mansion",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "washington-heights",
+        "colonial",
+        "1760s",
+        "house-museum"
+      ],
+      "factShort": "Manhattan's oldest surviving house, and Washington's headquarters in the autumn of 1776. Later Eliza Jumel, one of the richest women in America, lived here and briefly married Aaron Burr; she divorced him on the day he died.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Morris–Jumel_Mansion",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.834429,
+      "lng": -73.93858
+    },
+    {
+      "id": "wyckoff-house",
+      "name": "The Wyckoff House",
+      "prompt": "The Wyckoff House",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 5,
+      "tags": [
+        "east-flatbush",
+        "dutch-colonial",
+        "1650s",
+        "oldest-house"
+      ],
+      "factShort": "Parts of it date to about 1652, making it the oldest building in New York City and the first structure the city ever designated a landmark. It survived because the Wyckoff family held the farm for eight generations.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Wyckoff_House",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.644362,
+      "lng": -73.920876
+    }
+  ]
+}

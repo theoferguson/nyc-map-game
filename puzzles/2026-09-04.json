@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-04",
+  "puzzleNumber": 10,
+  "theme": null,
+  "locations": [
+    {
+      "id": "metropolitan-museum",
+      "name": "The Metropolitan Museum of Art",
+      "prompt": "The Metropolitan Museum of Art",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "upper-east-side",
+        "museum",
+        "1870s",
+        "encyclopedic"
+      ],
+      "factShort": "It was founded in a Paris restaurant in 1866 by Americans who thought their country needed a national gallery, and opened with not a single object in its collection. Admission was a suggested donation for decades, an arrangement that ended in 2018 for out-of-state visitors.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Metropolitan_Museum_of_Art",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.77944,
+      "lng": -73.963382
+    },
+    {
+      "id": "parachute-jump",
+      "name": "The Parachute Jump",
+      "prompt": "The Parachute Jump",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "coney-island",
+        "1930s",
+        "worlds-fair",
+        "steel-tower"
+      ],
+      "factShort": "Built for the 1939 World's Fair in Queens and moved to Coney Island in 1941, it dropped riders 250 feet under real parachutes until it closed in 1968. It has been lit but not operational for over fifty years, and is called Brooklyn's Eiffel Tower.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Parachute_Jump",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.572983,
+      "lng": -73.984397
+    },
+    {
+      "id": "hell-gate-bridge",
+      "name": "The Hell Gate Bridge",
+      "prompt": "The Hell Gate Bridge",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "astoria",
+        "steel-arch",
+        "1910s",
+        "rail-bridge"
+      ],
+      "factShort": "When it opened in 1916 it was the longest steel arch in the world, and it was built so massively that engineers estimate it would be the last New York bridge standing if people vanished. Sydney Harbour Bridge is a direct descendant of its design.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hell_Gate_Bridge",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.782553,
+      "lng": -73.922008
+    },
+    {
+      "id": "arthur-avenue",
+      "name": "Arthur Avenue",
+      "prompt": "Arthur Avenue",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "belmont",
+        "little-italy",
+        "market",
+        "food"
+      ],
+      "factShort": "The Bronx's Little Italy, and a strong claim to being a more intact one than Manhattan's. The covered retail market was built in 1940 because Fiorello La Guardia wanted the pushcarts off the street.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Arthur_Avenue",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.844978,
+      "lng": -73.893755
+    },
+    {
+      "id": "jamaica-bay-wildlife-refuge",
+      "name": "The Jamaica Bay Wildlife Refuge",
+      "prompt": "The Jamaica Bay Wildlife Refuge",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 5,
+      "tags": [
+        "broad-channel",
+        "wetlands",
+        "birding",
+        "national-park"
+      ],
+      "factShort": "Over 300 bird species have been recorded in a federal wildlife refuge that sits under the approach path to JFK and is reachable by subway. The two freshwater ponds at its heart are entirely artificial, dug in the 1950s by a parks employee on his own initiative.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Jamaica_Bay_Wildlife_Refuge",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.62359,
+      "lng": -73.826533
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-07",
+  "puzzleNumber": 13,
+  "theme": null,
+  "locations": [
+    {
+      "id": "lincoln-center",
+      "name": "Lincoln Center",
+      "prompt": "Lincoln Center",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "upper-west-side",
+        "performing-arts",
+        "1960s",
+        "plaza"
+      ],
+      "factShort": "Building it cleared the San Juan Hill neighbourhood, a largely Black and Puerto Rican district of some seven thousand families — the same blocks filmed for West Side Story shortly before demolition. Robert Moses called it slum clearance.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Lincoln_Center",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.77134,
+      "lng": -73.983507
+    },
+    {
+      "id": "apollo-theater",
+      "name": "The Apollo Theater",
+      "prompt": "The Apollo Theater",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 2,
+      "tags": [
+        "harlem",
+        "theatre",
+        "1910s",
+        "amateur-night"
+      ],
+      "factShort": "It opened as a whites-only burlesque house and did not admit Black audiences until 1934, after which Amateur Night launched Ella Fitzgerald at seventeen, then Billie Holiday, James Brown and the Jackson 5. Performers still touch a stump of elm from the Tree of Hope for luck.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Apollo_Theater",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.810089,
+      "lng": -73.949995
+    },
+    {
+      "id": "brighton-beach",
+      "name": "Brighton Beach",
+      "prompt": "Brighton Beach",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 3,
+      "tags": [
+        "brighton-beach",
+        "boardwalk",
+        "russian-community",
+        "atlantic"
+      ],
+      "factShort": "Named after the English resort and developed as a seaside escape in the 1860s, it became home to so many Soviet emigrants from the 1970s that it is widely called Little Odessa. The elevated train runs directly above the main street.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brighton_Beach",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.579644,
+      "lng": -73.96111
+    },
+    {
+      "id": "flushing-quaker-meeting-house",
+      "name": "The Flushing Quaker Meeting House",
+      "prompt": "The Flushing Quaker Meeting House",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 4,
+      "tags": [
+        "flushing",
+        "quaker",
+        "1690s",
+        "religious-freedom"
+      ],
+      "factShort": "Built in 1694 and in near-continuous use since, which makes it the oldest place of worship in the city. Its congregation produced the Flushing Remonstrance of 1657, a petition for religious tolerance written a century before the Constitution.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Old_Quaker_Meeting_House",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.763013,
+      "lng": -73.830337
+    },
+    {
+      "id": "chinese-scholars-garden",
+      "name": "The Chinese Scholar's Garden",
+      "prompt": "The Chinese Scholar's Garden",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "snug-harbor",
+        "garden",
+        "classical-chinese",
+        "1990s"
+      ],
+      "factShort": "One of only two authentic classical Chinese gardens in the United States, built by forty artisans from Suzhou who assembled it on site from components shipped over. It sits inside the grounds of a nineteenth-century sailors' retirement home.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Snug_Harbor_Cultural_Center",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.642068,
+      "lng": -74.104324
+    }
+  ]
+}

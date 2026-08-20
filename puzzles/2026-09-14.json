@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-14",
+  "puzzleNumber": 20,
+  "theme": null,
+  "locations": [
+    {
+      "id": "radio-city-music-hall",
+      "name": "Radio City Music Hall",
+      "prompt": "Radio City Music Hall",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "art-deco",
+        "1930s",
+        "theatre"
+      ],
+      "factShort": "The largest indoor theatre in the world when it opened in 1932, with a stage designed to look like a setting sun and hydraulics borrowed from aircraft-carrier lifts. It nearly closed in 1978 before landmark status saved it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Radio_City_Music_Hall",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.759812,
+      "lng": -73.979279
+    },
+    {
+      "id": "brooklyn-academy-of-music",
+      "name": "The Brooklyn Academy of Music",
+      "prompt": "The Brooklyn Academy of Music",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "fort-greene",
+        "performing-arts",
+        "1860s",
+        "avant-garde"
+      ],
+      "factShort": "America's oldest continuously operating performing arts centre, founded in 1861. Its original building burned down in 1903; the replacement opened with Caruso singing Faust.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Academy_of_Music",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.686111,
+      "lng": -73.976944
+    },
+    {
+      "id": "new-york-hall-of-science",
+      "name": "The New York Hall of Science",
+      "prompt": "The New York Hall of Science",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing-meadows",
+        "science-museum",
+        "worlds-fair",
+        "1960s"
+      ],
+      "factShort": "Built for the 1964 World's Fair and one of the few pavilions kept, its Great Hall is a curving wall of cobalt-blue glass set in concrete. It was left derelict through the 1970s before reopening as a science museum.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/New_York_Hall_of_Science",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.747377,
+      "lng": -73.851614
+    },
+    {
+      "id": "morris-high-school",
+      "name": "The Morris High School Historic District",
+      "prompt": "The Morris High School Historic District",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "morrisania",
+        "gothic-revival",
+        "1900s",
+        "school"
+      ],
+      "factShort": "The Bronx's first public high school, opened in 1904, with an auditorium of stained glass and carved oak that is a city landmark in its own right. Colin Powell graduated from it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Morris_High_School_(New_York_City)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.827601,
+      "lng": -73.902914
+    },
+    {
+      "id": "moravian-cemetery",
+      "name": "The Moravian Cemetery",
+      "prompt": "The Moravian Cemetery",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "new-dorp",
+        "cemetery",
+        "1740s",
+        "vanderbilt-mausoleum"
+      ],
+      "factShort": "The oldest cemetery on Staten Island, holding a Vanderbilt mausoleum that Richard Morris Hunt designed and Frederick Law Olmsted landscaped. Cornelius Vanderbilt was born a few miles away and is buried in it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Moravian_Cemetery",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.582989,
+      "lng": -74.11698
+    }
+  ]
+}

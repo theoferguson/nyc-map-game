@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-28",
+  "puzzleNumber": 34,
+  "theme": null,
+  "locations": [
+    {
+      "id": "ellis-island",
+      "name": "Ellis Island",
+      "prompt": "Ellis Island",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "upper-bay",
+        "immigration",
+        "1890s",
+        "museum"
+      ],
+      "factShort": "Twelve million people were processed through it between 1892 and 1954, and roughly forty percent of Americans have an ancestor who passed through. Only about two percent were ever turned away.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ellis_Island",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.698594,
+      "lng": -74.042013
+    },
+    {
+      "id": "domino-park",
+      "name": "Domino Park",
+      "prompt": "Domino Park",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "williamsburg",
+        "waterfront-park",
+        "2010s",
+        "sugar-refinery"
+      ],
+      "factShort": "Built on the site of the Domino Sugar refinery, which processed more than half the sugar consumed in the United States at its peak. Salvaged syrup tanks and crane tracks were kept as structure rather than ornament.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Domino_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.714106,
+      "lng": -73.968275
+    },
+    {
+      "id": "bohemian-hall",
+      "name": "Bohemian Hall and Beer Garden",
+      "prompt": "Bohemian Hall and Beer Garden",
+      "class": "venue",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "astoria",
+        "beer-garden",
+        "1910s",
+        "czech-slovak"
+      ],
+      "factShort": "Opened by a Czech and Slovak benevolent society in 1910 and still owned by it, making it the oldest surviving beer garden in New York. Prohibition turned it briefly into a soda garden.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bohemian_Hall_and_Beer_Garden",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.772953,
+      "lng": -73.915793
+    },
+    {
+      "id": "federal-hall",
+      "name": "Federal Hall",
+      "prompt": "Federal Hall",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "financial-district",
+        "greek-revival",
+        "1840s",
+        "inauguration"
+      ],
+      "factShort": "Washington was sworn in as president on a balcony here in 1789, and the Bill of Rights was drafted in the building that stood on the spot. That structure was demolished in 1812; the present Greek Revival customs house replaced it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Federal_Hall",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.707322,
+      "lng": -74.010253
+    },
+    {
+      "id": "soundview-park",
+      "name": "Soundview Park",
+      "prompt": "Soundview Park",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "soundview",
+        "park",
+        "landfill",
+        "bronx-river"
+      ],
+      "factShort": "Built on a filled-in salt marsh where the Bronx River meets the East River, with oyster reefs now being seeded off its shore. Its amphitheatre hosts free opera in the summer.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Soundview,_Bronx",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.815376,
+      "lng": -73.871106
+    }
+  ]
+}

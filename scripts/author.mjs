@@ -15,29 +15,54 @@
 import { readFile, writeFile } from 'node:fs/promises'
 
 const DAYS = new URL('../content/days.json', import.meta.url)
+const PREVIEW = new URL('../content/preview.json', import.meta.url)
 const OUT = new URL('../puzzles/', import.meta.url)
 const UA = 'nyc-map-game/0.1 (ferguson.theo@gmail.com)'
 
-/** Day one. Sequential from here, one puzzle per calendar day. */
-const START = '2026-08-20'
+/**
+ * The real queue begins here, one puzzle per calendar day.
+ *
+ * Every date from PREVIEW_FROM up to the day before it serves the same
+ * placeholder puzzle, so the game is playable before launch without burning a
+ * day of authored content. Those are numbered 0 -- a share string reading
+ * "NYC Daily #0" is a clearer signal that this is not the real thing than any
+ * numbering that looks legitimate.
+ */
+const START = '2026-08-26'
+const PREVIEW_FROM = '2026-08-20'
 const BOROUGHS = ['manhattan', 'brooklyn', 'queens', 'bronx', 'staten-island']
+
+/** [west, south, east, north] -- mirrors the map's own bounds. */
+const NYC = [-74.3, 40.47, -73.68, 40.93]
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const check = process.argv.includes('--check')
 
 const days = JSON.parse(await readFile(DAYS, 'utf8'))
+const preview = JSON.parse(await readFile(PREVIEW, 'utf8'))
 
 /* ------------------------------------------------------------- geocoding */
 
 let looked = 0
-for (const day of days) {
+for (const day of [preview, ...days]) {
   for (const loc of day.locations) {
     if (loc.lat && loc.lng) continue
     if (check) {
       console.log(`  missing coords: ${loc.id}`)
       continue
     }
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(loc.query)}`
+    // Bounded to the city, and not as an optimisation.
+    //
+    // Over-qualifying a query ("X, Brooklyn, New York") makes Nominatim return
+    // nothing; stripping the qualifier makes it return the best match on earth,
+    // which for "Nathan's Famous" is a restaurant in Moscow. A confidently
+    // wrong coordinate is far worse than a missing one -- it marks correct
+    // answers wrong and looks fine doing it. viewbox+bounded means a bare name
+    // can only ever resolve inside New York.
+    const box = `${NYC[0]},${NYC[3]},${NYC[2]},${NYC[1]}`
+    const url =
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1` +
+      `&viewbox=${box}&bounded=1&q=${encodeURIComponent(loc.query)}`
     const res = await fetch(url, { headers: { 'User-Agent': UA } })
     const [hit] = await res.json()
     if (!hit) {
@@ -51,7 +76,10 @@ for (const day of days) {
     await sleep(1100)
   }
 }
-if (looked) await writeFile(DAYS, JSON.stringify(days, null, 2) + '\n')
+if (looked) {
+  await writeFile(DAYS, JSON.stringify(days, null, 2) + '\n')
+  await writeFile(PREVIEW, JSON.stringify(preview, null, 2) + '\n')
+}
 
 /* --------------------------------------------------------------- validate */
 
@@ -80,9 +108,18 @@ days.forEach((day, i) => {
   }
 })
 
-const ids = days.flatMap((d) => d.locations.map((l) => l.id))
+const all = days.flatMap((d) => d.locations)
+const ids = all.map((l) => l.id)
 const dupes = ids.filter((id, i) => ids.indexOf(id) !== i)
-if (dupes.length) problems.push(`repeated locations: ${[...new Set(dupes)].join(', ')}`)
+if (dupes.length) problems.push(`repeated ids: ${[...new Set(dupes)].join(', ')}`)
+
+// Distinct ids can still be the same place under two names, which only shows up
+// as a player being asked to find somewhere they already found.
+for (const field of ['query', 'name']) {
+  const seen = all.map((l) => l[field].toLowerCase())
+  const twice = seen.filter((v, i) => seen.indexOf(v) !== i)
+  if (twice.length) problems.push(`same ${field} twice: ${[...new Set(twice)].join(', ')}`)
+}
 
 const mix = {}
 for (const id of ids) mix[id] = 1
@@ -96,16 +133,36 @@ if (problems.length) {
 
 /* --------------------------------------------------------------- assemble */
 
-const date = (n) => {
-  const [y, m, d] = START.split('-').map(Number)
-  const at = new Date(Date.UTC(y, m - 1, d + n))
-  return at.toISOString().slice(0, 10)
+const date = (from, n) => {
+  const [y, m, d] = from.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10)
 }
 
+const previewDays = Math.round(
+  (Date.parse(START) - Date.parse(PREVIEW_FROM)) / 86_400_000,
+)
+
 if (!check) {
+  for (let i = 0; i < previewDays; i++) {
+    const d = date(PREVIEW_FROM, i)
+    await writeFile(
+      new URL(`${d}.json`, OUT),
+      JSON.stringify(
+        {
+          date: d,
+          puzzleNumber: 0,
+          theme: preview.theme ?? null,
+          locations: preview.locations.map(({ query, ...keep }) => keep),
+        },
+        null,
+        2,
+      ) + '\n',
+    )
+  }
+
   for (const [i, day] of days.entries()) {
     const puzzle = {
-      date: date(i),
+      date: date(START, i),
       puzzleNumber: i + 1,
       theme: day.theme ?? null,
       locations: day.locations.map(({ query, ...keep }) => keep),
@@ -115,7 +172,8 @@ if (!check) {
 }
 
 const total = ids.length
-console.log(`\n${days.length} days, ${total} locations, ${date(0)} → ${date(days.length - 1)}`)
+console.log(`\npreview: ${previewDays} days, ${PREVIEW_FROM} → ${date(PREVIEW_FROM, previewDays - 1)}`)
+console.log(`queue:   ${days.length} days, ${total} locations, ${date(START, 0)} → ${date(START, days.length - 1)}`)
 console.log(
   'borough mix: ' +
     BOROUGHS.map((b) => `${b} ${Math.round(((mix[b] ?? 0) / total) * 100)}%`).join(' · '),

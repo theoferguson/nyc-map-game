@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-02",
+  "puzzleNumber": 38,
+  "theme": null,
+  "locations": [
+    {
+      "id": "south-street-seaport",
+      "name": "The South Street Seaport",
+      "prompt": "The South Street Seaport",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "financial-district",
+        "historic-district",
+        "1800s",
+        "tall-ships"
+      ],
+      "factShort": "Its cobbled blocks are among the largest concentrations of early nineteenth-century commercial buildings left in Manhattan, saved by a museum that bought them piecemeal in the 1960s. The masts belong to ships the museum keeps in the water.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/South_Street_Seaport",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.705751,
+      "lng": -74.002906
+    },
+    {
+      "id": "prospect-park-zoo",
+      "name": "The Prospect Park Zoo",
+      "prompt": "The Prospect Park Zoo",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "prospect-park",
+        "zoo",
+        "1930s",
+        "wpa"
+      ],
+      "factShort": "Built by the WPA in 1935 with a brick rotunda and animal reliefs over its doors, it was closed in 1988 and rebuilt entirely around smaller species. A sea lion pool sits where the elephant house used to be.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Prospect_Park_Zoo",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.665298,
+      "lng": -73.965023
+    },
+    {
+      "id": "douglaston-historic-district",
+      "name": "Douglaston",
+      "prompt": "Douglaston",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "douglaston",
+        "historic-district",
+        "peninsula",
+        "little-neck-bay"
+      ],
+      "factShort": "A peninsula of clapboard houses on Little Neck Bay that reads as a New England village and was a private summer colony until the 1920s. The Long Island Rail Road station is its centre.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Douglaston,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.768358,
+      "lng": -73.749248
+    },
+    {
+      "id": "columbia-low-library",
+      "name": "Low Memorial Library",
+      "prompt": "Low Memorial Library",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "morningside-heights",
+        "neoclassical",
+        "1890s",
+        "alma-mater"
+      ],
+      "factShort": "Its dome is among the largest granite domes in the country, and it was built on the site of the Bloomingdale Insane Asylum. It stopped being a working library in 1934 and now holds offices.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Low_Memorial_Library",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.808222,
+      "lng": -73.961835
+    },
+    {
+      "id": "bronx-whitestone-bridge",
+      "name": "The Bronx-Whitestone Bridge",
+      "prompt": "The Bronx-Whitestone Bridge",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "whitestone",
+        "suspension-bridge",
+        "1930s",
+        "aerodynamics"
+      ],
+      "factShort": "Opened days before the 1939 World's Fair, its slender deck flexed alarmingly in wind — the same flaw that destroyed Tacoma Narrows a year later. Stiffening trusses were added, then removed again in 2003 for fibreglass fairings.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bronx–Whitestone_Bridge",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.80205,
+      "lng": -73.829747
+    }
+  ]
+}

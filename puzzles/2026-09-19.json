@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-19",
+  "puzzleNumber": 25,
+  "theme": null,
+  "locations": [
+    {
+      "id": "empire-stores-dumbo",
+      "name": "Washington Street, Dumbo",
+      "prompt": "Washington Street, Dumbo",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 1,
+      "tags": [
+        "dumbo",
+        "cobblestone",
+        "manhattan-bridge",
+        "view"
+      ],
+      "factShort": "The single most photographed street corner in Brooklyn, where the Manhattan Bridge is framed exactly between two warehouse walls. The neighbourhood's name was invented by residents in the 1970s to sound ugly enough to deter developers.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Dumbo,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.703531,
+      "lng": -73.989559
+    },
+    {
+      "id": "strand-bookstore",
+      "name": "The Strand",
+      "prompt": "The Strand",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 2,
+      "tags": [
+        "union-square",
+        "bookstore",
+        "1920s",
+        "eighteen-miles"
+      ],
+      "factShort": "The last survivor of Fourth Avenue's Book Row, which held some forty-eight bookshops in the 1940s. It advertises eighteen miles of books, a figure it has since revised upward.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Strand_Bookstore",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.73328,
+      "lng": -73.99094
+    },
+    {
+      "id": "forest-park-carousel",
+      "name": "The Forest Park Carousel",
+      "prompt": "The Forest Park Carousel",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "woodhaven",
+        "carousel",
+        "1900s",
+        "muller-horses"
+      ],
+      "factShort": "It carries some of the last surviving horses carved by Daniel Muller, widely held to be the finest carousel carver who ever worked in America. It is one of very few carousels to be designated a landmark for the animals rather than the building.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Forest_Park_(Queens)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.700384,
+      "lng": -73.856729
+    },
+    {
+      "id": "st-anns-church-bronx",
+      "name": "St. Ann's Church",
+      "prompt": "St. Ann's Church",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "mott-haven",
+        "church",
+        "1840s",
+        "burial-vault"
+      ],
+      "factShort": "The oldest church building in the Bronx, built in 1841 by Gouverneur Morris II as a memorial to his mother. Her father Lewis Morris, a signer of the Declaration, is buried in the vault beneath.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/St._Ann's_Church_(Bronx)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.808488,
+      "lng": -73.916816
+    },
+    {
+      "id": "chumleys",
+      "name": "Chumley's",
+      "prompt": "Chumley's",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "greenwich-village",
+        "speakeasy",
+        "1920s",
+        "no-sign"
+      ],
+      "factShort": "A Prohibition speakeasy with no sign and two exits, one onto a courtyard — the back way out is a common explanation for the phrase eighty-six it. Its ceiling collapsed in 2007 and it took nearly a decade to reopen.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Chumley's",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.732056,
+      "lng": -74.005148
+    }
+  ]
+}

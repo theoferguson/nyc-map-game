@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-03",
+  "puzzleNumber": 9,
+  "theme": null,
+  "locations": [
+    {
+      "id": "rockefeller-center",
+      "name": "Rockefeller Center",
+      "prompt": "Rockefeller Center",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "art-deco",
+        "1930s",
+        "complex"
+      ],
+      "factShort": "It was conceived as a new opera house; the crash killed that plan and left Rockefeller with a lease he could not escape, so he built an office complex instead. Diego Rivera's mural was destroyed for including Lenin.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Rockefeller_Center",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.759258,
+      "lng": -73.979957
+    },
+    {
+      "id": "gowanus-canal",
+      "name": "The Gowanus Canal",
+      "prompt": "The Gowanus Canal",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "gowanus",
+        "canal",
+        "industrial",
+        "superfund"
+      ],
+      "factShort": "A century and a half of gasworks, tanneries and raw sewage made it one of the most contaminated waterways in the country, declared a Superfund site in 2010. The black sludge on its bed is known locally as black mayonnaise.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Gowanus_Canal",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.672858,
+      "lng": -73.997434
+    },
+    {
+      "id": "city-island",
+      "name": "City Island",
+      "prompt": "City Island",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 3,
+      "tags": [
+        "city-island",
+        "fishing-village",
+        "boatyards",
+        "long-island-sound"
+      ],
+      "factShort": "A mile-and-a-half island in the Bronx that reads as a New England fishing town, reached by one bridge. Its boatyards built America's Cup defenders, and residents born there call themselves clam diggers.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/City_Island,_Bronx",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.847433,
+      "lng": -73.786429
+    },
+    {
+      "id": "village-vanguard",
+      "name": "The Village Vanguard",
+      "prompt": "The Village Vanguard",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "greenwich-village",
+        "jazz-club",
+        "1930s",
+        "basement"
+      ],
+      "factShort": "A wedge-shaped basement of about 120 seats where Coltrane, Evans and Rollins all made records that are still in print. It opened in 1935 for poetry and folk and only turned fully to jazz in the fifties.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Village_Vanguard",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.73602,
+      "lng": -74.001639
+    },
+    {
+      "id": "snug-harbor",
+      "name": "Snug Harbor",
+      "prompt": "Snug Harbor",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "livingston",
+        "greek-revival",
+        "1830s",
+        "sailors-home"
+      ],
+      "factShort": "Built as a retirement home for aged sailors under a bequest that the courts fought over for years, it grew to fifty buildings and nearly a thousand residents. The Greek Revival row facing the water is among the finest in the country.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Snug_Harbor_Cultural_Center",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.642482,
+      "lng": -74.103195
+    }
+  ]
+}

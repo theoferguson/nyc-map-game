@@ -1,0 +1,102 @@
+{
+  "date": "2026-08-29",
+  "puzzleNumber": 4,
+  "theme": null,
+  "locations": [
+    {
+      "id": "flatiron-building",
+      "name": "The Flatiron Building",
+      "prompt": "The Flatiron Building",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "madison-square",
+        "steel-frame",
+        "1900s",
+        "triangular"
+      ],
+      "factShort": "Its wedge shape funnelled wind down Fifth Avenue hard enough to lift women's skirts, drawing loiterers whom police shooed away — reportedly the origin of the phrase twenty-three skidoo. Critics expected it to topple and nicknamed it Burnham's Folly.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Flatiron_Building",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.741059,
+      "lng": -73.989642
+    },
+    {
+      "id": "brooklyn-museum",
+      "name": "The Brooklyn Museum",
+      "prompt": "The Brooklyn Museum",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "prospect-heights",
+        "museum",
+        "beaux-arts",
+        "1890s"
+      ],
+      "factShort": "McKim, Mead and White designed it to be four times its built size, as the centrepiece of an independent City of Brooklyn that was absorbed into New York before the plan could finish. Its Egyptian collection is among the best anywhere outside Cairo and London.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.670955,
+      "lng": -73.963295
+    },
+    {
+      "id": "citi-field",
+      "name": "Citi Field",
+      "prompt": "Citi Field",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing",
+        "stadium",
+        "baseball",
+        "2000s"
+      ],
+      "factShort": "Its brick facade and rotunda copy Ebbets Field, home of a Brooklyn team that left for Los Angeles in 1957 — an odd tribute for a Queens ballpark to a stadium demolished in 1960. It replaced Shea Stadium, whose outline is marked in the car park next door.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Citi_Field",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.757278,
+      "lng": -73.845879
+    },
+    {
+      "id": "woodlawn-cemetery",
+      "name": "Woodlawn Cemetery",
+      "prompt": "Woodlawn Cemetery",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "woodlawn",
+        "cemetery",
+        "1860s",
+        "jazz-history"
+      ],
+      "factShort": "Duke Ellington, Miles Davis, Celia Cruz and Max Roach are all buried within a few hundred yards of each other, making it something close to a jazz pantheon. Its mausoleums were commissioned from the same architects who built the Gilded Age mansions their owners lived in.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Woodlawn_Cemetery_(Bronx)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.888134,
+      "lng": -73.872812
+    },
+    {
+      "id": "conference-house",
+      "name": "The Conference House",
+      "prompt": "The Conference House",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "tottenville",
+        "colonial",
+        "revolutionary-war",
+        "1670s"
+      ],
+      "factShort": "In September 1776 Benjamin Franklin, John Adams and Edward Rutledge met Admiral Howe here in the only peace conference of the Revolutionary War. It lasted three hours, failed over the question of independence, and the war ran another seven years.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Conference_House",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.501545,
+      "lng": -74.25183
+    }
+  ]
+}

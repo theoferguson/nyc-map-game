@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-04",
+  "puzzleNumber": 40,
+  "theme": null,
+  "locations": [
+    {
+      "id": "ed-sullivan-theater",
+      "name": "The Ed Sullivan Theater",
+      "prompt": "The Ed Sullivan Theater",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "theatre",
+        "1920s",
+        "broadcast"
+      ],
+      "factShort": "The Beatles played to seventy-three million American viewers from this stage in February 1964, still one of the largest television audiences ever recorded. It was built in 1927 as a Broadway house.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ed_Sullivan_Theater",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.763792,
+      "lng": -73.982861
+    },
+    {
+      "id": "totonnos",
+      "name": "Totonno's",
+      "prompt": "Totonno's",
+      "class": "venue",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "coney-island",
+        "pizzeria",
+        "1920s",
+        "coal-oven"
+      ],
+      "factShort": "Opened in 1924 by a man who had worked at Lombardi's, and still baking in the same coal oven, which is why it closes when it runs out of dough. Fire gutted it twice and it reopened both times.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Totonno's",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.578786,
+      "lng": -73.983803
+    },
+    {
+      "id": "broad-channel",
+      "name": "Broad Channel",
+      "prompt": "Broad Channel",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "jamaica-bay",
+        "island",
+        "stilt-houses",
+        "wetlands"
+      ],
+      "factShort": "The only inhabited island in Jamaica Bay, where houses stand on stilts over the water and residents held their land on city leases until the 1980s. Its main street is barely a mile long.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Broad_Channel,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.608019,
+      "lng": -73.815801
+    },
+    {
+      "id": "african-burial-ground",
+      "name": "The African Burial Ground",
+      "prompt": "The African Burial Ground",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "civic-center",
+        "memorial",
+        "1690s",
+        "archaeology"
+      ],
+      "factShort": "Construction crews digging a federal office tower in 1991 found human remains twenty-four feet down, and excavation uncovered over four hundred burials from a cemetery holding perhaps fifteen thousand free and enslaved Africans. Work was halted and the site made a national monument.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/African_Burial_Ground_National_Monument",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.714525,
+      "lng": -74.004466
+    },
+    {
+      "id": "concourse-plaza-hotel",
+      "name": "Concourse Plaza",
+      "prompt": "Concourse Plaza",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "concourse",
+        "hotel",
+        "1920s",
+        "yankees"
+      ],
+      "factShort": "Opened in 1923 opposite the new Yankee Stadium, it housed visiting ballplayers, borough presidents and wedding parties for decades. Babe Ruth and Lou Gehrig both lived in it during the season.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Concourse_Plaza_Hotel",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.82551,
+      "lng": -73.920372
+    }
+  ]
+}

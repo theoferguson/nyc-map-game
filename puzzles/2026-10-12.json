@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-12",
+  "puzzleNumber": 48,
+  "theme": null,
+  "locations": [
+    {
+      "id": "astor-place-cube",
+      "name": "The Astor Place Cube",
+      "prompt": "The Astor Place Cube (the Alamo)",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "east-village",
+        "sculpture",
+        "1960s",
+        "rotating-cube"
+      ],
+      "factShort": "An eight-foot steel cube on a hidden post that any two people can spin by pushing a corner, installed in 1967 as temporary public art and never removed. Students once found a live chicken sealed inside it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Alamo_(sculpture)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.72985,
+      "lng": -73.99139
+    },
+    {
+      "id": "williamsburgh-savings-bank-tower",
+      "name": "The Williamsburgh Savings Bank Tower",
+      "prompt": "The Williamsburgh Savings Bank Tower",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "fort-greene",
+        "skyscraper",
+        "1920s",
+        "clock-tower"
+      ],
+      "factShort": "Brooklyn's tallest building for over eighty years, with the largest four-faced clock in the United States at its top. Its banking hall ceiling is a mosaic vault, and the tower was converted to flats in 2007.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/One_Hanson_Place",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.685497,
+      "lng": -73.977716
+    },
+    {
+      "id": "wyckoff-bennett-homestead",
+      "name": "The Wyckoff-Bennett Homestead",
+      "prompt": "The Wyckoff-Bennett Homestead",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 3,
+      "tags": [
+        "madison",
+        "dutch-colonial",
+        "1760s",
+        "private-house"
+      ],
+      "factShort": "A Dutch farmhouse of about 1766 still in private hands, with the names of Hessian officers quartered there during the Revolution scratched into a windowpane. It is one of the few colonial houses in the city never opened as a museum.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Wyckoff-Bennett_Homestead",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.610783,
+      "lng": -73.951236
+    },
+    {
+      "id": "bowne-park",
+      "name": "Bowne Park",
+      "prompt": "Bowne Park",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 4,
+      "tags": [
+        "broadway-flushing",
+        "park",
+        "1920s",
+        "bocce"
+      ],
+      "factShort": "Twelve acres that were the estate of Walter Bowne, a mayor of New York in the 1830s, bought by the city in 1925. Its pond is a remnant of the ice pond that served the estate.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Flushing,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.770477,
+      "lng": -73.807331
+    },
+    {
+      "id": "stuyvesant-town",
+      "name": "Stuyvesant Town",
+      "prompt": "Stuyvesant Town",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "east-village",
+        "housing",
+        "1940s",
+        "gas-house-district"
+      ],
+      "factShort": "Built for returning veterans on eighteen blocks of demolished tenements, and openly refused to rent to Black tenants until a decade-long legal fight forced it to change in 1950. It holds over eleven thousand apartments.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Stuyvesant_Town–Peter_Cooper_Village",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.731971,
+      "lng": -73.978093
+    }
+  ]
+}

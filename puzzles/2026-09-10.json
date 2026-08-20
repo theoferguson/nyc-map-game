@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-10",
+  "puzzleNumber": 16,
+  "theme": null,
+  "locations": [
+    {
+      "id": "bryant-park",
+      "name": "Bryant Park",
+      "prompt": "Bryant Park",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "park",
+        "1840s",
+        "urban-renewal"
+      ],
+      "factShort": "By the 1970s it was so given over to drug dealing that people called it Needle Park, and it was closed and redesigned in 1988 using William Whyte's studies of how people actually use public space. Its moveable chairs were a deliberate part of that.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bryant_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.753751,
+      "lng": -73.983543
+    },
+    {
+      "id": "brooklyn-navy-yard",
+      "name": "The Brooklyn Navy Yard",
+      "prompt": "The Brooklyn Navy Yard",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "wallabout",
+        "shipyard",
+        "1800s",
+        "industrial"
+      ],
+      "factShort": "It built the Monitor's rival ships, the Maine, the Arizona and the Missouri, on whose deck Japan surrendered. Seventy thousand people worked here during the Second World War, a third of them women.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Navy_Yard",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.699327,
+      "lng": -73.975556
+    },
+    {
+      "id": "jackson-heights",
+      "name": "Jackson Heights",
+      "prompt": "Jackson Heights",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "jackson-heights",
+        "garden-apartments",
+        "1910s",
+        "historic-district"
+      ],
+      "factShort": "One of America's first planned garden-apartment communities, built around private interior gardens in the 1910s. It is now among the most linguistically diverse places on earth, with more than 160 languages spoken in the district.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Jackson_Heights,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.755656,
+      "lng": -73.885775
+    },
+    {
+      "id": "woolworth-building",
+      "name": "The Woolworth Building",
+      "prompt": "The Woolworth Building",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "tribeca",
+        "gothic-revival",
+        "1910s",
+        "skyscraper"
+      ],
+      "factShort": "Frank Woolworth paid 13.5 million dollars for it in cash, out of nickel-and-dime store profits, and it was the tallest building in the world until 1930. A clergyman called it the Cathedral of Commerce and the name stuck.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Woolworth_Building",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.712454,
+      "lng": -74.008135
+    },
+    {
+      "id": "sunnyside-gardens",
+      "name": "Sunnyside Gardens",
+      "prompt": "Sunnyside Gardens",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 5,
+      "tags": [
+        "sunnyside",
+        "planned-community",
+        "1920s",
+        "garden-city"
+      ],
+      "factShort": "A 1920s experiment in affordable housing built around shared interior courtyards, with Lewis Mumford among its first residents and its planners. It was designed to be walkable and low-rise at a time when the city was building tenements.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Sunnyside_Gardens,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.747778,
+      "lng": -73.918333
+    }
+  ]
+}

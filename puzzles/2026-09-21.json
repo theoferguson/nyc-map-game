@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-21",
+  "puzzleNumber": 27,
+  "theme": null,
+  "locations": [
+    {
+      "id": "plaza-hotel",
+      "name": "The Plaza Hotel",
+      "prompt": "The Plaza Hotel",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "midtown",
+        "hotel",
+        "1900s",
+        "chateau-style"
+      ],
+      "factShort": "It opened in 1907 and Alfred Vanderbilt was the first guest to sign the register. Eloise, the fictional six-year-old who lives on the top floor, has her portrait hanging in the lobby.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Plaza_Hotel",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.765454,
+      "lng": -73.976963
+    },
+    {
+      "id": "lefferts-historic-house",
+      "name": "The Lefferts Historic House",
+      "prompt": "The Lefferts Historic House",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "prospect-park",
+        "dutch-colonial",
+        "1780s",
+        "house-museum"
+      ],
+      "factShort": "A Dutch farmhouse rebuilt in the 1780s after the original was burned during the Battle of Long Island. It was moved into Prospect Park in 1918 when the family gave it to the city.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Lefferts_Historic_House",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.664347,
+      "lng": -73.96378
+    },
+    {
+      "id": "silvercup-studios",
+      "name": "Silvercup Studios",
+      "prompt": "Silvercup Studios",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "long-island-city",
+        "film-studio",
+        "1980s",
+        "bakery"
+      ],
+      "factShort": "A former bread bakery whose rooftop sign is still lit, converted in 1983 into the largest film studio in the northeast. The Sopranos, Sex and the City and Highlander were all shot inside it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Silvercup_Studios",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.751351,
+      "lng": -73.944243
+    },
+    {
+      "id": "andrew-freedman-home",
+      "name": "The Andrew Freedman Home",
+      "prompt": "The Andrew Freedman Home",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": [
+        "concourse",
+        "italianate",
+        "1920s",
+        "philanthropy"
+      ],
+      "factShort": "A subway contractor left his fortune to build a mansion where people who had been wealthy and lost it could live out their lives in the style they were used to, with servants and black-tie dinners. The last resident left in the 1980s.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Andrew_Freedman_Home",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.832845,
+      "lng": -73.920265
+    },
+    {
+      "id": "merchants-house-museum",
+      "name": "The Merchant's House Museum",
+      "prompt": "The Merchant's House Museum",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "noho",
+        "greek-revival",
+        "1830s",
+        "house-museum"
+      ],
+      "factShort": "The only nineteenth-century family home in New York preserved intact inside and out, down to the Tredwell family's furniture and clothing. One daughter lived in it for ninety-three years and changed almost nothing.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Merchant's_House_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.727659,
+      "lng": -73.992342
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-10",
+  "puzzleNumber": 46,
+  "theme": null,
+  "locations": [
+    {
+      "id": "city-hall",
+      "name": "New York City Hall",
+      "prompt": "New York City Hall",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "civic-center",
+        "federal-style",
+        "1810s",
+        "oldest-city-hall"
+      ],
+      "factShort": "The oldest city hall in America still used for its original purpose, finished in 1812. Its back was faced in cheap brownstone rather than marble because the city assumed nobody would ever build north of it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/New_York_City_Hall",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.712739,
+      "lng": -74.005939
+    },
+    {
+      "id": "city-reliquary",
+      "name": "The City Reliquary",
+      "prompt": "The City Reliquary",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "williamsburg",
+        "museum",
+        "2000s",
+        "found-objects"
+      ],
+      "factShort": "A museum of New York ephemera that began in a ground-floor apartment window, showing subway tokens, seltzer bottles and paint chips from the Statue of Liberty. It became a proper storefront museum in 2006.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/City_Reliquary",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.713954,
+      "lng": -73.955741
+    },
+    {
+      "id": "gould-memorial-library",
+      "name": "Gould Memorial Library",
+      "prompt": "Gould Memorial Library",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 3,
+      "tags": [
+        "university-heights",
+        "neoclassical",
+        "1890s",
+        "stanford-white"
+      ],
+      "factShort": "Stanford White modelled it on the Pantheon, with a coffered dome and green marble columns, for what was then NYU's uptown campus. It sits directly behind the Hall of Fame colonnade.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Gould_Memorial_Library",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.858742,
+      "lng": -73.913958
+    },
+    {
+      "id": "old-st-patricks-cathedral",
+      "name": "Old St. Patrick's Cathedral",
+      "prompt": "Old St. Patrick's Cathedral",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "nolita",
+        "gothic-revival",
+        "1810s",
+        "catacombs"
+      ],
+      "factShort": "The city's original Catholic cathedral, finished in 1815 and ringed by a brick wall its parishioners once defended with muskets against anti-Catholic mobs. Its catacombs still hold burials.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Basilica_of_St._Patrick's_Old_Cathedral",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.723581,
+      "lng": -73.995193
+    },
+    {
+      "id": "ear-inn",
+      "name": "The Ear Inn",
+      "prompt": "The Ear Inn",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 5,
+      "tags": [
+        "hudson-square",
+        "bar",
+        "1770s",
+        "james-brown-house"
+      ],
+      "factShort": "The house was built around 1770 for an aide of Washington's and stood on the shoreline before landfill pushed the Hudson back. The bar's neon B was painted over to read EAR so it would not need landmark approval for a new sign.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Ear_Inn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.725903,
+      "lng": -74.009487
+    }
+  ]
+}

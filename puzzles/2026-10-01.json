@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-01",
+  "puzzleNumber": 37,
+  "theme": null,
+  "locations": [
+    {
+      "id": "brooklyn-public-library",
+      "name": "The Brooklyn Public Library",
+      "prompt": "The Brooklyn Public Library",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 1,
+      "tags": [
+        "prospect-heights",
+        "library",
+        "1940s",
+        "art-deco"
+      ],
+      "factShort": "Its facade is shaped like an open book facing Grand Army Plaza, with gilded figures from American literature down the entrance pylons. Begun in 1912, it was interrupted by two wars and not finished until 1941.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Public_Library",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.672131,
+      "lng": -73.968189
+    },
+    {
+      "id": "united-nations-headquarters",
+      "name": "The United Nations Headquarters",
+      "prompt": "The United Nations Headquarters",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 2,
+      "tags": [
+        "turtle-bay",
+        "international",
+        "1950s",
+        "modernist"
+      ],
+      "factShort": "The eighteen acres it sits on are international territory, with their own postage stamps and fire brigade. Rockefeller bought the land, a stretch of slaughterhouses, and gave it to the UN to keep the organisation in New York.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Headquarters_of_the_United_Nations",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.749629,
+      "lng": -73.96739
+    },
+    {
+      "id": "terrace-on-the-park",
+      "name": "Terrace on the Park",
+      "prompt": "Terrace on the Park",
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing-meadows",
+        "worlds-fair",
+        "1960s",
+        "heliport"
+      ],
+      "factShort": "Built as the heliport for the 1964 World's Fair, lifting visitors in by helicopter from Manhattan rooftops. Its 120-foot pavilion is now a catering hall.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Terrace_on_the_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.7445,
+      "lng": -73.850735
+    },
+    {
+      "id": "riverside-church",
+      "name": "Riverside Church",
+      "prompt": "Riverside Church",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "morningside-heights",
+        "gothic-revival",
+        "1930s",
+        "carillon"
+      ],
+      "factShort": "Its 392-foot tower is the tallest church tower in the United States and holds the largest tuned carillon in the world, seventy-four bells including one of over twenty tons. Martin Luther King gave his Beyond Vietnam speech from its pulpit.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Riverside_Church",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.811787,
+      "lng": -73.963145
+    },
+    {
+      "id": "staten-island-greenbelt",
+      "name": "The Staten Island Greenbelt",
+      "prompt": "The Staten Island Greenbelt",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "central-staten-island",
+        "forest",
+        "1960s",
+        "trail-network"
+      ],
+      "factShort": "Nearly 2,800 acres of forest and wetland saved when residents defeated a Robert Moses expressway that would have cut straight through it. Thirty-five miles of trail run through the middle of the borough.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Staten_Island_Greenbelt",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.596469,
+      "lng": -74.181397
+    }
+  ]
+}

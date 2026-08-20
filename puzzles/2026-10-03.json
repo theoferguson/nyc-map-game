@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-03",
+  "puzzleNumber": 39,
+  "theme": null,
+  "locations": [
+    {
+      "id": "chelsea-market",
+      "name": "Chelsea Market",
+      "prompt": "Chelsea Market",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "chelsea",
+        "food-hall",
+        "1890s",
+        "nabisco"
+      ],
+      "factShort": "The Oreo was invented in this building when it was the National Biscuit Company factory. The exposed brick and industrial fittings inside are largely original rather than added for effect.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Chelsea_Market",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.742051,
+      "lng": -74.004897
+    },
+    {
+      "id": "fulton-ferry-landing",
+      "name": "Fulton Ferry Landing",
+      "prompt": "Fulton Ferry Landing",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "dumbo",
+        "ferry-landing",
+        "1810s",
+        "east-river"
+      ],
+      "factShort": "Robert Fulton's steam ferry ran from here in 1814, and the crossing is what made Brooklyn commutable and eventually a city. The Brooklyn Bridge put it out of business within a decade of opening.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fulton_Ferry",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.703338,
+      "lng": -73.995142
+    },
+    {
+      "id": "corona-plaza",
+      "name": "Corona Plaza",
+      "prompt": "Corona Plaza",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "corona",
+        "plaza",
+        "market",
+        "latin-american"
+      ],
+      "factShort": "A street closed to traffic in 2012 and turned into a public plaza that now hosts one of the largest street markets in the city, overwhelmingly Latin American. The 7 train runs directly overhead.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Corona,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.749603,
+      "lng": -73.862495
+    },
+    {
+      "id": "abyssinian-baptist-church",
+      "name": "The Abyssinian Baptist Church",
+      "prompt": "The Abyssinian Baptist Church",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "harlem",
+        "church",
+        "1800s",
+        "gothic"
+      ],
+      "factShort": "Founded in 1808 by Black parishioners who refused segregated seating in a Lower Manhattan church, it moved to Harlem in 1923. Adam Clayton Powell Jr. preached here before becoming New York's first Black congressman.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Abyssinian_Baptist_Church",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.816636,
+      "lng": -73.941478
+    },
+    {
+      "id": "staten-island-museum",
+      "name": "The Staten Island Museum",
+      "prompt": "The Staten Island Museum",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "snug-harbor",
+        "museum",
+        "1880s",
+        "natural-history"
+      ],
+      "factShort": "Founded in 1881 by local naturalists, it is the last general-interest museum in the city holding art, natural history and local history under one roof. Its cicada collection is among the largest anywhere.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Staten_Island_Museum",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.644521,
+      "lng": -74.102749
+    }
+  ]
+}

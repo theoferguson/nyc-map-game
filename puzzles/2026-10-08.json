@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-08",
+  "puzzleNumber": 44,
+  "theme": null,
+  "locations": [
+    {
+      "id": "conservatory-garden",
+      "name": "The Conservatory Garden",
+      "prompt": "The Conservatory Garden",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "central-park",
+        "formal-garden",
+        "1930s",
+        "wisteria-pergola"
+      ],
+      "factShort": "Central Park's only formal garden, built in 1937 where a glass conservatory had stood since the 1890s. It is divided into Italian, French and English sections and is the park's designated quiet zone.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Conservatory_Garden",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.793677,
+      "lng": -73.952569
+    },
+    {
+      "id": "bedford-stuyvesant-restoration",
+      "name": "Restoration Plaza",
+      "prompt": "Restoration Plaza",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "bedford-stuyvesant",
+        "community-development",
+        "1960s",
+        "milk-bottling-plant"
+      ],
+      "factShort": "Robert Kennedy walked the neighbourhood in 1966 and helped found what became the country's first community development corporation, housed in a converted milk bottling plant. It is still operating.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bedford–Stuyvesant_Restoration_Corporation",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.679779,
+      "lng": -73.945395
+    },
+    {
+      "id": "woodside",
+      "name": "Woodside",
+      "prompt": "Woodside",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "woodside",
+        "neighborhood",
+        "irish",
+        "transit-hub"
+      ],
+      "factShort": "Long the heart of Irish Queens, and still holding some of the oldest pubs in the borough, though it is now equally Filipino and Latin American. Its station is one of the few where the 7 train meets the Long Island Rail Road.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Woodside,_Queens",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.74538,
+      "lng": -73.905415
+    },
+    {
+      "id": "new-york-marble-cemetery",
+      "name": "The New York Marble Cemetery",
+      "prompt": "The New York Marble Cemetery",
+      "class": "area",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "east-village",
+        "cemetery",
+        "1830s",
+        "underground-vaults"
+      ],
+      "factShort": "The city's first non-sectarian burial ground, opened in 1830 with 156 underground marble vaults and no headstones at all — names are cut into the wall instead. It is hidden mid-block and open only a few days a year.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/New_York_Marble_Cemetery",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.725617,
+      "lng": -73.990955
+    },
+    {
+      "id": "co-op-city",
+      "name": "Co-op City",
+      "prompt": "Co-op City",
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "baychester",
+        "housing-cooperative",
+        "1960s",
+        "largest-cooperative"
+      ],
+      "factShort": "Fifteen thousand apartments across three hundred acres, the largest housing cooperative in the world, built on the site of a failed amusement park called Freedomland. Around forty thousand people live in it.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Co-op_City,_Bronx",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.873889,
+      "lng": -73.829444
+    }
+  ]
+}

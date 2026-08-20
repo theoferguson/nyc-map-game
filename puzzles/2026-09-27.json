@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-27",
+  "puzzleNumber": 33,
+  "theme": null,
+  "locations": [
+    {
+      "id": "staten-island-ferry",
+      "name": "The Staten Island Ferry",
+      "prompt": "The Staten Island Ferry",
+      "class": "area",
+      "borough": "staten-island",
+      "difficulty": 1,
+      "tags": [
+        "upper-bay",
+        "ferry",
+        "free",
+        "commute"
+      ],
+      "factShort": "Around twenty million passengers a year ride it for nothing, past the Statue of Liberty in both directions. It has run continuously since 1817, first under Cornelius Vanderbilt.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Staten_Island_Ferry",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.662606,
+      "lng": -74.052136
+    },
+    {
+      "id": "trinity-church",
+      "name": "Trinity Church",
+      "prompt": "Trinity Church",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 2,
+      "tags": [
+        "financial-district",
+        "gothic-revival",
+        "1840s",
+        "churchyard"
+      ],
+      "factShort": "When it was finished in 1846 its 281-foot spire was the tallest structure in the United States, and it stayed the tallest in New York for over forty years. Alexander Hamilton is buried in the churchyard.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Trinity_Church_(Manhattan)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.708053,
+      "lng": -74.012207
+    },
+    {
+      "id": "litchfield-villa",
+      "name": "Litchfield Villa",
+      "prompt": "Litchfield Villa",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 3,
+      "tags": [
+        "park-slope",
+        "italianate",
+        "1850s",
+        "villa"
+      ],
+      "factShort": "An Italianate mansion built in 1857 for a railroad magnate whose estate the city then bought to make Prospect Park around it. It has housed the Brooklyn parks offices since 1883.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Litchfield_Villa",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.666893,
+      "lng": -73.973773
+    },
+    {
+      "id": "calvary-cemetery",
+      "name": "Calvary Cemetery",
+      "prompt": "Calvary Cemetery",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 4,
+      "tags": [
+        "maspeth",
+        "cemetery",
+        "1840s",
+        "skyline-view"
+      ],
+      "factShort": "Around three million people are buried here, more than in any other cemetery in the United States. Its headstones with the Manhattan skyline behind them are one of the most recognisable views in Queens.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Calvary_Cemetery_(Queens)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.733155,
+      "lng": -73.930953
+    },
+    {
+      "id": "loews-paradise-theater",
+      "name": "Loew's Paradise Theater",
+      "prompt": "Loew's Paradise Theater",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "grand-concourse",
+        "movie-palace",
+        "1920s",
+        "atmospheric-theatre"
+      ],
+      "factShort": "One of the five Loew's Wonder Theatres, opened in 1929 with a ceiling painted as a night sky where projected clouds drifted across and stars twinkled overhead. It seated nearly four thousand people on the Grand Concourse.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Loew's_Paradise_Theater",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.860314,
+      "lng": -73.898668
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-06",
+  "puzzleNumber": 42,
+  "theme": null,
+  "locations": [
+    {
+      "id": "strawberry-fields",
+      "name": "Strawberry Fields",
+      "prompt": "Strawberry Fields",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": [
+        "central-park",
+        "memorial",
+        "1980s",
+        "imagine-mosaic"
+      ],
+      "factShort": "Yoko Ono paid for the memorial garden opposite the Dakota, where John Lennon was shot in 1980. The Imagine mosaic was a gift from the city of Naples.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Strawberry_Fields_(memorial)",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.775855,
+      "lng": -73.975227
+    },
+    {
+      "id": "beard-street-warehouses",
+      "name": "The Beard Street Warehouses",
+      "prompt": "The Beard Street Warehouses",
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": [
+        "red-hook",
+        "warehouse",
+        "1860s",
+        "waterfront"
+      ],
+      "factShort": "Brick Civil War-era stores built for the Erie Basin, among the oldest surviving warehouse buildings on the New York waterfront. Barges still tie up outside them.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Red_Hook,_Brooklyn",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.672615,
+      "lng": -74.011717
+    },
+    {
+      "id": "oakland-lake",
+      "name": "Oakland Lake",
+      "prompt": "Oakland Lake",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "bayside",
+        "kettle-pond",
+        "glacial",
+        "alley-pond"
+      ],
+      "factShort": "A glacial kettle pond left by the retreating ice sheet, one of very few natural bodies of fresh water left in the city. It supplied Bayside's drinking water into the twentieth century.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Alley_Pond_Park",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.75863,
+      "lng": -73.759737
+    },
+    {
+      "id": "mintons-playhouse",
+      "name": "Minton's Playhouse",
+      "prompt": "Minton's Playhouse",
+      "class": "venue",
+      "borough": "manhattan",
+      "difficulty": 4,
+      "tags": [
+        "harlem",
+        "jazz-club",
+        "1930s",
+        "bebop"
+      ],
+      "factShort": "Bebop was largely worked out in this room during after-hours sessions in the early 1940s, with Thelonious Monk as house pianist and Charlie Parker and Dizzy Gillespie sitting in. Musicians played fast and in difficult keys partly to keep amateurs off the stand.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Minton's_Playhouse",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.80474,
+      "lng": -73.952376
+    },
+    {
+      "id": "bronx-county-courthouse",
+      "name": "The Bronx County Courthouse",
+      "prompt": "The Bronx County Courthouse",
+      "class": "landmark",
+      "borough": "bronx",
+      "difficulty": 5,
+      "tags": [
+        "concourse",
+        "art-deco",
+        "1930s",
+        "limestone-friezes"
+      ],
+      "factShort": "A limestone block of a building finished in 1934, ringed by sculpted friezes and freestanding figures by nine different artists working on a New Deal commission. It sits at the highest point of the Grand Concourse.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Bronx_County_Courthouse",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.826278,
+      "lng": -73.923509
+    }
+  ]
+}
