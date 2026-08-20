@@ -4,6 +4,8 @@ A daily browser game in the Wordle family. Five significant New York locations a
 you find each one on unlabelled satellite imagery and tap it. Scoring is by proximity,
 feedback is immediate, and the day ends with every answer on the map at once.
 
+**Play it: https://nyc-map-game.vercel.app**
+
 No accounts, no backend, no database. Static files and `localStorage`.
 
 ## Running it
