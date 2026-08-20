@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { MapView, type MapHandle, type Overlay } from './map/MapView'
+import { useEffect, useRef, useState } from 'react'
+import { MapView, type MapHandle } from './map/MapView'
 import { loadTodaysPuzzle, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
@@ -120,16 +120,6 @@ export default function App() {
     map.current?.showAllAnswers(puzzle.locations.map((l) => ({ lng: l.lng, lat: l.lat })))
   }, [puzzle, over, mapReady])
 
-  // Every answer, each card pinned to its own location, all at once.
-  const overlays = useMemo<Overlay[]>(() => {
-    if (!over || !puzzle) return []
-    return puzzle.locations.map((loc, i) => ({
-      id: loc.id,
-      lngLat: { lng: loc.lng, lat: loc.lat },
-      content: <FactCard location={loc} result={results[i]} index={i} />,
-    }))
-  }, [over, puzzle, results])
-
   if (error) return <Centered>{error}</Centered>
   if (!puzzle) return <Centered>Loading…</Centered>
 
@@ -223,7 +213,6 @@ export default function App() {
         enabled={!current && !over}
         carefulMode={settings.carefulMode}
         holdMs={settings.holdMs}
-        overlays={overlays}
       />
 
       {!over && (
@@ -272,6 +261,12 @@ export default function App() {
           results={results}
           stats={stats}
           colorblind={settings.colorblind}
+          onFocus={(i, inset) =>
+            map.current?.focusLocation(
+              { lng: puzzle.locations[i].lng, lat: puzzle.locations[i].lat },
+              inset,
+            )
+          }
         />}
 
       <div className="absolute bottom-3 left-3 z-30 flex items-center gap-2">
@@ -297,43 +292,6 @@ export default function App() {
           onClose={() => setShowSettings(false)}
         />
       )}
-    </div>
-  )
-}
-
-/**
- * Pinned beside its answer, all five readable at once. Deliberately inert: the
- * recap is read, not operated, and making five cards interactive turned them
- * into a wall that swallowed every attempt to pan the map behind them.
- */
-function FactCard({
-  location,
-  result,
-  index,
-}: {
-  location: PuzzleLocation
-  result?: Result
-  index: number
-}) {
-  return (
-    // Opaque rather than blurred on purpose: a backdrop-filter over satellite
-    // imagery is repainted on every frame the card moves, and five of them made
-    // panning the recap unusable.
-    <div className="w-full rounded-lg bg-neutral-900 p-2.5 text-left text-white shadow-xl ring-1 ring-white/15">
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-[10px] font-semibold tabular-nums text-neutral-500">
-          {index + 1}
-        </span>
-        <span className="flex-1 text-xs font-semibold leading-tight">{location.name}</span>
-        <span className="text-xs font-semibold tabular-nums text-amber-400">
-          {result?.score ?? 0}
-        </span>
-      </div>
-      <p className="mt-0.5 text-[10px] leading-tight text-neutral-400">{result?.copy}</p>
-      <p className="mt-1.5 text-[11px] leading-snug text-neutral-200">
-        {location.factShort}
-      </p>
-      <p className="mt-1 text-[9px] text-neutral-500">{location.sourceAttribution}</p>
     </div>
   )
 }
@@ -411,19 +369,52 @@ function Landing({
   )
 }
 
+/**
+ * The recap steps through one answer at a time rather than pinning all five to
+ * the map at once.
+ *
+ * Five cards at readable size need about a thousand vertical pixels and a phone
+ * has eight hundred, so anchored cards buried the score and the Share button --
+ * the share loop broken at exactly the point it should fire. One panel at a
+ * time fits any screen, and the map flying to each answer does the work the
+ * leader lines were doing: showing which place is being talked about.
+ */
 function Results({
   puzzle,
   results,
   stats,
   colorblind,
+  onFocus,
 }: {
   puzzle: Puzzle
   results: Result[]
   stats: Stats
   colorblind: boolean
+  onFocus: (index: number, bottomInset: number) => void
 }) {
   const [copied, setCopied] = useState(false)
+  const [step, setStep] = useState(0)
+  const panel = useRef<HTMLDivElement>(null)
   const countdown = useCountdown()
+  const location = puzzle.locations[step]
+  const result = results[step]
+
+  // Wraps rather than disabling at the ends: five items is short enough that
+  // cycling past the last is friendlier than a dead arrow.
+  const go = (delta: number) => {
+    const next = (step + delta + puzzle.locations.length) % puzzle.locations.length
+    setStep(next)
+    onFocus(next, panel.current?.offsetHeight ?? 0)
+  }
+
+  // The opening move belongs here rather than in the recap effect: only this
+  // component knows how tall its panel has rendered.
+  const opened = useRef(false)
+  useEffect(() => {
+    if (opened.current) return
+    opened.current = true
+    onFocus(0, panel.current?.offsetHeight ?? 0)
+  })
   const total = totalScore(results)
   const text = shareString(puzzle.puzzleNumber, results, colorblind)
 
@@ -444,7 +435,45 @@ function Results({
 
   return (
     <Floating className="bottom-3">
-      <div className="space-y-3 rounded-2xl bg-neutral-900/90 p-5 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
+      <div
+        ref={panel}
+        className="space-y-3 rounded-2xl bg-neutral-900/90 p-5 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur"
+      >
+        <div className="-mx-2 space-y-1.5 rounded-xl bg-white/5 px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => go(-1)}
+              aria-label="Previous location"
+              className="shrink-0 rounded-lg px-2 py-1 text-lg leading-none text-neutral-400 active:bg-white/10"
+            >
+              ‹
+            </button>
+            <div className="min-w-0 flex-1 text-center">
+              <p className="truncate text-sm font-semibold leading-tight">{location.name}</p>
+              <p className="text-[10px] tabular-nums text-neutral-500">
+                {step + 1} of {puzzle.locations.length}
+              </p>
+            </div>
+            <button
+              onClick={() => go(1)}
+              aria-label="Next location"
+              className="shrink-0 rounded-lg px-2 py-1 text-lg leading-none text-neutral-400 active:bg-white/10"
+            >
+              ›
+            </button>
+          </div>
+
+          <div className="flex items-baseline justify-between gap-3 text-[11px]">
+            <span className="text-neutral-400">{result?.copy}</span>
+            <span className="shrink-0 font-semibold tabular-nums text-amber-400">
+              {result?.score ?? 0}
+            </span>
+          </div>
+
+          <p className="text-[11px] leading-snug text-neutral-200">{location.factShort}</p>
+          <p className="text-[9px] text-neutral-500">{location.sourceAttribution}</p>
+        </div>
+
         <div className="flex items-baseline justify-between">
           <p className="text-sm text-neutral-400">NYC Daily #{puzzle.puzzleNumber}</p>
           <p className="text-3xl font-semibold tabular-nums">
