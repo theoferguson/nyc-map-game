@@ -42,7 +42,7 @@ export const BASEMAP: Imagery = {
   maxzoom: 13,
   // Note {z}/{y}/{x} -- Esri inverts y relative to standard XYZ.
   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics',
+  attribution: 'Imagery &copy; Esri, Vantor, Earthstar Geographics',
   probe: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/15/12315/9649',
 }
 
@@ -61,7 +61,7 @@ export const VARIANTS: Imagery[] = [
     // pyramid up to z1 hunting for a parent tile to show while loading.
     minzoom: 9,
     url: 'https://maps.nyc.gov/xyz/1.0.0/photo/2018/{z}/{x}/{y}.png8',
-    attribution: 'Imagery &copy; NYC DoITT (2018)',
+    attribution: 'Imagery &copy; NYC OTI (2018)',
     probe: 'https://maps.nyc.gov/xyz/1.0.0/photo/2018/15/9649/12315.png8',
   },
   {
@@ -70,7 +70,7 @@ export const VARIANTS: Imagery[] = [
     bounds: NYC_BOUNDS,
     minzoom: 9,
     url: 'https://tiles.arcgis.com/tiles/yG5s3afENB5iO9fj/arcgis/rest/services/NYC_Orthos_2024/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Imagery &copy; City of New York (2024)',
+    attribution: 'Imagery &copy; NYC OTI (2024)',
     probe: 'https://tiles.arcgis.com/tiles/yG5s3afENB5iO9fj/arcgis/rest/services/NYC_Orthos_2024/MapServer/tile/15/12315/9649',
   },
 ]
