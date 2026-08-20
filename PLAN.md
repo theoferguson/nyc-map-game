@@ -715,3 +715,51 @@ imprecision, so this could not have been signed off from the harness.
 
 That closes the last open item in M0–M5. Everything the spec listed for Phase 1 is built and
 verified except content volume, which is deliberately deferred to deploy.
+
+---
+
+## 13. Deployment (2026-08-19)
+
+**Vercel.** The app is static -- a ~330KB gzipped bundle, with map tiles served by DoITT and
+Esri rather than by us -- so a CDN is both cheaper and more scalable than compute. Vercel's
+free tier includes 100GB transfer, roughly 300,000 cold loads a month, and a daily game where
+most players return to a warm cache stays well inside that.
+
+Fly.io was considered and is the wrong shape *for the frontend*: it runs machines, so it would
+mean paying for idle compute to serve files, and hand-rolling multi-region deployment for what
+a CDN does by default. Its bandwidth is genuinely cheaper (\$0.02/GB against Vercel's
+\$0.15/GB over the free allowance), but the crossover is far past where this will be for a
+long time.
+
+**Where Fly does belong is the Phase 3 backend** -- beta codes, custom quizzes, telemetry
+flush and accounts -- alongside the Fly Postgres already running for other projects. Static
+frontend on the CDN, API on Fly.
+
+`npm run build` runs `puzzles:build` first, so Vercel regenerates `public/puzzles/` at deploy
+time. That directory is gitignored deliberately: the encoded puzzles are build output, not
+source.
+
+**The real scaling risk is not the host, it is the tiles.** Every player pulls dozens of tiles
+per round from `maps.nyc.gov` and `server.arcgisonline.com`, which costs us nothing and is
+exactly why it is fragile. Esri's World Imagery endpoint is intended for ArcGIS use, and heavy
+anonymous traffic is plausibly outside its terms and trivially throttled; NYC's service is a
+public city resource that would also notice. If this gets popular, what breaks is a third
+party cutting us off, not a hosting bill -- and mitigating it means caching tiles ourselves,
+which *is* a compute workload and where Fly would earn its place. Check Esri's terms before
+launch rather than after.
+
+### Development serves the queue, not the calendar
+
+`loadTodaysPuzzle` returns the head of the authored queue in development and the real New York
+date in production. Without it the app shows "no puzzle yet" from the day after the last
+authored day, which during a content pause is every day.
+
+`import.meta.env.DEV` is replaced at build time, so the branch is absent from the shipped
+bundle -- verified by grepping the built output for the manifest URL. Production cannot
+silently drift onto queue-head behaviour.
+
+The build now emits `public/puzzles/index.json`, the authored dates earliest first. Phase 2's
+archive and past-days play want the same list.
+
+*Consequence worth knowing:* all storage keys off the puzzle's own `date`, never the date
+requested, or a development session writes progress and streaks under a day it is not playing.

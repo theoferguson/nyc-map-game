@@ -33,4 +33,10 @@ for (const file of files) {
   )
   console.log(`ok  ${file}  ${puzzle.locations.length} locations  ${encoded.length} b64 chars`)
 }
-console.log(`\nbuilt ${files.length} puzzle(s)`)
+// An index of what has been authored, earliest first. Development serves the
+// head of this queue rather than the calendar date, and Phase 2's archive will
+// want the same list.
+const dates = files.map((f) => f.replace(/\.json$/, '')).sort()
+await writeFile(new URL('index.json', OUT), JSON.stringify(dates))
+
+console.log(`\nbuilt ${files.length} puzzle(s), queue head ${dates[0]}`)
