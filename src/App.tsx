@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MapView, type MapHandle, type Overlay } from './map/MapView'
-import { loadPuzzle, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
+import { loadTodaysPuzzle, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
 import { track } from './game/telemetry'
@@ -67,7 +67,7 @@ export default function App() {
   const gameStarted = useRef(0)
 
   useEffect(() => {
-    loadPuzzle(today)
+    loadTodaysPuzzle(today)
       .then((p) => {
         setPuzzle(p)
         gameStarted.current = Date.now()
@@ -76,14 +76,14 @@ export default function App() {
         // Replay the saved taps through the live scoring rules rather than
         // restoring stored numbers, so a resumed game and a fresh one can never
         // disagree about what a guess was worth.
-        const saved = loadProgress(today)
+        const saved = loadProgress(p.date)
         if (saved) {
           const replayed = saved.guesses
             .slice(0, p.locations.length)
             .map((guess, i) => scoreGuess(guess, p.locations[i]))
           setResults(replayed)
           setRound(replayed.length)
-          track('game_resumed', { round: replayed.length + 1, date: today })
+          track('game_resumed', { round: replayed.length + 1, date: p.date })
           // Deliberately not skipping the landing: a player who refreshes wants
           // to be told their progress survived, not dropped back onto the map
           // wondering. A finished game bypasses it anyway, via `over`.
@@ -106,8 +106,8 @@ export default function App() {
   useEffect(() => {
     if (!puzzle || !over || recorded.current) return
     recorded.current = true
-    setStats(recordGame(today, totalScore(results)))
-  }, [puzzle, over, results, today])
+    setStats(recordGame(puzzle.date, totalScore(results)))
+  }, [puzzle, over, results])
 
   const recapShown = useRef(false)
   useEffect(() => {
@@ -159,6 +159,9 @@ export default function App() {
   }
 
   const location = puzzle.locations[round]
+  // The day actually being played, which in development is the head of the
+  // queue rather than the calendar date. All storage keys off this.
+  const activeDate = puzzle.date
 
   function place(guess: LngLat) {
     // The reveal is showing; taps must not overwrite a committed answer.
@@ -171,7 +174,7 @@ export default function App() {
 
     // Written on commit, not on Next. A refresh during the reveal must not cost
     // the player the round they have already played.
-    saveProgress(today, { guesses: [...results.map((r) => r.guess), guess] })
+    saveProgress(activeDate, { guesses: [...results.map((r) => r.guess), guess] })
 
     track('round_complete', {
       round: round + 1,
