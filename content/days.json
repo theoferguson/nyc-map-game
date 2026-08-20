@@ -1,0 +1,427 @@
+[
+  {
+    "theme": null,
+    "locations": [
+      {
+        "id": "empire-state-building",
+        "name": "Empire State Building",
+        "prompt": "Empire State Building",
+        "lat": 40.748442,
+        "lng": -73.985659,
+        "class": "landmark",
+        "borough": "manhattan",
+        "difficulty": 1,
+        "factShort": "It went up in 410 days during the depths of the Depression, a pace helped along by the fact that most of its floors were identical. It then sat mostly empty for years, earning the nickname the Empty State Building.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Empire_State_Building",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "tags": [
+          "midtown",
+          "skyscraper",
+          "art-deco",
+          "1930s",
+          "observation-deck"
+        ],
+        "query": "Empire State Building, New York"
+      },
+      {
+        "id": "yankee-stadium",
+        "name": "Yankee Stadium",
+        "prompt": "Yankee Stadium",
+        "lat": 40.829583,
+        "lng": -73.926521,
+        "class": "area",
+        "borough": "bronx",
+        "difficulty": 2,
+        "factShort": "The current stadium opened in 2009 across the street from the 1923 original, which was demolished and turned into a public park. The old field's home plate is marked in the grass where it stood.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Yankee_Stadium",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "tags": [
+          "south-bronx",
+          "stadium",
+          "baseball",
+          "2000s",
+          "sports"
+        ],
+        "query": "Yankee Stadium, Bronx, New York"
+      },
+      {
+        "id": "wonder-wheel",
+        "name": "The Wonder Wheel",
+        "prompt": "The Wonder Wheel, Coney Island",
+        "lat": 40.574041,
+        "lng": -73.979145,
+        "class": "area",
+        "borough": "brooklyn",
+        "difficulty": 3,
+        "factShort": "Built in 1920 and never once shut down for mechanical failure, the Wonder Wheel carries 24 cars, 16 of which slide along curved tracks as the wheel turns. It kept running through the decades when the rest of Coney Island was falling apart.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Wonder_Wheel",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "tags": [
+          "coney-island",
+          "amusement-park",
+          "waterfront",
+          "1920s",
+          "landmark-ride"
+        ],
+        "query": "Wonder Wheel, Coney Island, Brooklyn"
+      },
+      {
+        "id": "katzs-delicatessen",
+        "name": "Katz's Delicatessen",
+        "prompt": "Katz's Delicatessen",
+        "lat": 40.722343,
+        "lng": -73.987353,
+        "class": "venue",
+        "borough": "manhattan",
+        "difficulty": 4,
+        "factShort": "Open on Houston Street since 1888, Katz's still hands you a paper ticket at the door that you surrender on the way out. During the Second World War it mailed salami to soldiers overseas under the slogan it still hangs on the wall.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Katz%27s_Delicatessen",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "tags": [
+          "lower-east-side",
+          "deli",
+          "jewish-new-york",
+          "1880s",
+          "film-location"
+        ],
+        "query": "Katz's Delicatessen, Manhattan, New York"
+      },
+      {
+        "id": "louis-armstrong-house",
+        "name": "The Louis Armstrong House",
+        "prompt": "The house where Louis Armstrong lived for 28 years",
+        "lat": 40.754568,
+        "lng": -73.861543,
+        "class": "venue",
+        "borough": "queens",
+        "difficulty": 5,
+        "factShort": "Armstrong could have lived anywhere and chose a modest brick house in Corona, Queens, staying from 1943 until his death in 1971. His wife Lucille bought it while he was on tour; he saw it for the first time by taxi at night.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Louis_Armstrong_House",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "tags": [
+          "corona",
+          "house-museum",
+          "jazz",
+          "music-history",
+          "1940s"
+        ],
+        "query": "Louis Armstrong House Museum, Queens, New York"
+      }
+    ]
+  },
+  {
+    "theme": null,
+    "locations": [
+      {
+        "id": "brooklyn-bridge",
+        "name": "The Brooklyn Bridge",
+        "prompt": "The Brooklyn Bridge",
+        "query": "Brooklyn Bridge, New York",
+        "class": "area",
+        "borough": "brooklyn",
+        "difficulty": 1,
+        "tags": [
+          "east-river",
+          "suspension-bridge",
+          "1880s",
+          "engineering"
+        ],
+        "factShort": "Its designer died of tetanus before construction began, and his son took over only to be crippled by decompression sickness in the caissons. His wife Emily then ran the project for eleven years, learning the engineering as she went, and rode across first with a rooster in her lap.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.706218,
+        "lng": -73.997021
+      },
+      {
+        "id": "grand-central-terminal",
+        "name": "Grand Central Terminal",
+        "prompt": "Grand Central Terminal",
+        "query": "Grand Central Terminal, New York",
+        "class": "landmark",
+        "borough": "manhattan",
+        "difficulty": 2,
+        "tags": [
+          "midtown",
+          "beaux-arts",
+          "railway",
+          "1910s"
+        ],
+        "factShort": "The ceiling's zodiac is painted backwards, which the Vanderbilts explained away as the view from God's perspective; it was more likely a plasterer working from a reversed medieval drawing. The building was saved from demolition in 1978 by a Supreme Court case Jackie Onassis helped fight.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Grand_Central_Terminal",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.752694,
+        "lng": -73.977253
+      },
+      {
+        "id": "unisphere",
+        "name": "The Unisphere",
+        "prompt": "The Unisphere",
+        "query": "Unisphere",
+        "class": "area",
+        "borough": "queens",
+        "difficulty": 3,
+        "tags": [
+          "flushing-meadows",
+          "worlds-fair",
+          "1960s",
+          "steel-sculpture"
+        ],
+        "factShort": "Built for the 1964 World's Fair by U.S. Steel, the twelve-storey globe was meant to be dismantled afterwards and never was. Three rings around it mark the orbits of the first satellites, put there when spaceflight was six years old.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Unisphere",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.746384,
+        "lng": -73.845075
+      },
+      {
+        "id": "green-wood-cemetery",
+        "name": "Green-Wood Cemetery",
+        "prompt": "Green-Wood Cemetery",
+        "query": "Green-Wood Cemetery, Brooklyn",
+        "class": "area",
+        "borough": "brooklyn",
+        "difficulty": 4,
+        "tags": [
+          "sunset-park",
+          "cemetery",
+          "1830s",
+          "rural-cemetery-movement"
+        ],
+        "factShort": "In the 1850s it drew half a million visitors a year, second only to Niagara Falls, and its popularity as a place to simply walk is what convinced the city it needed Central Park. Its highest point was where Washington watched the Battle of Long Island go badly wrong.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Green-Wood_Cemetery",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.652203,
+        "lng": -73.991077
+      },
+      {
+        "id": "alice-austen-house",
+        "name": "The Alice Austen House",
+        "prompt": "The Alice Austen House",
+        "query": "Alice Austen House, Staten Island, New York",
+        "class": "landmark",
+        "borough": "staten-island",
+        "difficulty": 5,
+        "tags": [
+          "rosebank",
+          "house-museum",
+          "photography",
+          "victorian"
+        ],
+        "factShort": "Alice Austen made some 8,000 photographs of New York from the 1880s onward, then lost everything in the 1929 crash and died in a poorhouse. A historian found her negatives in a Staten Island archive in 1951 and got her moved to a nursing home months before she died.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Alice_Austen_House",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.615121,
+        "lng": -74.063036
+      }
+    ]
+  },
+  {
+    "theme": null,
+    "locations": [
+      {
+        "id": "times-square",
+        "name": "Times Square",
+        "prompt": "Times Square",
+        "query": "Times Square, New York",
+        "class": "area",
+        "borough": "manhattan",
+        "difficulty": 1,
+        "tags": [
+          "midtown",
+          "theatre-district",
+          "1900s",
+          "public-square"
+        ],
+        "factShort": "It was Longacre Square until The New York Times moved in and got the subway station renamed in 1904. The paper left in 1913 but kept dropping the New Year's ball from the old building, which is why the countdown happens where it does.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Times_Square",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.75701,
+        "lng": -73.985972
+      },
+      {
+        "id": "prospect-park",
+        "name": "Prospect Park",
+        "prompt": "Prospect Park",
+        "query": "Prospect Park, Brooklyn, New York",
+        "class": "area",
+        "borough": "brooklyn",
+        "difficulty": 2,
+        "tags": [
+          "park-slope",
+          "olmsted-vaux",
+          "1860s",
+          "public-park"
+        ],
+        "factShort": "Olmsted and Vaux considered it better than Central Park, which they had finished a few years earlier, because here they were not fighting an awkward rectangle. It holds Brooklyn's last remaining tract of old-growth forest.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Prospect_Park_(Brooklyn)",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.661774,
+        "lng": -73.97109
+      },
+      {
+        "id": "bronx-zoo",
+        "name": "The Bronx Zoo",
+        "prompt": "The Bronx Zoo",
+        "query": "Bronx Zoo, New York",
+        "class": "area",
+        "borough": "bronx",
+        "difficulty": 3,
+        "tags": [
+          "west-farms",
+          "zoo",
+          "1890s",
+          "conservation"
+        ],
+        "factShort": "It saved the American bison from extinction, breeding a herd in the Bronx and shipping animals west to restock the plains. It also, disgracefully, exhibited a Congolese man named Ota Benga in the monkey house in 1906.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Bronx_Zoo",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.849305,
+        "lng": -73.877138
+      },
+      {
+        "id": "the-cloisters",
+        "name": "The Cloisters",
+        "prompt": "The Cloisters",
+        "query": "Met Cloisters, New York",
+        "class": "landmark",
+        "borough": "manhattan",
+        "difficulty": 4,
+        "tags": [
+          "washington-heights",
+          "museum",
+          "medieval",
+          "1930s"
+        ],
+        "factShort": "Rockefeller bought up medieval French cloisters, had them shipped stone by stone and reassembled into one building that never existed in Europe. He also bought the New Jersey palisades opposite so nothing would ever spoil the view from it.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/The_Cloisters",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.864868,
+        "lng": -73.931923
+      },
+      {
+        "id": "bowne-house",
+        "name": "The Bowne House",
+        "prompt": "The Bowne House",
+        "query": "Bowne House, Flushing, Queens",
+        "class": "landmark",
+        "borough": "queens",
+        "difficulty": 5,
+        "tags": [
+          "flushing",
+          "colonial",
+          "religious-freedom",
+          "1660s"
+        ],
+        "factShort": "John Bowne let Quakers meet in his kitchen in 1662, was arrested and shipped to Amsterdam, and argued his way to an acquittal that forced New Netherland to tolerate them. The house still stands, and the argument is treated as an ancestor of the First Amendment.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Bowne_House",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.762891,
+        "lng": -73.824883
+      }
+    ]
+  },
+  {
+    "theme": null,
+    "locations": [
+      {
+        "id": "statue-of-liberty",
+        "name": "The Statue of Liberty",
+        "prompt": "The Statue of Liberty",
+        "query": "Statue of Liberty, New York",
+        "class": "landmark",
+        "borough": "manhattan",
+        "difficulty": 1,
+        "tags": [
+          "liberty-island",
+          "monument",
+          "1880s",
+          "french-gift"
+        ],
+        "factShort": "The arm and torch were exhibited in Madison Square for six years to raise money for a pedestal New York was reluctant to pay for. Joseph Pulitzer eventually shamed the city into it by printing the name of every small donor in his newspaper.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.689253,
+        "lng": -74.044548
+      },
+      {
+        "id": "coney-island-cyclone",
+        "name": "The Cyclone",
+        "prompt": "The Cyclone",
+        "query": "Coney Island Cyclone, Brooklyn",
+        "class": "landmark",
+        "borough": "brooklyn",
+        "difficulty": 2,
+        "tags": [
+          "coney-island",
+          "roller-coaster",
+          "1920s",
+          "wooden-coaster"
+        ],
+        "factShort": "The wooden coaster has run since 1927 on a first drop of eighty-five feet at a slope steeper than most modern steel rides manage. Charles Lindbergh reportedly said riding it was more frightening than flying the Atlantic.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Cyclone_(roller_coaster)",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.574568,
+        "lng": -73.977703
+      },
+      {
+        "id": "new-york-botanical-garden",
+        "name": "The New York Botanical Garden",
+        "prompt": "The New York Botanical Garden",
+        "query": "New York Botanical Garden, Bronx",
+        "class": "area",
+        "borough": "bronx",
+        "difficulty": 3,
+        "tags": [
+          "bronx-park",
+          "garden",
+          "1890s",
+          "herbarium"
+        ],
+        "factShort": "Fifty acres of it are old-growth forest that has never been logged, the last uncut remnant of the woodland that covered the whole city. Its herbarium holds around eight million preserved plant specimens.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/New_York_Botanical_Garden",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.862243,
+        "lng": -73.877154
+      },
+      {
+        "id": "stonewall-inn",
+        "name": "The Stonewall Inn",
+        "prompt": "The Stonewall Inn",
+        "query": "Stonewall Inn, Manhattan, New York",
+        "class": "venue",
+        "borough": "manhattan",
+        "difficulty": 4,
+        "tags": [
+          "greenwich-village",
+          "bar",
+          "1960s",
+          "lgbtq-history"
+        ],
+        "factShort": "It was a mafia-run bar without running water behind the counter, which is partly why it was raided so often. The June 1969 raid met resistance instead of compliance, and the bar became the first LGBTQ site named a national monument.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Stonewall_Inn",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.733816,
+        "lng": -74.002161
+      },
+      {
+        "id": "weeksville-heritage-center",
+        "name": "Weeksville Heritage Center",
+        "prompt": "Weeksville Heritage Center",
+        "query": "Weeksville Heritage Center, Brooklyn",
+        "class": "landmark",
+        "borough": "brooklyn",
+        "difficulty": 5,
+        "tags": [
+          "crown-heights",
+          "african-american-history",
+          "1830s",
+          "free-black-community"
+        ],
+        "factShort": "James Weeks, a free Black longshoreman, bought land here in 1838 and built one of the largest free Black communities in pre-Civil War America, with its own school, church and newspaper. It was forgotten entirely until a 1968 flight over Brooklyn spotted four surviving houses on a forgotten lane.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Weeksville,_Brooklyn",
+        "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+        "lat": 40.674227,
+        "lng": -73.925234
+      }
+    ]
+  }
+]

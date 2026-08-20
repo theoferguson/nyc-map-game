@@ -1,0 +1,102 @@
+{
+  "date": "2026-08-21",
+  "puzzleNumber": 2,
+  "theme": null,
+  "locations": [
+    {
+      "id": "brooklyn-bridge",
+      "name": "The Brooklyn Bridge",
+      "prompt": "The Brooklyn Bridge",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 1,
+      "tags": [
+        "east-river",
+        "suspension-bridge",
+        "1880s",
+        "engineering"
+      ],
+      "factShort": "Its designer died of tetanus before construction began, and his son took over only to be crippled by decompression sickness in the caissons. His wife Emily then ran the project for eleven years, learning the engineering as she went, and rode across first with a rooster in her lap.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.706218,
+      "lng": -73.997021
+    },
+    {
+      "id": "grand-central-terminal",
+      "name": "Grand Central Terminal",
+      "prompt": "Grand Central Terminal",
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 2,
+      "tags": [
+        "midtown",
+        "beaux-arts",
+        "railway",
+        "1910s"
+      ],
+      "factShort": "The ceiling's zodiac is painted backwards, which the Vanderbilts explained away as the view from God's perspective; it was more likely a plasterer working from a reversed medieval drawing. The building was saved from demolition in 1978 by a Supreme Court case Jackie Onassis helped fight.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Grand_Central_Terminal",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.752694,
+      "lng": -73.977253
+    },
+    {
+      "id": "unisphere",
+      "name": "The Unisphere",
+      "prompt": "The Unisphere",
+      "class": "area",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": [
+        "flushing-meadows",
+        "worlds-fair",
+        "1960s",
+        "steel-sculpture"
+      ],
+      "factShort": "Built for the 1964 World's Fair by U.S. Steel, the twelve-storey globe was meant to be dismantled afterwards and never was. Three rings around it mark the orbits of the first satellites, put there when spaceflight was six years old.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Unisphere",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.746384,
+      "lng": -73.845075
+    },
+    {
+      "id": "green-wood-cemetery",
+      "name": "Green-Wood Cemetery",
+      "prompt": "Green-Wood Cemetery",
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 4,
+      "tags": [
+        "sunset-park",
+        "cemetery",
+        "1830s",
+        "rural-cemetery-movement"
+      ],
+      "factShort": "In the 1850s it drew half a million visitors a year, second only to Niagara Falls, and its popularity as a place to simply walk is what convinced the city it needed Central Park. Its highest point was where Washington watched the Battle of Long Island go badly wrong.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Green-Wood_Cemetery",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.652203,
+      "lng": -73.991077
+    },
+    {
+      "id": "alice-austen-house",
+      "name": "The Alice Austen House",
+      "prompt": "The Alice Austen House",
+      "class": "landmark",
+      "borough": "staten-island",
+      "difficulty": 5,
+      "tags": [
+        "rosebank",
+        "house-museum",
+        "photography",
+        "victorian"
+      ],
+      "factShort": "Alice Austen made some 8,000 photographs of New York from the 1880s onward, then lost everything in the 1929 crash and died in a poorhouse. A historian found her negatives in a Staten Island archive in 1951 and got her moved to a nursing home months before she died.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Alice_Austen_House",
+      "sourceAttribution": "Wikipedia, CC BY-SA 4.0",
+      "lat": 40.615121,
+      "lng": -74.063036
+    }
+  ]
+}
