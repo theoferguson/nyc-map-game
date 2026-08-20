@@ -707,7 +707,11 @@ set varies *fill* -- `○ ◔ ◕ ●` -- which survives being seen in greyscale
 **Verified at 380px with touch emulation:** no horizontal overflow, `touch-action: none` in
 force, hold ring draws, early release cancels, full hold commits.
 
-*Not yet verified, and it cannot be from here:* the hold and drift thresholds on real
-hardware, and that iOS Safari raises no callout on long-press. Chrome's touch emulation does
-not reproduce either. The spec is explicit that these need tuning on a device, so they remain
-open.
+**Verified on device (2026-08-19).** 800ms hold, 12px drift cancel and `clickTolerance: 10` all
+confirmed on real hardware, with no iOS callout on long-press over the map. The spec required
+these be tuned on a phone rather than in a desktop browser; they were, and none needed
+changing. Chrome's touch emulation reproduces neither the callout behaviour nor thumb
+imprecision, so this could not have been signed off from the harness.
+
+That closes the last open item in M0–M5. Everything the spec listed for Phase 1 is built and
+verified except content volume, which is deliberately deferred to deploy.
