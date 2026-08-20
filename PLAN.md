@@ -911,3 +911,44 @@ The script also enforces the content rules before writing anything: five locatio
 difficulty climbing, at least two outside Manhattan, coordinates inside the map's bounds,
 valid class and borough, three or more tags, a fact of reasonable length, a source, and no
 location repeated across the whole run. It prints the borough mix so drift is visible.
+
+### The 50-day pass (2026-08-20)
+
+56 puzzles built: six preview days serving the dev quiz as #0 from 2026-08-20, then the real
+queue of 50 days running 2026-08-26 to 2026-10-14.
+
+Borough mix landed on the spec's targets exactly: Manhattan 35, Brooklyn 22, Queens 20,
+Bronx 15, Staten Island 8 percent.
+
+**Geocoding 250 locations surfaced four distinct classes of error**, none of which would have
+failed a test and all of which would have shipped as coordinates that mark correct answers
+wrong:
+
+*Over-qualified queries silently fail.* "Nathan's Famous, Coney Island, Brooklyn" returns
+nothing; 44 of 250 failed this way on the first pass.
+
+*Under-qualified queries silently succeed, elsewhere.* Stripping the qualifier makes
+"Nathan's Famous" resolve to a restaurant in Moscow. A geocoder that is confidently wrong is
+far more dangerous than one that returns nothing, which is why every lookup is now bounded to
+the city with `viewbox` and `bounded=1` -- a bare name can only ever resolve inside New York.
+
+*Cached bad results outlive the fix.* `bronx-river` was geocoded before the viewbox existed
+and resolved to Westchester, 40.98 north. The bounds check caught it. Left in, that round
+would have been literally unwinnable: the answer sits outside the map's own `maxBounds`, so
+no tap could reach it.
+
+*OSM knows places by other names.* 27 needed the name OpenStreetMap actually uses, or a street
+address -- "263 Mulberry Street" for Old St Patrick's, "2403 Grand Concourse" for the Paradise.
+
+**Two conceptual duplicates were caught by the new same-place check**: the Green-Wood chapel
+sits inside Green-Wood Cemetery, and the Hunterfly Road houses *are* Weeksville. Distinct ids
+and distinct names, same place — a player would have been asked to find somewhere they had
+already found. Both replaced.
+
+**Verification:** a reverse-geocode spot-check of 36 locations spread across the set found no
+borough mismatches. The two it flagged are bridges, where the coordinate sits mid-span and the
+name picks a side.
+
+**Still outstanding:** the facts. Coordinates are machine-verified; 250 facts written from
+knowledge are not, and each carries a Wikipedia source URL so a human pass is mechanical. The
+spec asks for exactly that review and it has not happened.
