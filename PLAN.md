@@ -763,3 +763,50 @@ archive and past-days play want the same list.
 
 *Consequence worth knowing:* all storage keys off the puzzle's own `date`, never the date
 requested, or a development session writes progress and streaks under a day it is not playing.
+
+---
+
+## 14. Tile performance and caching — to investigate
+
+Measured 2026-08-20, one full five-round game on a 390px viewport:
+
+| | requests | bytes | notes |
+|---|---|---|---|
+| DoITT city | 89 | 3.16 MB | **22 are 404s** — a quarter of them |
+| Esri world | 71 | 1.21 MB | drawn *underneath* the city layer |
+| **total** | **160** | **4.38 MB** | 18 tiles / 0.49 MB just to reach the standard framing |
+
+Two problems are already visible in that table, before any deeper investigation.
+
+**A quarter of city-layer requests are 404s.** DoITT stops at the city line, but the source has
+no `bounds`, so MapLibre requests tiles for water and New Jersey and gets nothing back. Raster
+sources accept a `bounds` field; setting it to the NYC extent should remove those outright.
+
+**Esri is fetched at full detail underneath an opaque layer.** It exists to fill the surround
+outside the city, which only shows at wide framings — yet it is fetched at every zoom,
+including z18 inside Manhattan where the city layer covers it completely. Capping the Esri
+source's `maxzoom` low and letting MapLibre overzoom those tiles for the background should
+remove most of that 1.21 MB without any visible change.
+
+**Then caching, which is the larger win.** Nothing is cached between sessions today, so a
+daily player re-downloads the standard framing every single day. A service worker over the
+Cache API would make the opening view instant on day two and cut repeat load substantially.
+Worth checking third-party cache headers first — a proxy would be needed to set our own TTLs,
+which is the same infrastructure as the tile-proxy option below.
+
+**Why this is not just a nicety.** 4.38 MB per game is real on mobile data, and it is entirely
+third-party: at 100,000 daily players that is roughly 440 GB a day landing on NYC's public
+service and Esri's free endpoint. The terms question raised in section 13 is a good deal
+sharper with that number attached — this is the volume that gets an anonymous client
+throttled or blocked, and no amount of hosting spend prevents it. Reducing tile count is
+therefore a dependency-risk mitigation first and a performance win second.
+
+**Investigate in this order,** cheapest and most certain first: source `bounds` to kill the
+404s; Esri `maxzoom` to stop fetching hidden detail; 512px tiles where a service offers them,
+halving request count; prefetching the standard framing at boot so round one is instant; then
+a service worker for cross-session caching; and only then a tile proxy, which buys TTL
+control and insulation from a third-party cutoff but is the first thing here that needs a
+server.
+
+*Measure after each, not before.* The table above is the baseline to beat, and it is cheap to
+regenerate.
