@@ -952,3 +952,14 @@ name picks a side.
 **Still outstanding:** the facts. Coordinates are machine-verified; 250 facts written from
 knowledge are not, and each carries a Wikipedia source URL so a human pass is mechanical. The
 spec asks for exactly that review and it has not happened.
+
+### Deploy note: the build command must be `npm run build`
+
+Vercel auto-detects Vite and proposes `vite build`, which is wrong here and fails silently in
+a way that is easy to miss. `public/puzzles/` is generated and gitignored; only
+`npm run build` runs `puzzles:build` to produce it. A CLI deploy from a working directory
+uploads the already-generated files and looks fine, so the first deploy passes -- and then
+the first build from a git checkout produces a site with no puzzles at all.
+
+`vercel.json` pins the build command in the repository rather than leaving it to a dashboard
+setting, so it cannot drift or be lost when the project is relinked.
