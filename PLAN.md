@@ -846,3 +846,44 @@ one of those Esri tiles used to be fetched and hidden.
 
 Still open from this section: 512px tiles, prefetching the standard framing, the service
 worker for cross-session caching, and a tile proxy.
+
+---
+
+## 15. Imagery licensing — checked 2026-08-20
+
+**Both city surveys are official City of New York services.** `NYC_Orthos_2024` is hosted by
+the `NYCmaps` ArcGIS organisation and credited to NYC OTI, DoITT's successor. Public
+government imagery, attribution required, no obstacle.
+
+**Attribution was wrong and is now fixed.** We credited Maxar; Esri's own `copyrightText` reads
+Vantor. The city layers said DoITT rather than NYC OTI. Both corrected -- that was the only
+clear defect the review turned up.
+
+**Esri World Imagery sits under the Esri Master License Agreement.** No grant could be found
+covering anonymous use of `server.arcgisonline.com` from a non-ArcGIS application. That is
+absence of permission rather than prohibition, and the realistic exposure is operational --
+an unannounced throttle or block -- rather than legal.
+
+**Decision: keep it.** The alternatives were worse on inspection:
+
+| option | why not |
+|---|---|
+| Sentinel-2 cloudless (EOX) | CC BY-**NC**-SA for 2018–2025 data, not CC BY. Explicitly excludes commercial use, so it is a firmer bar than Esri's silence for anything that might monetise later |
+| ArcGIS API key | Clean terms, but meters basemap requests and would exceed the free tier at section 14 volumes |
+| NASA public-domain imagery | ~500 m/px, far too coarse at the recap framing |
+
+There is no free-for-commercial global satellite basemap at this quality. Raw Copernicus
+Sentinel data is openly licensed but would need mosaicking ourselves, which is exactly the
+work EOX sells.
+
+**One clause to carry into section 14.** The World Imagery item states: *"This layer is not
+intended to be used to export tiles for offline."* A service worker caching Esri tiles across
+sessions is arguably the thing that forbids. The city layers carry no such restriction, so
+cross-session caching should be scoped to those and the Esri layer left uncached.
+
+**Escape hatch, already costed.** If Esri ever throttles or the licence question becomes
+pressing, the fix is to drop it from normal play and paint the surround a flat colour, keeping
+Esri only as the fallback when city imagery is unreachable. That removes roughly 44% of
+remaining tile requests as a side effect, and arguably reads better -- flat colour states the
+play boundary, where satellite imagery invites players to study somewhere they cannot be
+scored. Roughly an hour's work if it is ever needed.
