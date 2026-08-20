@@ -810,3 +810,39 @@ server.
 
 *Measure after each, not before.* The table above is the baseline to beat, and it is cheap to
 regenerate.
+
+### Applied 2026-08-20
+
+Both quick wins done, measured before and after on the same imagery variant so the numbers
+are comparable.
+
+| | before | after |
+|---|---|---|
+| requests per game | 160 | **126** |
+| city-layer 404s | 22 | **0** |
+| Esri requests | 71 | 56 |
+
+**Source `bounds` and `minzoom` killed every 404.** All 22 were outside the NYC box at zooms 1
+to 11 -- MapLibre walking the pyramid upward hunting a parent tile to display while the real
+one loaded, and getting nothing back each time because the city surveys start and stop at the
+city line. Coverage is a property of the service, so it now lives on the source rather than
+being left implicit.
+
+**Esri capped at z13.** Its whole job is filling the surround outside the city, which is only
+on screen at the wide end-of-game framing. From z14 up the player is inside the boroughs
+looking at a building, where the city survey is opaque over it -- so every Esri tile fetched
+there was bytes nobody could see. Verified at z18 over Katz's: Esri now stops at exactly 13
+while the city layer still delivers native z18 detail, on both variants, with zero failures.
+
+*Two measurement traps worth remembering.* Byte totals move several percent run to run purely
+from where the automated player happens to tap, so request count is the stabler signal.
+And the imagery A/B assigns a variant per browser profile, so any run that does not pin
+`nycmap:imagery` is silently measuring whichever survey it drew -- one run reported no city
+tiles at all simply because it had been given the variant the matcher did not recognise.
+
+*Understated on purpose:* the scripted player never zooms past about z15, so the Esri saving
+in that table is a floor. Real play spends its time at z16-18 hunting storefronts, and every
+one of those Esri tiles used to be fetched and hidden.
+
+Still open from this section: 512px tiles, prefetching the standard framing, the service
+worker for cross-session caching, and a tile proxy.
