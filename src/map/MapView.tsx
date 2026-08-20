@@ -1,13 +1,4 @@
-import {
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type Ref,
-  type ReactNode,
-} from 'react'
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import {
   Map as MapLibreMap,
   Marker,
@@ -16,7 +7,6 @@ import {
   type GeoJSONSource,
 } from 'maplibre-gl'
 import { resolveSources, NYC_BOUNDS as NYC } from './tiles'
-import { deoverlap, CARD_W } from './deoverlap'
 import type { LngLat } from '../game/scoring'
 
 /** [[W,S],[E,N]] for the camera APIs -- the player cannot pan out of the city. */
@@ -54,16 +44,19 @@ const DOUBLE_CLICK_WINDOW_MS = 300
 const EMPTY = { type: 'FeatureCollection', features: [] } as const
 
 
-/** A card pinned to a map coordinate -- the end-of-game fact cards. */
-export type Overlay = { id: string; lngLat: LngLat; content: ReactNode }
-
 export type MapHandle = {
   /** Return to the identical standard framing every round starts from. */
   resetCamera: () => void
   revealAnswer: (guess: LngLat, answer: LngLat) => void
   clearPins: () => void
-  /** End of game: every answer at once, camera pulled back to hold them all. */
+  /** End of game: drop every answer pin. */
   showAllAnswers: (points: LngLat[]) => void
+  /**
+   * Move to one answer as the player steps through the recap. `bottomInset` is
+   * the height of the panel covering the map, so the pin lands in the part the
+   * player can actually see.
+   */
+  focusLocation: (p: LngLat, bottomInset?: number) => void
 }
 
 
@@ -74,7 +67,6 @@ export function MapView({
   enabled = true,
   carefulMode = false,
   holdMs = 800,
-  overlays = [],
 }: {
   ref?: Ref<MapHandle>
   onPlace: (p: LngLat) => void
@@ -86,7 +78,6 @@ export function MapView({
   /** Commit on a deliberate press-and-hold instead of a tap. */
   carefulMode?: boolean
   holdMs?: number
-  overlays?: Overlay[]
 }) {
   const container = useRef<HTMLDivElement>(null)
   const map = useRef<MapLibreMap | null>(null)
@@ -94,13 +85,9 @@ export function MapView({
   const pins = useRef<Marker[]>([])
   const pendingPlace = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resetting = useRef(false)
-  const [loaded, setLoaded] = useState<MapLibreMap | null>(null)
-  const [moveTick, setMoveTick] = useState(0)
   /** Screen position of an in-progress hold, for the ring. */
   const [holding, setHolding] = useState<{ x: number; y: number } | null>(null)
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const cardEls = useRef<Record<string, HTMLDivElement | null>>({})
-  const [heights, setHeights] = useState<Record<string, number>>({})
 
   // These change as the round advances, but the map listener is registered once,
   // so read the current values through refs rather than rebuilding the map.
@@ -225,7 +212,6 @@ export function MapView({
           zoom: m.getZoom(),
           bearing: 0,
         }
-      setLoaded(m)
       ready.current?.()
     })
 
@@ -236,60 +222,6 @@ export function MapView({
       map.current = null
     }
   }, [])
-
-  // The camera is the external system; subscribing is all the effect does.
-  // Only while cards are on screen -- during normal play there is nothing
-  // anchored to the map, so waking React on every frame buys nothing.
-  const hasOverlays = overlays.length > 0
-  useEffect(() => {
-    if (!loaded || !hasOverlays) return
-    const bump = () => setMoveTick((t) => t + 1)
-    loaded.on('move', bump)
-    return () => {
-      loaded.off('move', bump)
-    }
-  }, [loaded, hasOverlays])
-
-  // Card heights vary by more than 2x with fact length, so they are measured
-  // rather than estimated. An estimate here silently overlaps the tall ones.
-  useLayoutEffect(() => {
-    const measured: Record<string, number> = {}
-    for (const o of overlays) {
-      const h = cardEls.current[o.id]?.offsetHeight
-      if (h) measured[o.id] = h
-    }
-    // Measuring rendered DOM is exactly the "synchronise with an external
-    // system" case; the height cannot be derived during render because it does
-    // not exist until the browser has laid the card out.
-    // oxlint-disable-next-line react/set-state-in-effect
-    setHeights((prev) => {
-      const same =
-        Object.keys(measured).length === Object.keys(prev).length &&
-        Object.entries(measured).every(([k, v]) => prev[k] === v)
-      return same ? prev : measured
-    })
-    // Deliberately NOT keyed on camera movement: offsetHeight forces a
-    // synchronous layout, and card height cannot change from panning. Measuring
-    // per move meant five forced layouts every frame of every drag.
-  }, [overlays])
-
-  // Card positions are derived, not stored: project each coordinate to screen
-  // space and re-derive whenever the camera moves. Only five cards, and only at
-  // game over, so this is cheaper than the marker-plus-portal lifecycle it
-  // replaces -- and it cannot fall out of sync with the map.
-  const placed = useMemo(() => {
-    void moveTick // re-project on every camera move; map.project() is not reactive
-    if (!loaded || !overlays.length) return []
-    return deoverlap(
-      overlays.map((o) => {
-        const { x, y } = loaded.project([o.lngLat.lng, o.lngLat.lat])
-        // Before the first measurement lands, assume tall: a card that starts
-        // too large only settles inward, which never flashes an overlap.
-        return { id: o.id, x, y, h: heights[o.id] ?? 240 }
-      }),
-      loaded.getContainer().clientHeight,
-    )
-  }, [loaded, overlays, moveTick, heights])
 
   useImperativeHandle(ref, () => ({
     resetCamera: () => {
@@ -344,38 +276,37 @@ export function MapView({
       src?.setData(EMPTY)
     },
 
+    focusLocation: (p, bottomInset = 0) => {
+      const m = map.current
+      if (!m) return
+      // Close enough to read the block, wide enough to keep a neighbouring pin
+      // in frame so the recap still feels like a map rather than a slideshow.
+      //
+      // The padding is load-bearing: the recap panel covers the lower half of a
+      // phone screen, so centring the answer would put the pin directly behind
+      // it. This lifts it into the visible strip above.
+      m.flyTo({
+        center: [p.lng, p.lat],
+        zoom: 15,
+        padding: { top: 0, left: 0, right: 0, bottom: bottomInset },
+        duration: 900,
+        essential: true,
+      })
+    },
+
     showAllAnswers: (points) => {
       const m = map.current
       if (!m || !points.length) return
       points.forEach((p) => addPin(m, p, '#22c55e'))
 
       // maxBounds exists to stop players wandering out of the city mid-round.
-      // At the recap framing the viewport is wider than the city itself, so
-      // MapLibre has nowhere legal to pan and the map locks solid. The game is
-      // over -- there is nothing left to constrain.
+      // The game is over; there is nothing left to constrain, and the recap
+      // flies between answers which the cage would fight.
       m.setMaxBounds(null)
 
-      const bounds = points.reduce(
-        (b, p) => b.extend([p.lng, p.lat]),
-        new LngLatBounds([points[0].lng, points[0].lat], [points[0].lng, points[0].lat]),
-      )
-      // Cards hang above their pins and are wider than them, so the framing has
-      // to hold the cards, not just the answers. Too little padding here and the
-      // northernmost card is simply cut off the top of the screen.
-      m.fitBounds(bounds, {
-        padding: {
-          top: 280, // a tall card plus its pin
-          bottom: 260, // clears the results sheet
-          left: CARD_W / 2 + 12,
-          right: CARD_W / 2 + 12,
-        },
-        maxZoom: 13,
-        duration: 1200,
-      })
     },
   }), [])
 
-  const byId = new Map(placed.map((p) => [p.id, p]))
 
   const cancelHold = () => {
     if (holdTimer.current) clearTimeout(holdTimer.current)
@@ -459,48 +390,6 @@ export function MapView({
           </circle>
         </svg>
       )}
-      {/* Leaders first, so cards paint over them. */}
-      {placed.length > 0 && (
-        <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full">
-          {placed.map((p) => (
-            <g key={p.id}>
-              <line
-                x1={p.anchorX}
-                y1={p.anchorY}
-                x2={p.x}
-                y2={p.y}
-                stroke="rgb(251 191 36 / 0.7)"
-                strokeWidth={1.5}
-              />
-              <circle cx={p.anchorX} cy={p.anchorY} r={2.5} fill="rgb(251 191 36)" />
-            </g>
-          ))}
-        </svg>
-      )}
-      {overlays.map((o) => {
-        const p = byId.get(o.id)
-        if (!p) return null
-        return (
-          // pointer-events-none throughout: the cards are read, not operated,
-          // and a wall of five of them would otherwise swallow every pan and
-          // pinch aimed at the map underneath.
-          <div
-            key={o.id}
-            ref={(el) => {
-              cardEls.current[o.id] = el
-            }}
-            className="pointer-events-none absolute z-20"
-            style={{
-              left: p.x,
-              top: p.y,
-              width: CARD_W,
-              transform: 'translate(-50%, -100%)',
-            }}
-          >
-            {o.content}
-          </div>
-        )
-      })}
     </div>
   )
 }

@@ -275,46 +275,6 @@ discovered later. And custom quiz results must be segregated from daily telemetr
 affinity model and the imagery experiment are both polluted by scopes and scoring curves they
 were never calibrated against.
 
-**Mobile recap is overcrowded and the share panel is buried.** Open, no solution chosen.
-
-Measured on a 390x800 viewport after a full game:
-
-| | |
-|---|---|
-| cards on screen | 5, totalling **63% of the viewport area** |
-| cards partly off screen | 2 |
-| cards overlapping the results panel | 2, covering **31% of it** |
-| z-index | cards 20, results panel 10 |
-
-Two problems are tangled here and they want separating before anyone reaches for a fix.
-
-*One is a layering bug.* Cards paint above the results panel. Because the cards are
-`pointer-events-none` the Share button still works, so this reads as purely cosmetic -- but
-the player cannot see their score, their squares, or the button. That half is a one-line
-z-index change.
-
-*The other is a genuine design conflict and will not yield to a nudge.* Five fact cards at
-readable size need roughly a thousand vertical pixels; a phone has eight hundred, and the
-results panel wants two hundred and forty of those. The de-overlap already spills into a
-second column and still pushes cards off-screen, because it has no concept of the results
-panel as an obstacle -- it only knows about other cards.
-
-The conflict is with a decision made deliberately: every fact is revealed outright, with no
-tap, because the recap is the payoff. That works on a desktop and does not fit on a phone.
-Whatever the fix is, it trades against that, so it should be a considered trade rather than a
-quiet regression back to tap-to-reveal.
-
-Directions worth weighing, none chosen:
-
-- Teach `deoverlap` about reserved regions, so cards route around the panel rather than under it
-- Let the results panel collapse to a summary bar, expanding on tap -- reclaims 240px without touching the cards
-- Shrink cards on small viewports: fewer lines of fact, expandable
-- Split the mobile recap into map-with-pins plus a swipeable card deck, keeping "all facts, no tap" as "all facts, one swipe"
-- Zoom the recap tighter on phones and let players pan between answers, accepting that not all five are on screen at once
-
-*Measure the same numbers after any attempt.* The table above is the baseline, and
-`recap.mjs` in the session scratchpad regenerates it.
-
 **Beta mode — playtest codes.** A code that unlocks five plays per day drawn from the *next*
 scheduled days' rounds, so testers burn future content instead of replaying today's. Needs a
 feedback capture path and somewhere to put the results, which is the first thing in this
@@ -1046,3 +1006,39 @@ the Share button, rather than by looking at a screenshot and believing it.
 This fixes only the layering half of the mobile recap problem in section 8. The density half
 -- five cards needing about 1,000px of height on an 800px screen -- is untouched and still
 wants a design decision.
+
+---
+
+## 18. The recap, restructured (2026-08-20)
+
+Five fact cards pinned to the map never fit a phone: they covered 63% of a 390x800 viewport,
+two ran off screen, and two sat over the results panel. Raising the panel's z-index made the
+score and Share button visible again but did nothing about the crowding, because the crowding
+was not a bug -- five cards at readable size need about a thousand vertical pixels and a phone
+has eight hundred.
+
+**The recap now steps through one answer at a time.** A panel above the share block carries the
+location, the miss, the score and the fact, with arrows either side; the map flies to each
+answer at z15 as you move. Wraps at both ends -- five items is short enough that cycling past
+the last is friendlier than a dead arrow. The share block is always on screen, which was the
+point: it is the distribution mechanism, and burying it broke the share loop at exactly the
+moment it should fire.
+
+Flying the map to each answer does the job the leader lines were doing -- showing which place
+is being talked about -- without needing any of the machinery.
+
+**`flyTo` padding is load-bearing.** The panel covers the lower half of a phone screen, so
+centring an answer puts the pin directly behind it. The panel measures itself and passes its
+height up, because nothing else can know how tall a given fact has made it. Verified across
+all five steps: the focused pin lands in the visible strip above the panel every time.
+
+**What this deleted.** `deoverlap.ts` and its tests, the leader-line SVG, the React portals,
+the per-card height measurement, the camera-move subscription and the projection memo -- the
+whole anchored-card system, which had already produced an infinite loop that froze the tab, a
+silent no-op behind an unfired event, and a wall that swallowed every pan. MapView went from
+506 lines to 381.
+
+*The lesson worth keeping:* that machinery existed to solve a layout problem that a different
+interaction did not have. Three separate bugs came out of positioning five variable-height
+cards against a moving camera, and none of them would have existed if the recap had stepped
+through answers from the start.
