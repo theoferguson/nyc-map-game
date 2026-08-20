@@ -1054,3 +1054,26 @@ not rise to fill it. The focus call therefore re-runs on collapse as well as on 
 
 Recap zoom eased from 15 to 14.5, so an answer sits in some neighbourhood rather than filling
 the frame.
+
+### The test gate (2026-08-20)
+
+`npm run build` now runs the suite:
+
+    npm run puzzles:build && tsc -b && vitest run && vite build
+
+That is the gate, and it is a real one rather than a signal. Vercel builds with this command,
+so a failing test means a failing build, which means **no deployment at all** -- production
+keeps serving the previous version rather than taking a broken one. Verified by planting a
+deliberately failing test: exit code 1, and `vite` never ran, so no bundle was produced.
+
+A GitHub Action running the tests would report a failure but would not stop Vercel, which
+deploys independently and in parallel. Putting the tests inside the build is what actually
+blocks the deploy.
+
+`vitest run` rather than `npm test`, because `test` has a `pretest` hook that would rebuild
+the puzzles a second time for nothing.
+
+*The one risk this introduces:* the build now depends on devDependencies being installed on
+the build host. Vercel installs them by default, but if that ever changed the build would fail
+with a missing binary and **nothing would deploy** -- a broken gate is worse than no gate. The
+recovery is to drop `vitest run` from the build script.

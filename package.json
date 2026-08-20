@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "npm run puzzles:build && tsc -b && vite build",
+    "build": "npm run puzzles:build && tsc -b && vitest run && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
     "check:tiles": "node scripts/check-tiles.mjs",
