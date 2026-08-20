@@ -275,6 +275,46 @@ discovered later. And custom quiz results must be segregated from daily telemetr
 affinity model and the imagery experiment are both polluted by scopes and scoring curves they
 were never calibrated against.
 
+**Mobile recap is overcrowded and the share panel is buried.** Open, no solution chosen.
+
+Measured on a 390x800 viewport after a full game:
+
+| | |
+|---|---|
+| cards on screen | 5, totalling **63% of the viewport area** |
+| cards partly off screen | 2 |
+| cards overlapping the results panel | 2, covering **31% of it** |
+| z-index | cards 20, results panel 10 |
+
+Two problems are tangled here and they want separating before anyone reaches for a fix.
+
+*One is a layering bug.* Cards paint above the results panel. Because the cards are
+`pointer-events-none` the Share button still works, so this reads as purely cosmetic -- but
+the player cannot see their score, their squares, or the button. That half is a one-line
+z-index change.
+
+*The other is a genuine design conflict and will not yield to a nudge.* Five fact cards at
+readable size need roughly a thousand vertical pixels; a phone has eight hundred, and the
+results panel wants two hundred and forty of those. The de-overlap already spills into a
+second column and still pushes cards off-screen, because it has no concept of the results
+panel as an obstacle -- it only knows about other cards.
+
+The conflict is with a decision made deliberately: every fact is revealed outright, with no
+tap, because the recap is the payoff. That works on a desktop and does not fit on a phone.
+Whatever the fix is, it trades against that, so it should be a considered trade rather than a
+quiet regression back to tap-to-reveal.
+
+Directions worth weighing, none chosen:
+
+- Teach `deoverlap` about reserved regions, so cards route around the panel rather than under it
+- Let the results panel collapse to a summary bar, expanding on tap -- reclaims 240px without touching the cards
+- Shrink cards on small viewports: fewer lines of fact, expandable
+- Split the mobile recap into map-with-pins plus a swipeable card deck, keeping "all facts, no tap" as "all facts, one swipe"
+- Zoom the recap tighter on phones and let players pan between answers, accepting that not all five are on screen at once
+
+*Measure the same numbers after any attempt.* The table above is the baseline, and
+`recap.mjs` in the session scratchpad regenerates it.
+
 **Beta mode — playtest codes.** A code that unlocks five plays per day drawn from the *next*
 scheduled days' rounds, so testers burn future content instead of replaying today's. Needs a
 feedback capture path and somewhere to put the results, which is the first thing in this
