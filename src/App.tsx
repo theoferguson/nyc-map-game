@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { MapView, type MapHandle } from './map/MapView'
-import { loadTodaysPuzzle, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
+import { loadTodaysPuzzle, loadPuzzle, puzzleQueue, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
 import { track } from './game/telemetry'
 import { imageryVariant } from './map/tiles'
-import { puzzleDate, msUntilRollover, formatCountdown } from './game/date'
+import {
+  puzzleDate,
+  msUntilRollover,
+  formatCountdown,
+  shiftDate,
+  daysBetween,
+} from './game/date'
 import {
   loadProgress,
   saveProgress,
@@ -14,6 +20,10 @@ import {
   loadSettings,
   saveSettings,
   HOLD_OPTIONS,
+  betaUnlocked,
+  tryBetaCode,
+  lockBeta,
+  BETA_DAYS_AHEAD,
   type Stats,
   type Settings,
 } from './game/storage'
@@ -43,6 +53,30 @@ export default function App() {
   const [mapReady, setMapReady] = useState(false)
   const [settings, setSettings] = useState<Settings>(loadSettings)
   const [showSettings, setShowSettings] = useState(false)
+  const [beta, setBeta] = useState(betaUnlocked)
+  const [queue, setQueue] = useState<string[]>([])
+
+  /**
+   * The day chosen from the beta picker, or null for the ordinary daily game.
+   *
+   * Any picked day is a beta play and is ephemeral: nothing is saved and
+   * nothing is recorded. Progress and stats are keyed by date, so a tester
+   * burning five days in a sitting would otherwise manufacture a five-day
+   * streak, and the progress pruner -- which deliberately keeps only the
+   * current day -- would delete the real game they had in flight.
+   */
+  const [pickedDate, setPickedDate] = useState<string | null>(null)
+  const ephemeral = pickedDate !== null
+
+  /**
+   * The day the ordinary game serves when nothing is picked.
+   *
+   * In production that is today. In development it is the head of the queue,
+   * so the two are not interchangeable -- comparing a picked day against
+   * `today` instead made the picker unable to move past it, because picking
+   * today collapsed to "no pick" and reloaded the queue head.
+   */
+  const [homeDate, setHomeDate] = useState<string | null>(null)
 
   function updateSettings(patch: Partial<Settings>) {
     const next = { ...settings, ...patch }
@@ -67,16 +101,24 @@ export default function App() {
   const gameStarted = useRef(0)
 
   useEffect(() => {
-    loadTodaysPuzzle(today)
+    if (!beta) return
+    puzzleQueue().then((dates) => setQueue(dates.filter((d) => d <= shiftDate(today, BETA_DAYS_AHEAD))))
+  }, [beta, today])
+
+  useEffect(() => {
+    const load = pickedDate ? loadPuzzle(pickedDate) : loadTodaysPuzzle(today)
+    load
       .then((p) => {
         setPuzzle(p)
+        if (!pickedDate) setHomeDate(p.date)
         gameStarted.current = Date.now()
         roundStarted.current = Date.now()
 
         // Replay the saved taps through the live scoring rules rather than
         // restoring stored numbers, so a resumed game and a fresh one can never
-        // disagree about what a guess was worth.
-        const saved = loadProgress(p.date)
+        // disagree about what a guess was worth. A beta day never resumes:
+        // it was never saved, which is also what lets a past day be replayed.
+        const saved = pickedDate ? null : loadProgress(p.date)
         if (saved) {
           const replayed = saved.guesses
             .slice(0, p.locations.length)
@@ -96,7 +138,7 @@ export default function App() {
         }
       })
       .catch((e: Error) => setError(e.message))
-  }, [today])
+  }, [today, pickedDate])
 
   const over = !!puzzle && round >= puzzle.locations.length
   // One path into the recap, whether the fifth round just ended or the page was
@@ -106,8 +148,11 @@ export default function App() {
   useEffect(() => {
     if (!puzzle || !over || recorded.current) return
     recorded.current = true
-    setStats(recordGame(puzzle.date, totalScore(results)))
-  }, [puzzle, over, results])
+    // A beta play never counts: five days burned in a sitting would fabricate a
+    // five-day streak, and maxStreak is permanent.
+    // oxlint-disable-next-line react/set-state-in-effect
+    if (!pickedDate) setStats(recordGame(puzzle.date, totalScore(results)))
+  }, [puzzle, over, results, pickedDate])
 
   const recapShown = useRef(false)
   useEffect(() => {
@@ -136,12 +181,33 @@ export default function App() {
             gameStarted.current = Date.now()
           }}
           onSettings={() => setShowSettings(true)}
+          queue={beta ? queue : []}
+          picked={pickedDate}
+          onPick={(date) => {
+            // Landing back on today is the ordinary daily game, not a beta
+            // play -- otherwise the picker would offer "Today" and refuse to
+            // save it, which reads as a bug rather than a rule.
+            // Switching day restarts cleanly: a half-played board belongs to
+            // the day it was played on.
+            setPickedDate(date === homeDate ? null : date)
+            setResults([])
+            setRound(0)
+            setCurrent(null)
+            recorded.current = false
+            recapShown.current = false
+            map.current?.clearPins()
+          }}
         />
         {showSettings && (
           <SettingsPanel
             settings={settings}
             onChange={updateSettings}
             onClose={() => setShowSettings(false)}
+            beta={beta}
+            onBeta={(unlocked) => {
+              setBeta(unlocked)
+              if (!unlocked) setPickedDate(null)
+            }}
           />
         )}
       </>
@@ -163,8 +229,11 @@ export default function App() {
     map.current?.revealAnswer(guess, answer)
 
     // Written on commit, not on Next. A refresh during the reveal must not cost
-    // the player the round they have already played.
-    saveProgress(activeDate, { guesses: [...results.map((r) => r.guess), guess] })
+    // the player the round they have already played. Beta days are not saved at
+    // all -- see `ephemeral`.
+    if (!ephemeral) {
+      saveProgress(activeDate, { guesses: [...results.map((r) => r.guess), guess] })
+    }
 
     track('round_complete', {
       round: round + 1,
@@ -191,6 +260,8 @@ export default function App() {
     // reset, so on the last round only one of them runs.
     if (finished.length === puzzle!.locations.length) {
       track('game_complete', {
+        beta: ephemeral || undefined,
+        dayOffset: ephemeral ? daysBetween(today, puzzle!.date) : undefined,
         puzzleNumber: puzzle!.puzzleNumber,
         total: totalScore(finished),
         scores: finished.map((r) => r.score),
@@ -290,6 +361,8 @@ export default function App() {
           settings={settings}
           onChange={updateSettings}
           onClose={() => setShowSettings(false)}
+          beta={beta}
+          onBeta={setBeta}
         />
       )}
     </div>
@@ -321,14 +394,21 @@ function Landing({
   resuming,
   onPlay,
   onSettings,
+  queue,
+  picked,
+  onPick,
 }: {
   puzzle: Puzzle
   stats: Stats
   resuming: boolean
   onPlay: () => void
   onSettings: () => void
+  queue: string[]
+  picked: string | null
+  onPick: (date: string | null) => void
 }) {
   const countdown = useCountdown()
+  const at = queue.indexOf(puzzle.date)
   return (
     <Centered>
       <div className="w-full max-w-xs space-y-6">
@@ -344,11 +424,50 @@ function Landing({
           search — just how well you know the city.
         </p>
 
+        {queue.length > 1 && (
+          <div className="rounded-xl bg-white/5 p-2.5">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onPick(queue[Math.max(0, at - 1)])}
+                disabled={at <= 0}
+                aria-label="Earlier day"
+                className="shrink-0 rounded-lg px-2 py-1 text-lg leading-none text-neutral-400 disabled:opacity-25"
+              >
+                ‹
+              </button>
+              <div className="min-w-0 flex-1 text-center">
+                <p className="truncate text-xs font-medium">
+                  {picked === null ? 'Today' : `#${puzzle.puzzleNumber} · ${puzzle.date}`}
+                </p>
+                <p className="text-[10px] text-neutral-500">
+                  {picked === null ? 'counts towards your streak' : 'beta play — nothing is saved'}
+                </p>
+              </div>
+              <button
+                onClick={() => onPick(queue[Math.min(queue.length - 1, at + 1)])}
+                disabled={at < 0 || at >= queue.length - 1}
+                aria-label="Later day"
+                className="shrink-0 rounded-lg px-2 py-1 text-lg leading-none text-neutral-400 disabled:opacity-25"
+              >
+                ›
+              </button>
+            </div>
+            {picked !== null && (
+              <button
+                onClick={() => onPick(null)}
+                className="mt-1 w-full text-center text-[10px] text-neutral-500 underline underline-offset-4"
+              >
+                back to today
+              </button>
+            )}
+          </div>
+        )}
+
         <button
           onClick={onPlay}
           className="w-full rounded-xl bg-white py-3 font-semibold text-neutral-900 active:bg-neutral-200"
         >
-          {resuming ? 'Resume' : 'Play'}
+          {resuming ? 'Resume' : picked !== null ? 'Play this day' : 'Play'}
         </button>
 
         {stats.played > 0 && (
@@ -546,11 +665,17 @@ function SettingsPanel({
   settings,
   onChange,
   onClose,
+  beta,
+  onBeta,
 }: {
   settings: Settings
   onChange: (patch: Partial<Settings>) => void
   onClose: () => void
+  beta: boolean
+  onBeta: (unlocked: boolean) => void
 }) {
+  const [code, setCode] = useState('')
+  const [rejected, setRejected] = useState(false)
   return (
     <div className="absolute inset-0 z-40 flex items-end justify-center bg-black/60 p-3 sm:items-center">
       <div className="w-full max-w-sm space-y-5 rounded-2xl bg-neutral-900 p-5 text-white ring-1 ring-white/10">
@@ -596,6 +721,67 @@ function SettingsPanel({
             </div>
           </div>
         )}
+
+        <div className="border-t border-white/10 pt-4">
+          {beta ? (
+            <div className="flex items-center justify-between gap-4">
+              <span>
+                <span className="block text-sm font-medium">Beta access</span>
+                <span className="block text-xs text-neutral-400">
+                  Play any past day, or up to {BETA_DAYS_AHEAD} days ahead. Beta games do
+                  not count towards streaks.
+                </span>
+              </span>
+              <button
+                onClick={() => {
+                  lockBeta()
+                  onBeta(false)
+                }}
+                className="shrink-0 text-xs text-neutral-500 underline underline-offset-4"
+              >
+                Turn off
+              </button>
+            </div>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                const ok = tryBetaCode(code)
+                setRejected(!ok)
+                if (ok) {
+                  setCode('')
+                  onBeta(true)
+                }
+              }}
+            >
+              <label className="block text-sm font-medium" htmlFor="beta-code">
+                Beta code
+              </label>
+              <div className="mt-1.5 flex gap-2">
+                <input
+                  id="beta-code"
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value)
+                    setRejected(false)
+                  }}
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  className="min-w-0 flex-1 rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none placeholder:text-neutral-600"
+                  placeholder="if you have one"
+                />
+                <button
+                  type="submit"
+                  className="shrink-0 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-neutral-900"
+                >
+                  Enter
+                </button>
+              </div>
+              {rejected && <p className="mt-1.5 text-xs text-amber-400">That code did not work.</p>}
+            </form>
+          )}
+        </div>
 
         <label className="flex items-start justify-between gap-4">
           <span>

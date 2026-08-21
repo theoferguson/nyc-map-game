@@ -75,3 +75,15 @@ export function formatCountdown(ms: number): string {
   const m = Math.floor((total % 3600) / 60)
   return `${h}:${pad(m)}:${pad(total % 60)}`
 }
+
+/** `date` shifted by whole days, staying on the puzzle-date calendar. */
+export function shiftDate(date: string, days: number): string {
+  const [y, m, d] = date.split('-').map(Number)
+  const at = new Date(Date.UTC(y, m - 1, d + days))
+  return `${at.getUTCFullYear()}-${pad(at.getUTCMonth() + 1)}-${pad(at.getUTCDate())}`
+}
+
+/** Whole days from `from` to `to`; negative if `to` is earlier. */
+export function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000)
+}
