@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { MapView, type MapHandle } from './map/MapView'
-import { loadTodaysPuzzle, loadPuzzle, puzzleQueue, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
+import { loadPuzzle, puzzleQueue, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
 import { track } from './game/telemetry'
@@ -68,15 +68,6 @@ export default function App() {
   const [pickedDate, setPickedDate] = useState<string | null>(null)
   const ephemeral = pickedDate !== null
 
-  /**
-   * The day the ordinary game serves when nothing is picked.
-   *
-   * In production that is today. In development it is the head of the queue,
-   * so the two are not interchangeable -- comparing a picked day against
-   * `today` instead made the picker unable to move past it, because picking
-   * today collapsed to "no pick" and reloaded the queue head.
-   */
-  const [homeDate, setHomeDate] = useState<string | null>(null)
 
   function updateSettings(patch: Partial<Settings>) {
     const next = { ...settings, ...patch }
@@ -106,11 +97,10 @@ export default function App() {
   }, [beta, today])
 
   useEffect(() => {
-    const load = pickedDate ? loadPuzzle(pickedDate) : loadTodaysPuzzle(today)
+    const load = loadPuzzle(pickedDate ?? today)
     load
       .then((p) => {
         setPuzzle(p)
-        if (!pickedDate) setHomeDate(p.date)
         gameStarted.current = Date.now()
         roundStarted.current = Date.now()
 
@@ -189,7 +179,7 @@ export default function App() {
             // save it, which reads as a bug rather than a rule.
             // Switching day restarts cleanly: a half-played board belongs to
             // the day it was played on.
-            setPickedDate(date === homeDate ? null : date)
+            setPickedDate(date === today ? null : date)
             setResults([])
             setRound(0)
             setCurrent(null)

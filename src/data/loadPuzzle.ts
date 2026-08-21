@@ -49,25 +49,6 @@ export async function puzzleQueue(): Promise<string[]> {
   return res.ok ? ((await res.json()) as string[]) : []
 }
 
-/**
- * In development the calendar is not the constraint, the queue is: serve the
- * head of the queue so the app opens on any date instead of showing "no puzzle
- * yet" the day after the last authored one. Production always uses the real
- * New York date -- `import.meta.env.DEV` is replaced at build time, so this
- * branch is not present in the shipped bundle at all.
- *
- * Every caller should key storage off the returned puzzle's own `date`, not the
- * date it asked for, or a development session writes progress under a day it is
- * not actually playing.
- */
-export async function loadTodaysPuzzle(realDate: string): Promise<Puzzle> {
-  if (import.meta.env.DEV) {
-    const queue = await puzzleQueue()
-    if (queue.length) return loadPuzzle(queue[0])
-  }
-  return loadPuzzle(realDate)
-}
-
 export async function loadPuzzle(date: string): Promise<Puzzle> {
   const res = await fetch(`/puzzles/${date}.json`)
   // Reachable in normal use the moment the calendar passes the last authored
