@@ -1077,3 +1077,52 @@ the puzzles a second time for nothing.
 the build host. Vercel installs them by default, but if that ever changed the build would fail
 with a missing binary and **nothing would deploy** -- a broken gate is worse than no gate. The
 recovery is to drop `vitest run` from the build script.
+
+---
+
+## 19. Facts pulled from Wikipedia (2026-08-20)
+
+`factShort` is now the opening of the linked Wikipedia article rather than prose written from
+knowledge. `scripts/pull-facts.mjs` fetches, cleans and trims each extract to two or three
+whole sentences.
+
+**This makes the attribution true.** Every entry claimed "Wikipedia, CC BY-SA 4.0" while the
+text had been written from knowledge and pointed at an article afterwards -- an attribution
+that looked like provenance and was really a suggestion for where to check. Deriving the text
+from the article makes the licence statement accurate rather than decorative, and makes the
+whole content path mechanical, which is what the generative engine will need.
+
+**The trade is voice, knowingly.** An extract reads like an encyclopaedia because it is one.
+The hand-written versions survive in git at `78d2e99` if a voice pass is wanted later; the
+point of pulling now is that the text is at least *correct* first.
+
+### The source links were worse than the facts
+
+6 `sourceUrl`s pointed at articles that do not exist and 24 were stale redirects. An
+attribution pointing at nothing is worse than none.
+
+Repointing them mechanically introduced its own error: searching Wikipedia for
+"Bedford-Stuyvesant Restoration Corporation" returned **30 Rockefeller Plaza**, a page that
+exists and is nine kilometres away. Existence is not correctness.
+
+*The check that catches that:* Wikipedia articles carry coordinates, so an article far from
+the location is usually the wrong article. Now 233 of 250 position-checked, 3 flagged, and all
+3 are a boulevard, a river and a 2,800-acre greenbelt where distance from the centroid is
+expected. Zero real mislinks.
+
+`prop=coordinates` returns only 10 results per request by default, which made the first run
+report 199 locations as having no coordinates at all. `colimit=max` fixes it. A verifier that
+silently checks a fifth of its input is worse than none, for the same reason as the
+attribution.
+
+### Two extraction bugs worth remembering
+
+*Sentence splitting on every full stop tears text apart.* "1,595 feet (486.3 m)" splits at the
+decimal, which produced `"...the first fixed crossing of the East River.7 m) above mean high
+water."` Unit conversions are now stripped before splitting, and the splitter only breaks
+where punctuation is followed by a space and a capital.
+
+*`git checkout` reverted more than intended.* Restoring `content/days.json` to undo the bad
+facts also undid the source-URL repairs in the same file, so the next pull failed on six
+articles that had already been fixed once. Content and its metadata living in one file makes
+that easy to do.
