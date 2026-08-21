@@ -146,6 +146,54 @@ before there is real play data -- designing it against guesses about what the da
 is how you end up with a model fitted to assumptions. The notes below exist so the telemetry
 already captures what it will need, not as a brief to start work.
 
+### Fact triage — planned, not built
+
+The generator needs to know which pulled facts are worth showing. Length is a poor proxy in
+both directions: a 300-character extract can be purely definitional ("The Metropolitan Museum
+of Art is an art museum in New York City. It is the largest art museum in the Americas."),
+and an 80-character one can be excellent. The real predicate is whether a player would find
+anything in it worth knowing, which is a judgement, not a measurement.
+
+**A small model doing classification is the cheap way to make that judgement.** Batch about 25
+facts per request, return structured output, run it once per content batch at authoring time
+rather than at runtime. At 250 facts that is ten calls against a fast model -- effectively
+free next to the authoring it replaces.
+
+Roughly:
+
+    classify(facts) -> [{ id, verdict, reason }]
+
+    verdict:
+      keep          carries a specific, non-obvious claim
+      thin          definitional only; refetch deeper into the article
+      wrong-subject the text is not about this place
+
+The prompt should ask one narrow question -- "does this say anything a visitor would not
+already assume from the name?" -- and be given the location name alongside the fact so
+`wrong-subject` is answerable. Vague instructions like "is this good" produce a coin flip.
+
+**Three things this earns beyond triage:**
+
+*`wrong-subject` catches what coordinates cannot.* The position check needs the article to
+carry coordinates and to be a point rather than a region; 17 of our articles have none, and
+three legitimate ones flag as false positives for being a river, a boulevard and a greenbelt.
+A model reading the text can tell that an article about a piano company is not an article
+about a building in Astoria.
+
+*It sizes the human review.* The remaining job on 250 hand-checked facts is unbounded and
+therefore never starts. "Read the eleven the classifier flagged" gets done.
+
+*It gives the difficulty tiers a second signal* at authoring time, before any play data
+exists -- a fact that has to explain what a place is suggests the place is obscure.
+
+**The boundary that must not be crossed: the model classifies, it does not write.** Every fact
+is Wikipedia text, which is what makes the CC BY-SA attribution accurate. A model writing a
+replacement from its own knowledge is not derived from the article, and the licence line
+silently becomes false again -- exactly the problem section 19 fixed. Filling out a thin fact
+means fetching more of the article, not generating prose. A later voice pass that *rewrites*
+the article's text is a derivative work and stays within the licence; inventing new text does
+not.
+
 *What "generative" can and cannot learn from play data:* round results measure difficulty
 well -- score distribution and time-to-guess per location are exactly the calibration signal
 the difficulty tiers need, and far better than guessing. They do not measure whether a place
@@ -1114,6 +1162,39 @@ expected. Zero real mislinks.
 report 199 locations as having no coordinates at all. `colimit=max` fixes it. A verifier that
 silently checks a fifth of its input is worse than none, for the same reason as the
 attribution.
+
+### Thin facts filled out from the article body
+
+Twenty facts were one definitional sentence -- Prospect Park was "a 526-acre urban park in
+Brooklyn" and nothing else. Where the lead is that short, the puller now reads into the body.
+That is still the article's own text, so the attribution stays true, which writing something
+richer ourselves would not.
+
+All 250 now run 140 to 376 characters, median 239.
+
+*Two bugs surfaced doing it, both of which had been hiding in plain sight:*
+
+**`trim` stopped short whenever the next sentence was long.** It broke as soon as adding a
+sentence would pass the 300-character target, so a short opening sentence followed by a long
+second one stayed short permanently -- which was most of why the thin facts were thin. It now
+overshoots the target when the fact is still below the useful threshold, up to a hard cap.
+
+**Four sources were disambiguation pages.** "Fulton Ferry" yielded *"Fulton Ferry may refer
+to: ..."* -- text that reads as prose, passes every length check, and is about nothing. Three
+more were doing the same and had gone unnoticed: the Tenement Museum, the National Lighthouse
+Museum and the Longwood Historic District. Wikipedia flags these itself via
+`pageprops.disambiguation`, which is authoritative and does not false-positive the way
+matching on the phrase would.
+
+*The pattern in both:* the failure produced plausible output rather than an error. Nothing was
+empty, nothing threw, every validator passed. That is the class of bug this content pipeline
+keeps producing, and the reason each check has to assert something specific rather than merely
+that a value exists.
+
+### Retries, because the run is all-or-nothing
+
+The puller makes five hundred sequential requests and only writes at the end, so one transient
+socket failure discarded the whole run. Three retries with backoff now, and a request timeout.
 
 ### Two extraction bugs worth remembering
 
