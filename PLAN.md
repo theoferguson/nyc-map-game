@@ -365,15 +365,8 @@ discovered later. And custom quiz results must be segregated from daily telemetr
 affinity model and the imagery experiment are both polluted by scopes and scoring curves they
 were never calibrated against.
 
-**Beta mode — playtest codes.** A code that unlocks five plays per day drawn from the *next*
-scheduled days' rounds, so testers burn future content instead of replaying today's. Needs a
-feedback capture path and somewhere to put the results, which is the first thing in this
-project that genuinely needs a backend -- it should be scoped alongside whatever Phase 3
-account work happens rather than bolted onto the static build.
-
-*Resolved (2026-08-19):* beta days come from the ordinary queue, no separate pool. The point
-of beta access is bunched early plays rather than sustained daily access, so the draw is a
-burst inside a bounded window that the standing queue absorbs. See section 10.
+**Beta mode — playtest codes.** Planned in full in section 20. Needs no backend, which
+overturns the earlier assumption here.
 
 **Scoring recalibrated (2026-08-19).** The spec's lambdas (area 400, landmark 250, venue
 350) decayed far too fast to match how a miss feels on the ground: a guess half an avenue
@@ -1249,3 +1242,77 @@ where punctuation is followed by a space and a capital.
 facts also undid the source-URL repairs in the same file, so the next pull failed on six
 articles that had already been fixed once. Content and its metadata living in one file makes
 that easy to do.
+
+---
+
+## 20. Beta codes — plan (2026-08-21)
+
+**Decided:** one shared code; unlocks the next five days *and* every past day; no feedback
+mechanism in the product, feedback comes by talking to testers; plays still generate telemetry
+so development has more to evaluate.
+
+### It needs no backend, and never did
+
+The earlier plan assumed a code gates access to unreleased content and therefore needs a
+server. It does not. **Every future puzzle is already public** -- `2026-10-14.json` returns 200
+today, `index.json` lists all 56 days, and the XOR decoder is in the open-source client. The
+content was never secret; that was accepted deliberately when the obfuscation was scoped.
+
+So the code cannot gate anything. All it can do is change what the client offers and tag the
+session. Both are client-side. A shared string compared in the browser is exactly as strong as
+the content it guards, which is to say not at all, and that is already the accepted position.
+
+*Consequence to accept up front:* a shared code spread by word of mouth is permanent and will
+leak. The worst outcome is somebody plays ahead, which is what the code grants anyway.
+
+### The three state hazards
+
+This is the part that is not obvious, and all three come from progress and stats being keyed
+by date.
+
+**Streaks would be fabricated.** `recordGame(date, total)` treats consecutive dates as a
+streak. A tester burning five days in one sitting would manufacture a five-day streak in ten
+minutes, and `maxStreak` is permanent.
+
+**Playing ahead would delete today's game.** `saveProgress` prunes every progress key that is
+not the day being written -- deliberately, so saves cannot accumulate forever. Starting a beta
+day mid-way through a real one silently destroys the real one.
+
+**Past days cannot currently be replayed.** A completed day restores its recap and refuses new
+guesses, because `over` is derived from saved progress.
+
+**Resolution: beta plays are ephemeral.** No progress written, no stats recorded, no pruning
+triggered. That answers all three at once: streaks stay honest, the real day survives, and a
+past day replays because nothing says it was finished. The daily game remains the only thing
+that counts, which is also the right answer editorially.
+
+*The cost:* refreshing mid-beta-game loses it. Acceptable for someone deliberately burning
+through five days; if it proves annoying, a separate `nycmap:beta:progress:` namespace fixes
+it without touching the daily keys.
+
+### Shape of the work
+
+1. **Code entry in Settings.** A text field; a match sets `nycmap:beta` and unlocks the picker.
+   Settings is already reachable from the landing screen and mid-game.
+2. **A day picker on the landing screen.** Arrows across the queue, bounded to five days ahead
+   of today and back to the first authored day. The recap stepper is the same interaction and
+   can be the model.
+3. **An ephemeral game mode.** The round machine already takes a puzzle; what changes is that
+   `saveProgress` and `recordGame` are skipped, and `over` comes from local state rather than
+   storage.
+4. **Telemetry tags every beta event** with the offset from today. Beta plays must be
+   filterable out of the imagery A/B and the affinity model, both of which assume one fresh
+   play per person per day -- a tester playing five days in a sitting is not that, and would
+   quietly skew both.
+
+### Custom quiz codes wait for the builder
+
+Correct instinct: a code that shares a quiz is meaningless until something can make one. The
+sequencing is builder, then storage, then sharing -- and the storage decision (section 8:
+server-backed, Phase 3) is what makes custom quizzes a different project from beta codes
+rather than a variation on them.
+
+Worth noting the two are less similar than the shared word "code" suggests. A beta code is a
+flag: same content, different access. A custom quiz code is a *payload*: content that does not
+exist until someone authors it, and which has to travel. Beta needs no backend precisely
+because it grants access to content already shipped.
