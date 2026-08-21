@@ -194,6 +194,48 @@ means fetching more of the article, not generating prose. A later voice pass tha
 the article's text is a derivative work and stays within the licence; inventing new text does
 not.
 
+### Extraction failures the generator inherits
+
+These are not history, they are requirements. Every one was found in the 250-location pull and
+every one will recur at scale, because the generator will run the same extraction against
+articles nobody has read.
+
+**The governing property: these failures produce plausible output, not errors.** Nothing was
+empty, nothing threw, every validator passed. A generator producing thousands of facts cannot
+rely on noticing — so each check has to assert something *specific*, never merely that a value
+exists. "It returned a string" is not a test.
+
+**Sentence assembly stops short when the next sentence is long.** Building a fact by adding
+sentences until a character target would be exceeded strands a short opening sentence whenever
+the following one is long. Twenty facts sat at one definitional line for exactly this reason,
+and reading deeper into the article barely helped, because the truncation — not the source —
+was the cause. A generator must overshoot its target when the result is still below a useful
+floor, bounded by a hard cap.
+
+*Assert:* no generated fact below a minimum length, and the minimum checked against the
+distribution rather than a single sample.
+
+**Disambiguation pages read as prose and are about nothing.** "Fulton Ferry" yields *"Fulton
+Ferry may refer to: ..."* — well-formed sentences, correct length, real title, no error. Three
+more were doing it unnoticed until a check went looking. Wikipedia marks them itself via
+`pageprops.disambiguation`; use the flag, not a phrase match, which both misses variants and
+false-positives on articles that legitimately contain the words.
+
+*Assert:* zero facts whose source page carries the disambiguation flag.
+
+**Redirects and dead titles.** Six source URLs pointed at articles that do not exist and 24
+were stale redirects. Repointing by search then returned *30 Rockefeller Plaza* for the
+Bedford-Stuyvesant Restoration Corporation — a page that exists, nine kilometres away.
+Existence is not correctness.
+
+*Assert:* every source page resolves, and its coordinates sit within a few kilometres of the
+location. Remember `prop=coordinates` returns only ten results per request by default, which
+once had this check silently validating a fifth of its input.
+
+**All-or-nothing runs lose everything to one socket.** Five hundred sequential requests writing
+only at the end discarded a complete run on a single transient failure. Retry with backoff,
+and for a generator working at volume, checkpoint rather than buffering.
+
 *What "generative" can and cannot learn from play data:* round results measure difficulty
 well -- score distribution and time-to-guess per location are exactly the calibration signal
 the difficulty tiers need, and far better than guessing. They do not measure whether a place
