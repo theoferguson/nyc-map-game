@@ -1316,3 +1316,36 @@ Worth noting the two are less similar than the shared word "code" suggests. A be
 flag: same content, different access. A custom quiz code is a *payload*: content that does not
 exist until someone authors it, and which has to travel. Beta needs no backend precisely
 because it grants access to content already shipped.
+
+### Built 2026-08-21
+
+Entirely client-side, as planned. Code entry in Settings, day picker on the landing screen,
+`fivepoints` (case- and whitespace-tolerant).
+
+**Verified end to end in a browser**, because the thing worth proving is a negative -- that a
+beta play cannot touch the daily game:
+
+    real day, 2 rounds in   progress: [2026-08-20]   stats: null
+    wrong code              rejected, nothing unlocked
+    correct code            unlocked, picker appears, Resume still offered
+    full beta game played   progress: [2026-08-20]   stats: null
+
+The progress key is unchanged and no stats exist after a complete beta game. The half-played
+real day survived and still offers Resume.
+
+Picker bounds confirmed by walking it: it stops at today plus five and disables the arrow.
+
+**Two bugs found building it, both from the dev/production divergence.**
+
+*Collapsing "picked today" to "no pick" compared against `today`*, but in development the
+ordinary game serves the head of the queue rather than today's date. Picking today therefore
+collapsed to no-pick, reloaded the queue head, and the picker could never advance past it --
+it just bounced. The comparison is now against the date the ordinary game actually served,
+which is today in production and the queue head in development.
+
+*The picker labelled a beta day "Today"* while also saying nothing would be saved, which reads
+as a bug rather than a rule. Same root cause.
+
+*Worth noting the shape:* the dev-mode convenience of serving the queue head, added so the app
+would open during a content pause, has now caused a bug twice. Anything comparing a date
+against `today` has to ask which today it means.

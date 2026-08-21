@@ -1,5 +1,12 @@
 import { test, expect } from 'vitest'
-import { puzzleDate, previousDate, msUntilRollover, formatCountdown } from './date'
+import {
+  puzzleDate,
+  previousDate,
+  msUntilRollover,
+  formatCountdown,
+  shiftDate,
+  daysBetween,
+} from './date'
 
 const HOUR = 3_600_000
 
@@ -55,4 +62,22 @@ test('countdown formatting', () => {
   expect(formatCountdown(0)).toBe('0:00:00')
   expect(formatCountdown(-500)).toBe('0:00:00')
   expect(formatCountdown(3 * HOUR + 4 * 60_000 + 5000)).toBe('3:04:05')
+})
+
+test('shiftDate crosses months, years and leap days', () => {
+  expect(shiftDate('2026-08-21', 5)).toBe('2026-08-26')
+  expect(shiftDate('2026-08-31', 1)).toBe('2026-09-01')
+  expect(shiftDate('2026-01-01', -1)).toBe('2025-12-31')
+  expect(shiftDate('2028-02-28', 1)).toBe('2028-02-29')
+  expect(shiftDate('2026-08-21', 0)).toBe('2026-08-21')
+})
+
+test('daysBetween is signed and survives a clock change', () => {
+  expect(daysBetween('2026-08-21', '2026-08-26')).toBe(5)
+  expect(daysBetween('2026-08-26', '2026-08-21')).toBe(-5)
+  // 8 March 2026 is a 23-hour day; naive division would return 4.96 and floor
+  // to 4, putting every later date one day out.
+  expect(daysBetween('2026-03-05', '2026-03-10')).toBe(5)
+  // 1 November 2026 is a 25-hour day.
+  expect(daysBetween('2026-10-29', '2026-11-03')).toBe(5)
 })

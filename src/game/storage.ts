@@ -201,3 +201,35 @@ export function loadSettings(): Settings {
 export function saveSettings(settings: Settings): void {
   storage.set(SETTINGS_KEY, JSON.stringify(settings))
 }
+
+/* -------------------------------------------------------------------- beta */
+
+const BETA_KEY = 'nycmap:beta'
+
+/**
+ * Not a secret, and not pretending to be one.
+ *
+ * Every puzzle in the queue is already served publicly and the decoder ships in
+ * this bundle, so a code cannot gate content -- it only changes what the client
+ * offers. Comparing a string in the browser is exactly as strong as the thing
+ * it guards, which was accepted when the obfuscation was scoped. Shared by word
+ * of mouth it will leak, and the worst outcome is somebody plays ahead, which
+ * is what it grants anyway.
+ */
+const BETA_CODE = 'fivepoints'
+
+/** How far ahead of today the queue opens up. */
+export const BETA_DAYS_AHEAD = 5
+
+export const betaUnlocked = () => storage.get(BETA_KEY) === BETA_CODE
+
+/** True if the code matched, so the caller can report a bad one. */
+export function tryBetaCode(input: string): boolean {
+  if (input.trim().toLowerCase() !== BETA_CODE) return false
+  storage.set(BETA_KEY, BETA_CODE)
+  return true
+}
+
+export function lockBeta(): void {
+  storage.remove(BETA_KEY)
+}
