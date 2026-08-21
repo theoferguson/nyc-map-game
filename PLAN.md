@@ -831,23 +831,28 @@ party cutting us off, not a hosting bill -- and mitigating it means caching tile
 which *is* a compute workload and where Fly would earn its place. Check Esri's terms before
 launch rather than after.
 
-### Development serves the queue, not the calendar
+### Development served the queue rather than the calendar — removed 2026-08-21
 
-`loadTodaysPuzzle` returns the head of the authored queue in development and the real New York
-date in production. Without it the app shows "no puzzle yet" from the day after the last
-authored day, which during a content pause is every day.
+`loadTodaysPuzzle` returned the head of the authored queue in development and the real New
+York date in production. It existed so the app would open during the content pause, when the
+day after the last authored day was every day.
 
-`import.meta.env.DEV` is replaced at build time, so the branch is absent from the shipped
-bundle -- verified by grepping the built output for the manifest URL. Production cannot
-silently drift onto queue-head behaviour.
+**Removed.** The queue now runs to 14 October, so today's puzzle exists; the reason is gone
+and the divergence was expensive. It caused three bugs, each one a place where `today` and
+"the day the app is actually showing" were quietly different things:
 
-The build now emits `public/puzzles/index.json`, the authored dates earliest first. Phase 2's
-archive and past-days play want the same list.
+- the recap effect and storage keys had to be re-pointed at `puzzle.date` rather than the date
+  requested, or a development session wrote progress under a day it was not playing
+- the beta picker could not advance past today, because collapsing "picked today" to "no pick"
+  reloaded the queue head and bounced
+- the same confusion labelled a beta day "Today" while refusing to save it
 
-*Consequence worth knowing:* all storage keys off the puzzle's own `date`, never the date
-requested, or a development session writes progress and streaks under a day it is not playing.
+Deleting it also deleted the state it had forced: `homeDate` existed only to answer "which
+today do you mean", and with one answer the question disappears.
 
----
+*What happens when content runs out again:* development and production both show "No puzzle
+for {date} yet — check back soon", which is correct, consistent, and a clearer signal to
+author more than a dev-only fallback that quietly hides it.
 
 ## 14. Tile performance and caching — to investigate
 
