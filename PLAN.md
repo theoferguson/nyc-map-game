@@ -575,10 +575,9 @@ no full referrer URL (hostname only). The only coordinates recorded are the ones
 deliberately tapped inside the game. Storage failures are swallowed -- Safari in private mode
 throws on write, and telemetry must never break a game.
 
-**Open before anything is transmitted:** a consent notice is likely required in the EU/UK
-once events leave the device, even anonymous ones. Decide the lawful basis and the banner
-before wiring a flush endpoint, not after. `drain()` exists as that seam and is deliberately
-not called anywhere yet.
+**Settled in section 21 (2026-08-22):** opt-in consent, asked once on the landing screen,
+with `denied` suppressing capture entirely and deleting the install id. Events now flush to
+`POST /api/events`.
 
 ### Location affinity (planned, not built)
 
@@ -1354,3 +1353,100 @@ as a bug rather than a rule. Same root cause.
 *Worth noting the shape:* the dev-mode convenience of serving the queue head, added so the app
 would open during a content pause, has now caused a bug twice. Anything comparing a date
 against `today` has to ask which today it means.
+
+---
+
+## 21. The flush endpoint (2026-08-22)
+
+Telemetry has been buffering into `localStorage` since M4 and going nowhere. Everything
+downstream -- the imagery A/B, the affinity model, whether venue rounds are unfair-hard,
+whether difficulty actually climbs across the five rounds -- was waiting on somewhere to
+put it. `POST /api/events` is that somewhere.
+
+### Consent, decided before the wire was run
+
+Section 9 said to settle the lawful basis before wiring a flush endpoint rather than after,
+so: **opt-in, asked once, on the landing screen.**
+
+The payload is anonymous and the purpose is making the game better, which is a defensible
+legitimate interest under GDPR. That is not the binding constraint. The install id is a
+persistent identifier stored for analytics, and ePrivacy wants opt-in for that regardless of
+how harmless the contents are. Being right about an exemption is worth less than an inline
+question with two buttons.
+
+Three states, and the middle one is the one that matters:
+
+| state | tracks | transmits |
+|---|---|---|
+| `unset` -- not asked yet | yes, to `localStorage` | no |
+| `granted` | yes | yes |
+| `denied` | **no** | no |
+
+`unset` still buffers so a player who says yes at the end of their first game is not asked
+to play a second one before anything is learned. `denied` records nothing and deletes the
+install id -- answering the question must not itself be a way to be identified. The toggle
+in Settings reverses either answer.
+
+### What the endpoint refuses
+
+It is public, unauthenticated and write-only, so nothing in the body is trusted: an event
+name allowlist, a 64KB body, 100 events, 2KB of props, an install id under 64 characters,
+and a timestamp inside a plausible range. Bad events are dropped individually rather than
+failing the batch -- one malformed event must not cost a player the other nineteen, and a
+400 would have the client discard the lot as permanently unacceptable.
+
+*Not done:* rate limiting. There is no counter store, and Vercel's platform protection is
+the only thing between the table and a script. The caps above bound the damage per request
+but not the number of requests. Revisit when there is a reason to.
+
+### Player location, closed out
+
+Section 9 left server-side IP geolocation as the right answer waiting for a backend. It is
+now the implementation: `x-vercel-ip-country`, `-country-region` and `-city` are resolved at
+the edge from an address this process never sees and never stores. City is as fine-grained
+as it gets. The client's timezone-and-locale guess stays for devices that never flush.
+
+### Three bugs, and one of them would have shipped
+
+**A default export hangs forever.** Vercel selects its web handler on a *named method*
+export; a default export is handed the old `(req, res)` pair and never responds to whatever
+the function returns. `vercel build` was perfectly happy. `vercel dev` hung on every request,
+including the ones that never touch the database, which is what gave it away.
+
+**Props stored as a string, not an object.** Passed as a `jsonb[]` element, the driver hands
+Postgres each item as a JSON *string*, so every row stored `"{\"score\":88}"` instead of an
+object. The insert succeeded, the row count was right, and every `props ->> 'score'` came
+back null. Fixed by sending `text[]` and casting after `unnest`. Weeks of collection would
+have looked fine until the first `group by`.
+
+**A long-offline queue would have been thrown away.** The buffer caps at 400 events, the
+endpoint refuses more than 100, and 413 is a 4xx -- which the client treats as permanent and
+drops. Now flushed in batches of 100, with the remainder kept on the first failure rather
+than reordered. `keepalive` is also dropped above 60KB, since the browser rejects the call
+outright past its limit and the queue would strand.
+
+*The pattern from section 19 held again:* all three produced plausible output rather than an
+error. Only the third was found by reasoning; the other two needed the thing actually run.
+
+### Verification
+
+`npm run check:events` round-trips one event through the real handler against a real
+Postgres and asserts the aggregate the table exists to answer -- not that a row was written,
+which is exactly what the jsonb bug would have passed. Opt-in via `CHECK_EVENTS_DB` and
+deliberately outside `npm run build`: a database blip must not block deploying a static
+game. Confirmed to fail when the cast is removed.
+
+The rest is in `api/events.test.ts` (what the endpoint refuses) and `telemetry.test.ts`
+(consent gating, batching, and the retry/drop split). The full flow was exercised over HTTP
+through `vercel dev` against a throwaway local Postgres.
+
+### Setup, which is one manual step
+
+The endpoint answers 503 with no `DATABASE_URL`, and 5xx is retryable, so events keep
+buffering on the device until a database exists. Nothing breaks before provisioning and
+nothing is lost.
+
+1. Add a Postgres store in the Vercel dashboard (Storage -> Neon, free tier). It sets
+   `DATABASE_URL` on the project.
+2. `psql "$DATABASE_URL" -f api/schema.sql`
+3. `DATABASE_URL=... npm run check:events`

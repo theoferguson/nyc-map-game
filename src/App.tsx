@@ -3,7 +3,7 @@ import { MapView, type MapHandle } from './map/MapView'
 import { loadPuzzle, puzzleQueue, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
-import { track } from './game/telemetry'
+import { track, flush, consent, setConsent, type Consent } from './game/telemetry'
 import { imageryVariant } from './map/tiles'
 import {
   puzzleDate,
@@ -68,6 +68,15 @@ export default function App() {
   const [pickedDate, setPickedDate] = useState<string | null>(null)
   const ephemeral = pickedDate !== null
 
+  const [dataConsent, setDataConsent] = useState<Consent>(consent)
+  function answerConsent(granted: boolean) {
+    setConsent(granted)
+    setDataConsent(granted ? 'granted' : 'denied')
+    // Send what this session already buffered rather than making them play a
+    // second game before anything is learned.
+    if (granted) void flush()
+  }
+
 
   function updateSettings(patch: Partial<Settings>) {
     const next = { ...settings, ...patch }
@@ -90,6 +99,12 @@ export default function App() {
   // unfair-hard, and it cannot be reconstructed after the fact.
   const roundStarted = useRef(0)
   const gameStarted = useRef(0)
+
+  // Whatever last session ended holding. Fire and forget: a failed flush puts
+  // the events back, and nothing in the game waits on it.
+  useEffect(() => {
+    void flush()
+  }, [])
 
   useEffect(() => {
     if (!beta) return
@@ -171,6 +186,8 @@ export default function App() {
             gameStarted.current = Date.now()
           }}
           onSettings={() => setShowSettings(true)}
+          consent={dataConsent}
+          onConsent={answerConsent}
           queue={beta ? queue : []}
           picked={pickedDate}
           onPick={(date) => {
@@ -193,6 +210,8 @@ export default function App() {
             settings={settings}
             onChange={updateSettings}
             onClose={() => setShowSettings(false)}
+            consent={dataConsent}
+            onConsent={answerConsent}
             beta={beta}
             onBeta={(unlocked) => {
               setBeta(unlocked)
@@ -260,6 +279,7 @@ export default function App() {
         ),
         durationMs: Date.now() - gameStarted.current,
       })
+      void flush()
     } else {
       map.current?.resetCamera()
     }
@@ -351,6 +371,8 @@ export default function App() {
           settings={settings}
           onChange={updateSettings}
           onClose={() => setShowSettings(false)}
+          consent={dataConsent}
+          onConsent={answerConsent}
           beta={beta}
           onBeta={setBeta}
         />
@@ -384,6 +406,8 @@ function Landing({
   resuming,
   onPlay,
   onSettings,
+  consent,
+  onConsent,
   queue,
   picked,
   onPick,
@@ -393,6 +417,8 @@ function Landing({
   resuming: boolean
   onPlay: () => void
   onSettings: () => void
+  consent: Consent
+  onConsent: (granted: boolean) => void
   queue: string[]
   picked: string | null
   onPick: (date: string | null) => void
@@ -467,6 +493,30 @@ function Landing({
           </p>
         )}
         <p className="text-xs text-neutral-600">Next puzzle in {countdown}</p>
+
+        {consent === 'unset' && (
+          <div className="rounded-xl bg-white/5 p-3">
+            <p className="text-xs leading-relaxed text-neutral-400">
+              Share anonymous play data to help tune the puzzles? Scores, distances
+              and which places are too hard. No account, no ads, no third parties.
+            </p>
+            <div className="mt-2.5 flex gap-2">
+              <button
+                onClick={() => onConsent(true)}
+                className="flex-1 rounded-lg bg-white/10 py-1.5 text-xs font-medium active:bg-white/20"
+              >
+                Sure
+              </button>
+              <button
+                onClick={() => onConsent(false)}
+                className="flex-1 rounded-lg py-1.5 text-xs text-neutral-400 active:bg-white/5"
+              >
+                No thanks
+              </button>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={onSettings}
           className="text-xs text-neutral-400 underline underline-offset-4"
@@ -655,12 +705,16 @@ function SettingsPanel({
   settings,
   onChange,
   onClose,
+  consent,
+  onConsent,
   beta,
   onBeta,
 }: {
   settings: Settings
   onChange: (patch: Partial<Settings>) => void
   onClose: () => void
+  consent: Consent
+  onConsent: (granted: boolean) => void
   beta: boolean
   onBeta: (unlocked: boolean) => void
 }) {
@@ -711,6 +765,22 @@ function SettingsPanel({
             </div>
           </div>
         )}
+
+        <label className="flex items-start justify-between gap-4 border-t border-white/10 pt-4">
+          <span>
+            <span className="block text-sm font-medium">Share anonymous play data</span>
+            <span className="block text-xs text-neutral-400">
+              Scores and distances, to find puzzles that are too hard. Turning this
+              off also deletes the anonymous id this device was using.
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={consent === 'granted'}
+            onChange={(e) => onConsent(e.target.checked)}
+            className="mt-1 size-5 shrink-0 accent-amber-400"
+          />
+        </label>
 
         <div className="border-t border-white/10 pt-4">
           {beta ? (

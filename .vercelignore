@@ -1,0 +1,2 @@
+# Test files are not serverless functions.
+*.test.ts

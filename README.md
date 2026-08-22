@@ -21,11 +21,28 @@ npm run dev          # http://localhost:5173
 | `npm run build` | typecheck, build puzzles, bundle |
 | `npm test` | unit tests |
 | `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
+| `npm run check:events` | round-trips an event through `/api/events`; needs `DATABASE_URL` |
 | `npm run puzzles:build` | encodes `puzzles/` into `public/puzzles/` |
 
 `check:tiles` is worth running on a schedule. The imagery services are third-party and
 break silently — NYC dropped every survey after 2018 from one host without notice, and a
 dead endpoint takes the whole game with it.
+
+## Telemetry
+
+Anonymous play data — scores, distances, which places are too hard — is buffered locally and
+flushed to `POST /api/events` only after the player opts in. Saying no records nothing and
+deletes the device's anonymous id. There is no account, no ad network and no third party;
+country and city come from Vercel's edge headers, and the IP itself is never stored.
+
+The endpoint answers 503 until `DATABASE_URL` is set, and the client retries 5xx, so events
+buffer safely before the database exists. To provision:
+
+```
+# Vercel dashboard → Storage → Postgres, which sets DATABASE_URL
+psql "$DATABASE_URL" -f api/schema.sql
+DATABASE_URL=... npm run check:events
+```
 
 ## Imagery
 

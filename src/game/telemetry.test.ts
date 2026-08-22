@@ -17,7 +17,7 @@ vi.stubGlobal('document', { referrer: '' })
 vi.stubGlobal('window', { location: { search: '?utm_source=twitter&utm_medium=social' } })
 vi.stubGlobal('navigator', { language: 'en-US' })
 
-const { track, drain } = await import('./telemetry')
+const { track, drain, flush, consent, setConsent } = await import('./telemetry')
 const { loadProgress, saveProgress, loadStats, recordGame, loadSettings, saveSettings, HOLD_OPTIONS } =
   await import('./storage')
 const { imageryVariant, VARIANTS } = await import('../map/tiles')
@@ -219,4 +219,121 @@ test('settings fall back sanely, including a hold duration off the menu', () => 
 
   store.set('nycmap:settings', 'null')
   expect(() => loadSettings()).not.toThrow()
+})
+
+/* ------------------------------------------------------------ consent */
+
+test('nothing is sent, and nothing is kept, once a player has said no', async () => {
+  setConsent(false)
+  expect(consent()).toBe('denied')
+  track('round_complete', { score: 40 })
+  expect(drain()).toHaveLength(0)
+
+  const fetchSpy = vi.fn()
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+  expect(fetchSpy).not.toHaveBeenCalled()
+})
+
+test('saying no deletes the id the device was using', () => {
+  track('round_complete', {})
+  expect(localStorage.getItem('nycmap:id')).toBe('test-uuid')
+  setConsent(false)
+  expect(localStorage.getItem('nycmap:id')).toBeNull()
+})
+
+test('a player who has not been asked still buffers, but sends nothing', async () => {
+  expect(consent()).toBe('unset')
+  track('round_complete', { score: 12 })
+  const fetchSpy = vi.fn()
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+  expect(fetchSpy).not.toHaveBeenCalled()
+  // Still there to send if they say yes at the end of the game.
+  expect(drain()).toHaveLength(1)
+})
+
+test('granted consent posts the buffer and clears it', async () => {
+  setConsent(true)
+  track('round_complete', { score: 90 })
+  const fetchSpy = vi.fn().mockResolvedValue({ status: 204 })
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+
+  const [url, init] = fetchSpy.mock.calls[0]
+  expect(url).toBe('/api/events')
+  expect(JSON.parse(init.body).events[0].props.score).toBe(90)
+  expect(drain()).toHaveLength(0)
+})
+
+test('a 5xx puts the batch back, ahead of what arrived since', async () => {
+  setConsent(true)
+  track('round_complete', { score: 1 })
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => {
+      // Tracked while the request was in flight -- it must end up second.
+      track('round_complete', { score: 2 })
+      return { status: 503 }
+    }),
+  )
+  await flush()
+  expect(drain().map((e) => e.props.score)).toEqual([1, 2])
+})
+
+test('a network failure puts the batch back', async () => {
+  setConsent(true)
+  track('share', { method: 'clipboard' })
+  vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
+  await flush()
+  expect(drain()).toHaveLength(1)
+})
+
+test('a 4xx drops the batch rather than retrying it forever', async () => {
+  setConsent(true)
+  track('round_complete', { score: 3 })
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ status: 400 }))
+  await flush()
+  expect(drain()).toHaveLength(0)
+})
+
+test('a long-offline queue is sent in batches the endpoint will accept', async () => {
+  setConsent(true)
+  for (let i = 0; i < 250; i++) track('round_complete', { i })
+  const fetchSpy = vi.fn().mockResolvedValue({ status: 204 })
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+
+  expect(fetchSpy).toHaveBeenCalledTimes(3)
+  const sizes = fetchSpy.mock.calls.map((c) => JSON.parse(c[1].body).events.length)
+  expect(sizes).toEqual([100, 100, 50])
+  // Every event went exactly once, in order.
+  const sent = fetchSpy.mock.calls.flatMap((c) => JSON.parse(c[1].body).events.map((e) => e.props.i))
+  expect(sent).toEqual([...Array(250).keys()])
+  expect(drain()).toHaveLength(0)
+})
+
+test('a failure mid-way keeps the rest of the queue instead of reordering it', async () => {
+  setConsent(true)
+  for (let i = 0; i < 250; i++) track('round_complete', { i })
+  const fetchSpy = vi
+    .fn()
+    .mockResolvedValueOnce({ status: 204 })
+    .mockResolvedValueOnce({ status: 503 })
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+
+  expect(fetchSpy).toHaveBeenCalledTimes(2)
+  const left = drain().map((e) => e.props.i)
+  expect(left).toHaveLength(150)
+  expect(left[0]).toBe(100)
+})
+
+test('an oversized batch drops keepalive rather than being rejected by the browser', async () => {
+  setConsent(true)
+  for (let i = 0; i < 60; i++) track('round_complete', { pad: 'x'.repeat(1500) })
+  const fetchSpy = vi.fn().mockResolvedValue({ status: 204 })
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+  expect(fetchSpy.mock.calls[0][1].keepalive).toBe(false)
 })
