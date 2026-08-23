@@ -1374,6 +1374,18 @@ persistent identifier stored for analytics, and ePrivacy wants opt-in for that r
 how harmless the contents are. Being right about an exemption is worth less than an inline
 question with two buttons.
 
+**Asked on the results screen, not the landing screen (moved 2026-08-23).** The first
+placement put it under the Play button, where it lost every time -- a player heading for
+Play does not stop to read a grey box beneath it. Worse, the landing screen does not render
+at all once the day's game is finished (`if (!started && !over)`), so anyone who had already
+played could not reach the card even deliberately. Found by playing a game and finding the
+events table empty with fifteen events buffered locally and consent still `null`.
+
+The results screen has neither problem: every finished game passes through it, including a
+reload into one, the game is over so no button is being raced, and "help tune the puzzles"
+carries more weight with someone who has just been beaten by one. Settings still holds the
+toggle for changing either answer.
+
 Three states, and the middle one is the one that matters:
 
 | state | tracks | transmits |
