@@ -1386,6 +1386,12 @@ reload into one, the game is over so no button is being raced, and "help tune th
 carries more weight with someone who has just been beaten by one. Settings still holds the
 toggle for changing either answer.
 
+**Both screens, in the end.** Results-only left a real gap: a player who never finishes a
+game is never asked at all. So the ask is a shared `ConsentAsk` used in both places -- on the
+landing screen directly under Play rather than buried beneath the stats line, and at the foot
+of the results panel. It is answered once and retires everywhere, so two placements are two
+chances to be seen rather than two asks.
+
 Three states, and the middle one is the one that matters:
 
 | state | tracks | transmits |

@@ -189,6 +189,8 @@ export default function App() {
             gameStarted.current = Date.now()
           }}
           onSettings={() => setShowSettings(true)}
+          consent={dataConsent}
+          onConsent={answerConsent}
           queue={beta ? queue : []}
           picked={pickedDate}
           onPick={(date) => {
@@ -403,12 +405,51 @@ function useCountdown(): string {
   return formatCountdown(ms)
 }
 
+/**
+ * Shown on both the landing screen and the results panel, and only until it is
+ * answered once. Two placements because neither covers everyone on its own: a
+ * player who never finishes a game is never asked by the results panel, and the
+ * landing screen does not render at all once the day's game is over. Answering
+ * in either place retires it everywhere.
+ */
+function ConsentAsk({
+  consent,
+  onConsent,
+}: {
+  consent: Consent
+  onConsent: (granted: boolean) => void
+}) {
+  if (consent !== 'unset') return null
+  return (
+    <div className="flex items-center gap-2 border-t border-white/10 pt-3">
+      <p className="min-w-0 flex-1 text-[11px] leading-snug text-neutral-400">
+        Share anonymous play data to help tune the puzzles? No account, no ads,
+        no third parties.
+      </p>
+      <button
+        onClick={() => onConsent(true)}
+        className="shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium active:bg-white/20"
+      >
+        Sure
+      </button>
+      <button
+        onClick={() => onConsent(false)}
+        className="shrink-0 px-1 py-1.5 text-xs text-neutral-500 active:text-neutral-300"
+      >
+        No
+      </button>
+    </div>
+  )
+}
+
 function Landing({
   puzzle,
   stats,
   resuming,
   onPlay,
   onSettings,
+  consent,
+  onConsent,
   queue,
   picked,
   onPick,
@@ -418,6 +459,8 @@ function Landing({
   resuming: boolean
   onPlay: () => void
   onSettings: () => void
+  consent: Consent
+  onConsent: (granted: boolean) => void
   queue: string[]
   picked: string | null
   onPick: (date: string | null) => void
@@ -484,6 +527,8 @@ function Landing({
         >
           {resuming ? 'Resume' : picked !== null ? 'Play this day' : 'Play'}
         </button>
+
+        <ConsentAsk consent={consent} onConsent={onConsent} />
 
         {stats.played > 0 && (
           <p className="text-xs text-neutral-500">
@@ -652,32 +697,7 @@ function Results({
           {stats.streak > 1 && `${stats.streak} day streak · `}Next puzzle in {countdown}
         </p>
 
-        {/* Asked here, not on the landing screen, where it sat under the Play
-            button and every player walked straight past it -- and where a
-            finished game never renders at all, so anyone who had already played
-            could not reach it. The game is over by this point, there is no
-            button they are trying to get past, and "help tune the puzzles"
-            means something to someone who has just been beaten by one. */}
-        {consent === 'unset' && (
-          <div className="flex items-center gap-2 border-t border-white/10 pt-3">
-            <p className="min-w-0 flex-1 text-[11px] leading-snug text-neutral-400">
-              Share anonymous play data to help tune the puzzles? No account, no
-              ads, no third parties.
-            </p>
-            <button
-              onClick={() => onConsent(true)}
-              className="shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium active:bg-white/20"
-            >
-              Sure
-            </button>
-            <button
-              onClick={() => onConsent(false)}
-              className="shrink-0 px-1 py-1.5 text-xs text-neutral-500 active:text-neutral-300"
-            >
-              No
-            </button>
-          </div>
-        )}
+        <ConsentAsk consent={consent} onConsent={onConsent} />
       </div>
     </Floating>
   )
