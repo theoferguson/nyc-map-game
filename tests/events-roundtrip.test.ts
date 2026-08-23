@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
 import postgres from 'postgres'
-import { POST } from './events.ts'
+import { POST } from '../api/events.ts'
 
 /**
  * The only check that touches a real database, so it is opt-in:

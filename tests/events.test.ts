@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { POST } from './events.ts'
+import { POST } from '../api/events.ts'
 
 // No DATABASE_URL in the test environment, which is the point: 503 means the
 // batch got all the way past validation and found nothing to write to, while
@@ -57,3 +57,11 @@ test('one bad event does not cost the good ones', async () => {
   const res = await post({ events: [{ ...valid, name: 'bogus' }, valid] })
   expect(res.status).toBe(503)
 })
+
+/**
+ * Everything under api/ becomes a serverless function, which is why these
+ * tests live here and not beside the code they cover. The first attempt kept
+ * them in api/ and excluded them with a `.vercelignore` of `*.test.ts` -- which
+ * also stripped every test in src/, so the build's own gate found no test files
+ * at all and exited 1. A directory Vercel does not look at costs nothing.
+ */
