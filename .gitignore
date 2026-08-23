@@ -26,3 +26,7 @@ dist-ssr
 # generated from puzzles/ by npm run puzzles:build
 public/puzzles/
 .vercel
+
+# Never in a public repo. `vercel env pull` writes the database URL here.
+.env
+.env.*
