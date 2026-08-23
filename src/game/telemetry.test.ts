@@ -17,7 +17,7 @@ vi.stubGlobal('document', { referrer: '' })
 vi.stubGlobal('window', { location: { search: '?utm_source=twitter&utm_medium=social' } })
 vi.stubGlobal('navigator', { language: 'en-US' })
 
-const { track, drain, flush, consent, setConsent } = await import('./telemetry')
+const { track, drain, flush, consent, setConsent, queued } = await import('./telemetry')
 const { loadProgress, saveProgress, loadStats, recordGame, loadSettings, saveSettings, HOLD_OPTIONS } =
   await import('./storage')
 const { imageryVariant, VARIANTS } = await import('../map/tiles')
@@ -336,4 +336,22 @@ test('an oversized batch drops keepalive rather than being rejected by the brows
   vi.stubGlobal('fetch', fetchSpy)
   await flush()
   expect(fetchSpy.mock.calls[0][1].keepalive).toBe(false)
+})
+
+test('the settings readout counts what is actually waiting', async () => {
+  expect(queued()).toBe(0)
+  track('round_complete', { score: 5 })
+  track('round_complete', { score: 6 })
+  expect(queued()).toBe(2)
+
+  setConsent(true)
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ status: 204 }))
+  await flush()
+  expect(queued()).toBe(0)
+
+  // A failed send is still on the device, and must still be counted.
+  track('share', {})
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ status: 503 }))
+  await flush()
+  expect(queued()).toBe(1)
 })

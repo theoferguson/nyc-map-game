@@ -157,6 +157,18 @@ export function drain(): TrackedEvent[] {
 }
 
 /**
+ * How many events are waiting to be sent.
+ *
+ * Exists because there was no way to tell a working pipeline from a dead one
+ * from the outside: the endpoint was correct, the table stayed empty, and the
+ * only way to find out why was reading localStorage in a console. A count in
+ * Settings makes the next silent failure obvious.
+ */
+export function queued(): number {
+  return storage.parse<TrackedEvent[]>(QUEUE_KEY, []).length
+}
+
+/**
  * Put a failed batch back in front of whatever was tracked while it was in
  * flight, so order survives a retry. Capped like any other write -- a device
  * that has been offline for a month does not get to grow without bound.

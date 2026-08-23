@@ -3,7 +3,7 @@ import { MapView, type MapHandle } from './map/MapView'
 import { loadPuzzle, puzzleQueue, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
-import { track, flush, consent, setConsent, type Consent } from './game/telemetry'
+import { track, flush, consent, setConsent, queued, type Consent } from './game/telemetry'
 import { imageryVariant } from './map/tiles'
 import {
   puzzleDate,
@@ -727,6 +727,16 @@ function SettingsPanel({
 }) {
   const [code, setCode] = useState('')
   const [rejected, setRejected] = useState(false)
+
+  // Polled rather than read once: granting consent starts a flush that settles
+  // after this panel has rendered, and a count frozen at "15 waiting" a second
+  // after they all sent is worse than no count at all.
+  const [waiting, setWaiting] = useState(queued)
+  useEffect(() => {
+    const id = setInterval(() => setWaiting(queued()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
   return (
     <div className="absolute inset-0 z-40 flex items-end justify-center bg-black/60 p-3 sm:items-center">
       <div className="w-full max-w-sm space-y-5 rounded-2xl bg-neutral-900 p-5 text-white ring-1 ring-white/10">
@@ -788,6 +798,18 @@ function SettingsPanel({
             className="mt-1 size-5 shrink-0 accent-amber-400"
           />
         </label>
+
+        <p className="-mt-3 text-xs text-neutral-500">
+          {consent === 'denied'
+            ? 'Nothing is being recorded.'
+            : waiting === 0
+              ? consent === 'granted'
+                ? 'Everything sent.'
+                : 'Nothing recorded yet.'
+              : `${waiting} event${waiting === 1 ? '' : 's'} on this device, ${
+                  consent === 'granted' ? 'waiting to send' : 'not sent'
+                }.`}
+        </p>
 
         <div className="border-t border-white/10 pt-4">
           {beta ? (
