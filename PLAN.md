@@ -1650,3 +1650,69 @@ specific field -- `npm run check:db` now does exactly that for both tables, and 
 (`::text::jsonb`) or handed to the driver's json helper. Never pass a stringified object at a
 bare `::jsonb`. And the reason it recurred is worth more than the rule -- the first fix lived
 in a comment on an unrelated file, so nothing carried it to the next table. It is now a test.
+
+
+---
+
+## 23. Content out of the repo, and behind a date gate (2026-08-25)
+
+Asked to hide the admin panel, found something larger: `content/days.json` held all fifty
+future days -- names, coordinates, facts -- in plaintext, in a **public** repo. No decoding,
+no URL guessing. Anyone could read the next seven weeks on github.com, and every commit since
+the content pass still contained it.
+
+Ranked by how exposed they were, and they are not equally fixable:
+
+| exposure | fixable? |
+|---|---|
+| plaintext content in a public repo, and in its history | yes, completely |
+| `/puzzles/<date>.json` served statically for any date | yes, completely |
+| today's answers reaching the browser | **no**, not without server-side session state |
+
+That last row is worth stating plainly rather than implying it is covered. Scoring happens on
+the client, so the client must hold today's coordinates. Moving scoring to the server would
+only help if the server knew which round a given player was on -- and with no accounts,
+anyone can ask it five times. The honest description is that today's answers are protected
+against casual inspection and nothing more.
+
+### Content moved to the database
+
+`content/` and `puzzles/` are gitignored. Days are pushed with `npm run puzzles:push` and
+served by `GET /api/puzzle?date=…`, which compares the request against New York's today --
+the same rollover the game uses -- and returns 404 for anything later. A beta code widens the
+window by exactly `beta.daysAhead`, checked server-side against the stored config.
+
+Two details that are load-bearing:
+
+- **404, not 403,** for a day that exists but is not yet allowed. A distinguishable refusal
+  would confirm which future dates are authored, which is a slower version of the leak the
+  endpoint exists to close.
+- **`cache-control: private`.** The response depends on the beta code, so a shared cache
+  holding one caller's answer would hand a future day to everyone.
+
+The build no longer produces content at all, which is the point: a deploy cannot leak what it
+never contains.
+
+### The deal was burned, so it was redealt
+
+The leaked file is permanent -- forks, clones and caches keep it. What was secret was not the
+250 places but *which five appear on which date*, so all 250 were redealt across the fifty
+days: shuffled within each difficulty tier so the 1-to-5 climb survives, then repaired by
+swapping within a tier until every day again had at least two locations outside Manhattan.
+Nine of 250 landed on their original date and slot, which is chance rather than a bug.
+
+*What this does not fix:* the pool of 250 is now known to anyone who read the old file.
+Someone determined could study all of them. Genuinely fresh content needs the generator in
+section 4, and this buys the time to build it rather than substituting for it.
+
+### The codec test had to stop reading content
+
+`loadPuzzle.test.ts` round-tripped a real built file through the real decoder, and would have
+failed in CI the moment content left the repo -- taking the deploy gate with it. Skipping it
+would have quietly retired the check that catches encoder/decoder drift, which is the one
+failure here that marks correct answers wrong while looking fine.
+
+The encoder now lives in `scripts/encode.mjs`, imported by both the push script and the test,
+so the test drives the real encoder against the real decoder on a synthetic day. The
+content-rules test is skipped when the files are absent, since it only matters to whoever has
+them open.

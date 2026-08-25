@@ -5,15 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "npm run puzzles:build && tsc -b && vitest run && vite build",
+    "build": "tsc -b && vitest run && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
     "check:tiles": "node scripts/check-tiles.mjs",
     "check:db": "CHECK_EVENTS_DB=1 vitest run tests/events-roundtrip.test.ts tests/config-roundtrip.test.ts",
     "test": "vitest run",
-    "puzzles:build": "node scripts/build-puzzles.mjs",
-    "predev": "npm run puzzles:build",
-    "pretest": "npm run puzzles:build"
+    "puzzles:push": "node scripts/push-puzzles.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.4.1",

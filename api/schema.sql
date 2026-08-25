@@ -37,3 +37,14 @@ create table if not exists config (
   updated_at timestamptz not null default now(),
   constraint config_singleton check (id = 1)
 );
+
+-- Authored puzzles. Content lives here rather than in the repo or in public/,
+-- so a future day cannot be read by guessing a URL or by browsing GitHub.
+-- `locations` is the same date-keyed XOR blob the client already decodes; the
+-- real protection is the date gate in /api/puzzle, not the encoding.
+create table if not exists puzzles (
+  date          date  primary key,
+  puzzle_number int   not null,
+  theme         text,
+  locations     text  not null
+);

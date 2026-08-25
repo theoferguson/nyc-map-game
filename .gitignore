@@ -23,7 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-# generated from puzzles/ by npm run puzzles:build
+# Authored content. Never in the repo: a public repo publishes every future
+# day in plaintext, and git history keeps it there. Content lives in the
+# database and is served through the date gate in /api/puzzle.
+content/
+puzzles/
 public/puzzles/
 .vercel
 

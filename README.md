@@ -22,7 +22,7 @@ npm run dev          # http://localhost:5173
 | `npm test` | unit tests |
 | `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
 | `npm run check:db` | round-trips an event and a config through the API; needs `DATABASE_URL` |
-| `npm run puzzles:build` | encodes `puzzles/` into `public/puzzles/` |
+| `npm run puzzles:push` | uploads `puzzles/` to the database; needs `DATABASE_URL` |
 
 `check:tiles` is worth running on a schedule. The imagery services are third-party and
 break silently — NYC dropped every survey after 2018 from one host without notice, and a
@@ -43,6 +43,19 @@ buffer safely before the database exists. To provision:
 psql "$DATABASE_URL" -f api/schema.sql
 DATABASE_URL=... npm run check:db
 ```
+
+## Content
+
+Authored content is **not in this repo**. `content/` and `puzzles/` are gitignored, and the
+days live in the database, served one at a time through `GET /api/puzzle?date=…`. That
+endpoint refuses any date after today in New York unless a valid beta code is presented, so a
+future puzzle cannot be read by guessing a URL.
+
+Authoring is unchanged — edit `content/days.json`, run `node scripts/author.mjs` — but
+publishing is now `npm run puzzles:push` rather than a commit.
+
+The date-keyed XOR on the payload is a speed bump against devtools, not protection. Today's
+answers necessarily reach the browser, because scoring happens there.
 
 ## Admin panel
 

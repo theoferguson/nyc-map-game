@@ -44,9 +44,13 @@ export function decodePuzzle(raw: EncodedPuzzle): Puzzle {
   return { ...raw, locations }
 }
 
-/** Authored days, earliest first. */
-export async function puzzleQueue(): Promise<string[]> {
-  const res = await fetch('/puzzles/index.json')
+/**
+ * Authored days, earliest first -- and only the ones this caller may see. The
+ * server decides that from the beta code, so an unlocked queue cannot be
+ * obtained by asking differently.
+ */
+export async function puzzleQueue(code: string | null): Promise<string[]> {
+  const res = await fetch(`/api/puzzle?index=1${code ? `&code=${encodeURIComponent(code)}` : ''}`)
   return res.ok ? ((await res.json()) as string[]) : []
 }
 
@@ -78,10 +82,14 @@ export const layoutOf = (puzzle: Puzzle) => puzzle.locations.map((l) => l.id).jo
 export async function loadPuzzle(
   date: string,
   overrides: Record<string, LocationOverride> = {},
+  code: string | null = null,
 ): Promise<Puzzle> {
-  const res = await fetch(`/puzzles/${date}.json`)
+  const res = await fetch(
+    `/api/puzzle?date=${date}${code ? `&code=${encodeURIComponent(code)}` : ''}`,
+  )
   // Reachable in normal use the moment the calendar passes the last authored
-  // day, so it says something a player can act on rather than a status code.
+  // day, and also whenever a day is asked for before it is allowed -- the
+  // server answers 404 to both, deliberately, so this copy covers both.
   if (!res.ok) throw new Error(`No puzzle for ${date} yet — check back soon.`)
   return applyOverrides(decodePuzzle(await res.json()), overrides)
 }

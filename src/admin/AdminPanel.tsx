@@ -53,7 +53,9 @@ export default function AdminPanel() {
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) ?? '')
   const [config, setConfig] = useState<Config>(DEFAULTS)
   const [version, setVersion] = useState<number | null>(null)
-  const [status, setStatus] = useState('Loading…')
+  // Blank, not "Loading…": with no token held there is nothing to load and the
+  // prompt should say so by saying nothing.
+  const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
   /**
    * The code as the server has it. Handing someone the value in the input
@@ -95,8 +97,10 @@ export default function AdminPanel() {
   // A token already in this tab's session skips the prompt.
   useEffect(() => {
     const held = sessionStorage.getItem(TOKEN_KEY)
+    // `unlock` sets state, but only after an await -- this is a fetch on mount,
+    // which is exactly what an effect is for.
+    // oxlint-disable-next-line react/set-state-in-effect
     if (held) void unlock(held)
-    else setStatus('')
     // Runs once. `unlock` is recreated every render and listing it here would
     // re-prompt on each one.
     // oxlint-disable-next-line exhaustive-deps
@@ -225,7 +229,7 @@ export default function AdminPanel() {
           savedCode={savedCode}
         />
 
-        <Locations config={config} patch={patch} />
+        <Locations config={config} patch={patch} betaCode={config.beta.code} />
 
         <Section title="Save" note="Nothing above has any effect until this succeeds.">
           <button
@@ -324,9 +328,11 @@ function Beta({
 function Locations({
   config,
   patch,
+  betaCode,
 }: {
   config: Config
   patch: (p: Partial<Config>) => void
+  betaCode: string
 }) {
   const [date, setDate] = useState(puzzleDate)
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null)
@@ -340,11 +346,14 @@ function Locations({
     setPuzzle(null)
     // Deliberately unpatched: the panel edits the authored content, so it has
     // to show what was authored rather than what the overrides already say.
-    fetch(`/puzzles/${date}.json`)
+    // Through the same gate as everyone else, with the live beta code as the
+    // key -- the panel has no privileged path to content, so a day beyond the
+    // beta window cannot be edited here either.
+    fetch(`/api/puzzle?date=${date}&code=${encodeURIComponent(betaCode)}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error('none'))))
       .then((raw) => setPuzzle(decodePuzzle(raw)))
-      .catch(() => setError(`No puzzle authored for ${date}.`))
-  }, [date])
+      .catch(() => setError(`No puzzle available for ${date}.`))
+  }, [date, betaCode])
 
   const set = (id: string, next: { factShort?: string; hidden?: boolean }) => {
     const locations = { ...config.locations }

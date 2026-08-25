@@ -138,13 +138,17 @@ export default function App() {
 
   useEffect(() => {
     if (!beta) return
+    // The server decides the window from the code; this only bounds what the
+    // picker offers, so a wider server answer cannot silently widen the UI.
     const ahead = config().beta.daysAhead
-    puzzleQueue().then((dates) => setQueue(dates.filter((d) => d <= shiftDate(today, ahead))))
+    puzzleQueue(betaCode()).then((dates) =>
+      setQueue(dates.filter((d) => d <= shiftDate(today, ahead))),
+    )
   }, [beta, today])
 
   useEffect(() => {
     if (!ready) return
-    const load = loadPuzzle(pickedDate ?? today, config().locations)
+    const load = loadPuzzle(pickedDate ?? today, config().locations, betaCode())
     load
       .then((p) => {
         setPuzzle(p)
