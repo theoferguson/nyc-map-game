@@ -5,7 +5,7 @@ import { timingSafeEqual } from 'node:crypto'
 // and `vercel build`, then fails at runtime with FUNCTION_INVOCATION_FAILED
 // because the file next to it is `config.js`. `vercel dev` runs the TypeScript
 // directly and never sees it.
-import { DEFAULTS, validateConfig, type Config } from '../src/game/config.js'
+import { DEFAULTS, validateConfig, toPublic, type Config } from '../src/game/config.js'
 
 /**
  * Read is public: every client needs it at boot. Write is guarded by a single
@@ -34,23 +34,25 @@ export async function GET(): Promise<Response> {
   const client = db()
   // Defaults, not an error. The client would fall back to these anyway, and a
   // 500 on the boot path is a worse thing to explain than a stale config.
-  if (!client) return json({ version: 0, config: DEFAULTS })
+  if (!client) return json({ version: 0, config: toPublic(DEFAULTS) })
 
   try {
     const [row] = await client<{ version: number; data: Config }[]>`
       select version, data from config where id = 1`
-    if (!row) return json({ version: 0, config: DEFAULTS })
+    if (!row) return json({ version: 0, config: toPublic(DEFAULTS) })
     // Repaired rather than trusted: the row could predate a schema change.
     const { config } = validateConfig(row.data)
     return json(
-      { version: row.version, config },
+      // Stripped, not filtered by the caller: the one place this response is
+      // built is the only place that can guarantee the code never leaves.
+      { version: row.version, config: toPublic(config) },
       200,
       // Short, because the point of the panel is that a change lands quickly.
       // Stale-while-revalidate keeps the boot path off the origin regardless.
       { 'cache-control': 'public, max-age=60, stale-while-revalidate=600' },
     )
   } catch {
-    return json({ version: 0, config: DEFAULTS })
+    return json({ version: 0, config: toPublic(DEFAULTS) })
   }
 }
 
@@ -100,7 +102,7 @@ export async function POST(req: Request): Promise<Response> {
             data = excluded.data,
             updated_at = now()
       returning version`
-    return json({ version: row.version, config })
+    return json({ version: row.version, config: toPublic(config) })
   } catch {
     return json({ error: 'write failed' }, 503)
   }

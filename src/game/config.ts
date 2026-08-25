@@ -27,6 +27,19 @@ export type LocationOverride = {
   hidden?: boolean
 }
 
+/**
+ * What clients are allowed to see. The beta code is deliberately absent: a code
+ * shipped to every browser is not a gate, and returning it from a public
+ * endpoint made the beta group open to anyone who opened devtools. Codes are
+ * checked by `POST /api/beta` instead, where the client never learns the answer.
+ */
+export type PublicConfig = Omit<Config, 'beta'> & { beta: { daysAhead: number } }
+
+export const toPublic = (c: Config): PublicConfig => ({
+  ...c,
+  beta: { daysAhead: c.beta.daysAhead },
+})
+
 export type Config = {
   scoring: ScoringConfig
   beta: { code: string; daysAhead: number }

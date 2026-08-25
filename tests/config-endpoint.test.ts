@@ -1,6 +1,6 @@
 import { test, expect, beforeEach } from 'vitest'
 import { GET, POST } from '../api/config.ts'
-import { DEFAULTS } from '../src/game/config.ts'
+import { DEFAULTS, toPublic } from '../src/game/config.ts'
 
 beforeEach(() => {
   delete process.env.DATABASE_URL
@@ -22,7 +22,16 @@ const post = (body: unknown, token?: string) =>
 test('reads fall back to defaults rather than failing the boot path', async () => {
   const res = await GET()
   expect(res.status).toBe(200)
-  expect(await res.json()).toEqual({ version: 0, config: DEFAULTS })
+  expect(await res.json()).toEqual({ version: 0, config: toPublic(DEFAULTS) })
+})
+
+test('the public config never carries the beta code', async () => {
+  // The gate is worthless if the answer ships with the question. This is the
+  // assertion, not a comment: any future field added under beta has to be
+  // deliberately let through toPublic.
+  const body = (await (await GET()).json()) as { config: { beta: Record<string, unknown> } }
+  expect(Object.keys(body.config.beta)).toEqual(['daysAhead'])
+  expect(JSON.stringify(body)).not.toContain(DEFAULTS.beta.code)
 })
 
 test('a write without the token is refused', async () => {

@@ -4,7 +4,7 @@ import { loadPuzzle, puzzleQueue, layoutOf, type Puzzle, type PuzzleLocation } f
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, maxTotal, totalScore, shareString } from './game/share'
 import { track, flush, consent, setConsent, queued, type Consent } from './game/telemetry'
-import { loadConfig, config, configVersion } from './game/config-client'
+import { loadConfig, config, configVersion, verifyBetaCode } from './game/config-client'
 import { setScoring } from './game/scoring'
 import { imageryVariant } from './map/tiles'
 import {
@@ -23,7 +23,8 @@ import {
   saveSettings,
   HOLD_OPTIONS,
   betaUnlocked,
-  tryBetaCode,
+  betaCode,
+  saveBetaCode,
   lockBeta,
   type Stats,
   type Settings,
@@ -117,8 +118,21 @@ export default function App() {
     // defaults. The game must start even when this endpoint does not answer.
     void loadConfig().then((cfg) => {
       setScoring(cfg.scoring)
-      setBeta(betaUnlocked(cfg.beta.code))
+      // Optimistic: a stored code counts as unlocked immediately, so a returning
+      // tester is not made to wait on a round trip. The check below revokes only
+      // on an actual rejection -- a failed request leaves them alone.
+      setBeta(betaUnlocked())
       setReady(true)
+
+      const held = betaCode()
+      if (held) {
+        void verifyBetaCode(held).then((ok) => {
+          if (ok === false) {
+            lockBeta()
+            setBeta(false)
+          }
+        })
+      }
     })
   }, [])
 
@@ -880,11 +894,14 @@ function SettingsPanel({
             </div>
           ) : (
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault()
-                const ok = tryBetaCode(code, config().beta.code)
-                setRejected(!ok)
-                if (ok) {
+                // Checked by the server, so a wrong code and an unreachable
+                // server are both simply "not accepted" from here.
+                const ok = await verifyBetaCode(code)
+                setRejected(ok !== true)
+                if (ok === true) {
+                  saveBetaCode(code)
                   setCode('')
                   onBeta(true)
                 }

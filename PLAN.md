@@ -1557,6 +1557,43 @@ a different route. `Progress` now records the day's layout (its location ids, jo
 resume whose layout no longer matches starts clean instead. `MAX_TOTAL` became `maxTotal(n)`
 for the same reason: a four-round day scored out of 1000 reads as unwinnable.
 
+### The beta code was public (2026-08-25)
+
+Found while gating the panel, and it mattered more than the gating did. `GET /api/config` is
+read by every client at boot and returned the whole document -- including `beta.code`. The
+beta gate was defeated by opening the network tab. Hiding the admin panel would not have
+touched it.
+
+The cause is structural rather than careless: the code was checked client-side, so the client
+had to be given the answer. Any client-side secret comparison has this shape.
+
+Now `POST /api/beta` answers yes or no and the client never learns the code. Three details
+that are load-bearing:
+
+- The public config is built through `toPublic()` in one place, so a field added under `beta`
+  has to be deliberately let through. A test asserts the response's `beta` keys are exactly
+  `['daysAhead']` and that the code appears nowhere in the body.
+- A wrong code returns **200 `{ok:false}`**, not 401. A status code that differs on a correct
+  guess confirms it to something that never reads the body.
+- Devices store the code they were admitted with and re-verify on load, so rotation still
+  revokes. A verification that *fails to answer* -- offline, endpoint down -- leaves an
+  existing tester alone rather than throwing them out; only an explicit rejection locks.
+
+*What this is not.* `/puzzles/<date>.json` is a public static file, so anyone determined to
+read next week's puzzle can still fetch it directly. The gate protects the intentionality of
+the tester group, not the secrecy of the content. Worth being precise about, because it would
+be easy to now believe the content is protected.
+
+### The panel is gated, the URL is not
+
+The panel renders a token prompt and nothing else until `POST /api/admin` accepts the token
+and returns the config. There is nothing to show before that, so the gate is real rather than
+a hidden div.
+
+The path stays `/?admin`. A secret URL leaks into browser history, referrer headers and
+screenshots, and would add nothing the token does not already do -- while creating the
+impression that the URL is what protects the panel.
+
 **Handing the code out (2026-08-25).** The panel copies the code and generates a replacement.
 Two details that are not decoration:
 

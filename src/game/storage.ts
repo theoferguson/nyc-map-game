@@ -233,13 +233,20 @@ const BETA_KEY = 'nycmap:beta'
 // a flag is what makes rotation actually revoke: change it, and every device
 // holding the old one is locked out on its next load.
 
-export const betaUnlocked = (code: string) => storage.get(BETA_KEY) === code
+/**
+ * The code this device was let in with, or null.
+ *
+ * Held rather than a bare flag so revocation works: the server is asked whether
+ * it is still valid on each load, and a rotated code fails that check. Treated
+ * as unlocked until the server actually says otherwise, so a tester on a train
+ * is not thrown out by a dropped request.
+ */
+export const betaCode = () => storage.get(BETA_KEY)
 
-/** True if the code matched, so the caller can report a bad one. */
-export function tryBetaCode(input: string, code: string): boolean {
-  if (input.trim().toLowerCase() !== code.trim().toLowerCase()) return false
-  storage.set(BETA_KEY, code)
-  return true
+export const betaUnlocked = () => betaCode() !== null
+
+export function saveBetaCode(code: string): void {
+  storage.set(BETA_KEY, code.trim().toLowerCase())
 }
 
 export function lockBeta(): void {

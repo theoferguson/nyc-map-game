@@ -7,10 +7,14 @@ import { puzzleDate } from '../game/date'
 /**
  * Operator surface for the handful of settings that change without a deploy.
  *
- * Reached at /?admin, and the URL is not the security boundary -- the token is.
- * Anyone can open this page; nothing they type has any effect until a write is
- * accepted by the endpoint, which checks ADMIN_TOKEN. So the panel is free to
- * be a plain route rather than something hidden.
+ * Reached at /?admin, and nothing is rendered until the token is accepted. The
+ * gate is real rather than cosmetic: the panel has no config to display until
+ * `POST /api/admin` returns one, and that endpoint checks ADMIN_TOKEN. A visitor
+ * without the token sees a prompt and can learn nothing else from the page.
+ *
+ * The URL is still not a secret and is not treated as one. Hiding the path would
+ * put it in browser history, referrer headers and screenshots while adding
+ * nothing the token does not already do.
  *
  * The token lives in sessionStorage, not localStorage: it is a credential, and
  * it should not outlive the tab it was typed into.
@@ -57,28 +61,87 @@ export default function AdminPanel() {
    * confusing thing to debug over a text message.
    */
   const [savedCode, setSavedCode] = useState<string | null>(null)
+  const [unlocked, setUnlocked] = useState(false)
 
-  useEffect(() => {
-    fetch('/api/config')
-      .then((r) => r.json())
-      .then((body: { version: number; config: unknown }) => {
-        const loaded = validateConfig(body.config).config
-        setConfig(loaded)
-        setSavedCode(loaded.beta.code)
-        setVersion(body.version)
-        setStatus('')
+  /** Proves the token and loads the config in one call. */
+  async function unlock(candidate: string): Promise<void> {
+    setStatus('')
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'x-admin-token': candidate },
       })
-      .catch(() => setStatus('Could not load the current config.'))
+      if (res.status === 401) {
+        sessionStorage.removeItem(TOKEN_KEY)
+        setStatus('Token rejected.')
+        return
+      }
+      if (!res.ok) {
+        setStatus('Could not load the config.')
+        return
+      }
+      const body = (await res.json()) as { version: number; config: unknown }
+      const loaded = validateConfig(body.config).config
+      setConfig(loaded)
+      setSavedCode(loaded.beta.code)
+      setVersion(body.version)
+      sessionStorage.setItem(TOKEN_KEY, candidate)
+      setUnlocked(true)
+    } catch {
+      setStatus('Could not reach the server.')
+    }
+  }
+
+  // A token already in this tab's session skips the prompt.
+  useEffect(() => {
+    const held = sessionStorage.getItem(TOKEN_KEY)
+    if (held) void unlock(held)
+    else setStatus('')
+    // Runs once. `unlock` is recreated every render and listing it here would
+    // re-prompt on each one.
+    // oxlint-disable-next-line exhaustive-deps
   }, [])
 
   // The preview scores through the real function, so what it shows is what
   // players get -- a reimplementation here would drift from the game silently.
   useEffect(() => setScoring(config.scoring), [config.scoring])
 
+  if (!unlocked) {
+    return (
+      <div className="flex min-h-full items-center justify-center bg-neutral-950 p-6 text-white">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            void unlock(token)
+          }}
+          className="w-full max-w-xs space-y-4"
+        >
+          <h1 className="text-lg font-semibold">Admin</h1>
+          <input
+            type="password"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            placeholder="token"
+            autoComplete="off"
+            autoFocus
+            className="w-full rounded-lg bg-neutral-900 px-3 py-2 ring-1 ring-white/10"
+          />
+          <button
+            type="submit"
+            disabled={!token}
+            className="w-full rounded-lg bg-white py-2 font-semibold text-neutral-900 disabled:opacity-30"
+          >
+            Unlock
+          </button>
+          {status && <p className="text-sm text-neutral-400">{status}</p>}
+        </form>
+      </div>
+    )
+  }
+
   async function save() {
     setSaving(true)
     setStatus('')
-    sessionStorage.setItem(TOKEN_KEY, token)
     try {
       const res = await fetch('/api/config', {
         method: 'POST',
@@ -165,23 +228,13 @@ export default function AdminPanel() {
         <Locations config={config} patch={patch} />
 
         <Section title="Save" note="Nothing above has any effect until this succeeds.">
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="admin token"
-              autoComplete="off"
-              className="min-w-0 flex-1 rounded-lg bg-neutral-900 px-3 py-2 ring-1 ring-white/10"
-            />
-            <button
-              onClick={save}
-              disabled={saving || !token}
-              className="rounded-lg bg-white px-5 py-2 font-semibold text-neutral-900 disabled:opacity-40"
-            >
-              {saving ? 'Saving…' : 'Save'}
-            </button>
-          </div>
+          <button
+            onClick={save}
+            disabled={saving}
+            className="rounded-lg bg-white px-6 py-2 font-semibold text-neutral-900 disabled:opacity-40"
+          >
+            {saving ? 'Saving…' : 'Save'}
+          </button>
           {status && <p className="mt-3 text-sm text-neutral-300">{status}</p>}
         </Section>
       </div>

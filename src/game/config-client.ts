@@ -1,5 +1,5 @@
 import { storage } from './storage'
-import { DEFAULTS, validateConfig, type Config } from './config'
+import { DEFAULTS, validateConfig, toPublic, type PublicConfig } from './config'
 
 /**
  * Client half of the runtime config: fetch it, cache it, and never let it stop
@@ -21,11 +21,11 @@ const CACHE_KEY = 'nycmap:config'
  */
 const TIMEOUT_MS = 2000
 
-let active: Config = DEFAULTS
+let active: PublicConfig = toPublic(DEFAULTS)
 let activeVersion = 0
 
 /** The config in force for this session. Resolved once at boot and then frozen. */
-export const config = (): Config => active
+export const config = (): PublicConfig => active
 
 /**
  * Which config produced a score. Stamped on `round_complete` so a retune does
@@ -35,12 +35,12 @@ export const config = (): Config => active
  */
 export const configVersion = (): number => activeVersion
 
-export async function loadConfig(): Promise<Config> {
+export async function loadConfig(): Promise<PublicConfig> {
   // Last known good first, so a repeat visit boots on the right config even if
   // the network is slow or gone.
   const cached = storage.parse<{ version: number; config: unknown } | null>(CACHE_KEY, null)
   if (cached && typeof cached.version === 'number') {
-    active = validateConfig(cached.config).config
+    active = toPublic(validateConfig(cached.config).config)
     activeVersion = cached.version
   }
 
@@ -48,7 +48,7 @@ export async function loadConfig(): Promise<Config> {
     const res = await fetch('/api/config', { signal: AbortSignal.timeout(TIMEOUT_MS) })
     if (res.ok) {
       const body = (await res.json()) as { version?: number; config?: unknown }
-      active = validateConfig(body.config).config
+      active = toPublic(validateConfig(body.config).config)
       activeVersion = typeof body.version === 'number' ? body.version : 0
       storage.set(CACHE_KEY, JSON.stringify({ version: activeVersion, config: active }))
     }
@@ -57,4 +57,28 @@ export async function loadConfig(): Promise<Config> {
     // have -- cache or defaults -- is what the session plays on.
   }
   return active
+}
+
+/**
+ * Ask the server whether a beta code is right. The client never holds the
+ * answer, which is the entire point -- the previous version compared against a
+ * code delivered in the public config, so reading the network tab was enough to
+ * join the beta.
+ *
+ * Returns null when the question could not be asked at all. Callers use that to
+ * leave an existing tester alone rather than revoking them over a dropped
+ * connection.
+ */
+export async function verifyBetaCode(code: string): Promise<boolean | null> {
+  try {
+    const res = await fetch('/api/beta', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ code }),
+    })
+    if (!res.ok) return null
+    return (await res.json()).ok === true
+  } catch {
+    return null
+  }
 }
