@@ -28,7 +28,7 @@ const UA = 'nyc-map-game/0.1 (ferguson.theo@gmail.com)'
  * "NYC Daily #0" is a clearer signal that this is not the real thing than any
  * numbering that looks legitimate.
  */
-const START = '2026-08-26'
+const START = '2026-08-25'
 const PREVIEW_FROM = '2026-08-20'
 const BOROUGHS = ['manhattan', 'brooklyn', 'queens', 'bronx', 'staten-island']
 

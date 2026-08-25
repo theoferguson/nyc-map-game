@@ -1705,6 +1705,27 @@ Nine of 250 landed on their original date and slot, which is chance rather than 
 Someone determined could study all of them. Genuinely fresh content needs the generator in
 section 4, and this buys the time to build it rather than substituting for it.
 
+### The schedule moved forward a day (2026-08-25)
+
+`START` went from 2026-08-26 to 2026-08-25, so the placeholder now runs 20-24 August and the
+authored queue begins today with #1, ending 13 October. One knob, since every date is derived
+from it.
+
+Two things that only surface when a schedule shifts:
+
+- **`puzzles/` is regenerated, not overwritten.** Author output is derived from `content/`, and
+  writing over it leaves the old tail date on disk -- 2026-10-14 in this case -- looking exactly
+  like a real day.
+- **The push now prunes.** Days on disk are the source of truth, so a date in the table that no
+  longer exists locally is a leftover that would keep being served by the date gate with content
+  nothing regenerates. Pruning is guarded on a plausible push rather than a flag: the risk is
+  running against a partial directory, not a full one.
+
+*One consequence for anyone who already played today:* the board for 25 August changed under
+them. The layout guard from section 22 catches it -- a resume whose location ids no longer match
+starts clean rather than scoring saved guesses against different places -- but `recordGame` is
+idempotent per date, so a score already recorded for today stands.
+
 ### The codec test had to stop reading content
 
 `loadPuzzle.test.ts` round-tripped a real built file through the real decoder, and would have

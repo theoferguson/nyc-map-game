@@ -41,6 +41,22 @@ for (const file of files) {
   pushed++
 }
 
+/**
+ * Days on disk are the source of truth, so anything else in the table is a
+ * leftover -- a shifted schedule strands the old tail date, which would then
+ * keep serving content nothing regenerates.
+ *
+ * Guarded on a plausible push rather than a flag: the danger is running this
+ * against a partial directory, not against a full one.
+ */
+if (pushed >= 10) {
+  const dates = files.map((f) => f.replace(/\.json$/, ''))
+  const stale = await sql`delete from puzzles where date::text <> all(${dates}) returning date::text`
+  if (stale.length) console.log(`removed ${stale.length} stale day(s): ${stale.map((r) => r.date).join(', ')}`)
+} else {
+  console.log(`only ${pushed} day(s) pushed — skipping the prune`)
+}
+
 const [{ count }] = await sql`select count(*)::int from puzzles`
 const [{ first, last }] = await sql`select min(date)::text first, max(date)::text last from puzzles`
 await sql.end()
