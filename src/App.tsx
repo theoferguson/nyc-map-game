@@ -148,7 +148,9 @@ export default function App() {
 
   useEffect(() => {
     if (!ready) return
-    const load = loadPuzzle(pickedDate ?? today, config().locations, betaCode())
+    // Cached only for the ordinary daily game -- see loadPuzzle. A beta pick is
+    // ephemeral and is fetched against a revocable code.
+    const load = loadPuzzle(pickedDate ?? today, config().locations, betaCode(), !pickedDate)
     load
       .then((p) => {
         setPuzzle(p)

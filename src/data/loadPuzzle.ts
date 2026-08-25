@@ -1,5 +1,6 @@
 import type { LocationClass } from '../game/scoring'
 import type { LocationOverride } from '../game/config'
+import { storage } from '../game/storage'
 
 export type PuzzleLocation = {
   id: string
@@ -79,17 +80,56 @@ export function applyOverrides(
 /** The day's shape, for spotting a board that changed under a saved game. */
 export const layoutOf = (puzzle: Puzzle) => puzzle.locations.map((l) => l.id).join(',')
 
+const CACHE_PREFIX = 'nycmap:puzzle:'
+
+/**
+ * Keeps the day you are playing, and only that day.
+ *
+ * Moving content into the database bought secrecy at the cost of availability:
+ * static files came off a CDN and effectively never failed, whereas a Neon
+ * outage or a cold start now means nobody can play at all. One cached day turns
+ * that from an outage into a shrug for anyone who has already loaded it.
+ *
+ * Beta days are never cached. They are fetched with a code that can be revoked,
+ * and a copy on disk would keep serving a future puzzle after the code that
+ * unlocked it stopped working -- quietly undoing the gate. They are also
+ * ephemeral by design, so there is nothing to preserve.
+ */
 export async function loadPuzzle(
   date: string,
   overrides: Record<string, LocationOverride> = {},
   code: string | null = null,
+  cache = false,
 ): Promise<Puzzle> {
-  const res = await fetch(
-    `/api/puzzle?date=${date}${code ? `&code=${encodeURIComponent(code)}` : ''}`,
-  )
-  // Reachable in normal use the moment the calendar passes the last authored
-  // day, and also whenever a day is asked for before it is allowed -- the
-  // server answers 404 to both, deliberately, so this copy covers both.
-  if (!res.ok) throw new Error(`No puzzle for ${date} yet — check back soon.`)
-  return applyOverrides(decodePuzzle(await res.json()), overrides)
+  const key = CACHE_PREFIX + date
+  const missing = new Error(`No puzzle for ${date} yet — check back soon.`)
+
+  try {
+    const res = await fetch(
+      `/api/puzzle?date=${date}${code ? `&code=${encodeURIComponent(code)}` : ''}`,
+    )
+    if (res.ok) {
+      const raw = (await res.json()) as EncodedPuzzle
+      if (cache) {
+        storage.set(key, JSON.stringify(raw))
+        // One day at a time. Yesterday's is unplayable and would accumulate for
+        // as long as somebody keeps playing.
+        for (const k of storage.keys()) {
+          if (k.startsWith(CACHE_PREFIX) && k !== key) storage.remove(k)
+        }
+      }
+      return applyOverrides(decodePuzzle(raw), overrides)
+    }
+    // A 4xx is an answer, not an outage. The day is genuinely not available --
+    // past the last authored one, or asked for before it is allowed -- and
+    // serving a cached copy over a refusal is exactly how a gate stops working.
+    if (res.status < 500) throw missing
+  } catch (e) {
+    if (e === missing) throw e
+    // Network failure. Falls through to whatever is on disk.
+  }
+
+  const cached = storage.parse<EncodedPuzzle | null>(key, null)
+  if (cached) return applyOverrides(decodePuzzle(cached), overrides)
+  throw missing
 }

@@ -1705,6 +1705,31 @@ Nine of 250 landed on their original date and slot, which is chance rather than 
 Someone determined could study all of them. Genuinely fresh content needs the generator in
 section 4, and this buys the time to build it rather than substituting for it.
 
+### One cached day, against the availability the move cost (2026-08-25)
+
+Moving content into the database bought secrecy and spent reliability. Static puzzle files came
+off a CDN and effectively never failed; a Neon outage, a connection limit or a cold-start
+failure now means nobody can play at all -- where before it would only have broken telemetry.
+That trade was made knowingly, and this is the cheap half of paying it back.
+
+`loadPuzzle` keeps the day being played in `localStorage` and falls back to it when the API
+cannot answer. It leaks nothing: the only thing cached is what the gate already handed over.
+
+Three rules make it safe rather than merely convenient:
+
+- **A 4xx is obeyed.** Only a network failure or a 5xx falls back. A 404 means the day is
+  genuinely unavailable -- past the queue, or asked for before it is allowed -- and serving a
+  cached copy over a refusal is exactly how a gate stops meaning anything. Same split as the
+  telemetry retry logic, for the same reason.
+- **Beta days are never cached.** They are fetched against a revocable code, and a copy on disk
+  would keep serving a future puzzle after that code stopped working. They are ephemeral by
+  design anyway.
+- **One day at a time.** Yesterday's cached puzzle is unplayable and would accumulate for as
+  long as somebody keeps playing, like the progress keys before it.
+
+*Still open:* the first load of the day needs the API regardless. A player who has not opened
+the game during an outage cannot play, and no amount of client caching changes that.
+
 ### The schedule moved forward a day (2026-08-25)
 
 `START` went from 2026-08-26 to 2026-08-25, so the placeholder now runs 20-24 August and the
