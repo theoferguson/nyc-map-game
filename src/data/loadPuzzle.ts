@@ -1,4 +1,5 @@
 import type { LocationClass } from '../game/scoring'
+import type { LocationOverride } from '../game/config'
 
 export type PuzzleLocation = {
   id: string
@@ -49,10 +50,38 @@ export async function puzzleQueue(): Promise<string[]> {
   return res.ok ? ((await res.json()) as string[]) : []
 }
 
-export async function loadPuzzle(date: string): Promise<Puzzle> {
+/**
+ * Admin corrections, applied after decoding.
+ *
+ * Two emergencies, one mechanism: a fact that is wrong can be replaced, and a
+ * location that is wrong can be dropped. Hiding never empties a day -- a board
+ * with no rounds is a worse failure than the bad round it was meant to fix, and
+ * a typo in the panel should not be able to cause it.
+ */
+export function applyOverrides(
+  puzzle: Puzzle,
+  overrides: Record<string, LocationOverride>,
+): Puzzle {
+  if (Object.keys(overrides).length === 0) return puzzle
+
+  const kept = puzzle.locations.filter((l) => !overrides[l.id]?.hidden)
+  const locations = (kept.length > 0 ? kept : puzzle.locations).map((l) => {
+    const fact = overrides[l.id]?.factShort
+    return fact ? { ...l, factShort: fact } : l
+  })
+  return { ...puzzle, locations }
+}
+
+/** The day's shape, for spotting a board that changed under a saved game. */
+export const layoutOf = (puzzle: Puzzle) => puzzle.locations.map((l) => l.id).join(',')
+
+export async function loadPuzzle(
+  date: string,
+  overrides: Record<string, LocationOverride> = {},
+): Promise<Puzzle> {
   const res = await fetch(`/puzzles/${date}.json`)
   // Reachable in normal use the moment the calendar passes the last authored
   // day, so it says something a player can act on rather than a status code.
   if (!res.ok) throw new Error(`No puzzle for ${date} yet — check back soon.`)
-  return decodePuzzle(await res.json())
+  return applyOverrides(decodePuzzle(await res.json()), overrides)
 }

@@ -25,3 +25,15 @@ create table if not exists events (
 create index if not exists events_name_received_idx on events (name, received_at desc);
 create index if not exists events_location_idx
   on events ((props ->> 'locationId')) where name = 'round_complete';
+
+-- Runtime configuration. One row, edited by the admin panel, read by every
+-- client at boot. Versioned so a score can be traced to the curve that produced
+-- it: without that, retuning lambda silently makes yesterday's scores and
+-- today's incomparable, and the events table exists to compare them.
+create table if not exists config (
+  id         int         primary key default 1,
+  version    int         not null default 1,
+  data       jsonb       not null,
+  updated_at timestamptz not null default now(),
+  constraint config_singleton check (id = 1)
+);

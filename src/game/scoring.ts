@@ -1,3 +1,5 @@
+import { DEFAULTS, type ScoringConfig } from './config'
+
 export type LocationClass = 'area' | 'landmark' | 'venue'
 
 export type LngLat = { lng: number; lat: number }
@@ -24,16 +26,16 @@ export type LngLat = { lng: number; lat: number }
  * polygon containment lands, tapping the south end of Central Park is a kilometre
  * from its middle and must not be punished as a miss.
  */
-const FALLOFF = 1.5
+/**
+ * The curve in force. Starts at the shipped defaults and is replaced once at
+ * boot if the admin panel has changed it -- never mid-game, which would score
+ * two rounds of the same day on different curves.
+ */
+let curve: ScoringConfig = DEFAULTS.scoring
 
-const LAMBDA: Record<LocationClass, number> = {
-  area: 4200,
-  landmark: 2800,
-  venue: 3600,
+export function setScoring(next: ScoringConfig): void {
+  curve = next
 }
-
-/** Inside this radius every guess is a bullseye; below it the curve is noise. */
-const BULLSEYE_M = 40
 
 const EARTH_RADIUS_M = 6_371_000
 const rad = (deg: number) => (deg * Math.PI) / 180
@@ -48,8 +50,8 @@ export function haversine(a: LngLat, b: LngLat): number {
 }
 
 export function roundScore(distanceM: number, cls: LocationClass): number {
-  if (distanceM <= BULLSEYE_M) return 100
-  return Math.round(100 * Math.exp(-((distanceM / LAMBDA[cls]) ** FALLOFF)))
+  if (distanceM <= curve.bullseyeM) return 100
+  return Math.round(100 * Math.exp(-((distanceM / curve.lambda[cls]) ** curve.falloff)))
 }
 
 /* ------------------------------------------------------------------ blocks */
@@ -87,7 +89,7 @@ const article = (axis: Miss['axis']) => (axis === 'avenues' ? 'an' : 'a')
 /** The emotional payoff of the round -- worth writing rather than templating. */
 export function describeMiss(guess: LngLat, answer: LngLat): string {
   const d = haversine(guess, answer)
-  if (d <= BULLSEYE_M) return 'Dead on.'
+  if (d <= curve.bullseyeM) return 'Dead on.'
 
   if (isJersey(guess)) return 'You were in Jersey.'
 

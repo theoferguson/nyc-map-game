@@ -1,7 +1,15 @@
 /** Difficulty climbs across the day, so later rounds are worth more. Max 1000. */
 export const MULTIPLIERS = [1, 1, 2, 3, 3]
 
-export const MAX_TOTAL = MULTIPLIERS.reduce((n, m) => n + m * 100, 0)
+/**
+ * Per game, not a constant: an admin hiding a broken location leaves the day one
+ * round shorter, and a fixed 1000 would show that day as unwinnable.
+ */
+export function maxTotal(rounds: number): number {
+  let total = 0
+  for (let i = 0; i < rounds; i++) total += (MULTIPLIERS[i] ?? 1) * 100
+  return total
+}
 
 export type RoundResult = { score: number; distanceM: number }
 
@@ -53,7 +61,7 @@ export function shareString(
   const blocks = medianBlocks(results)
   const set = colorblind ? SHAPES : COLOUR
   return [
-    `NYC Daily #${puzzleNumber} — ${totalScore(results)}/${MAX_TOTAL}`,
+    `NYC Daily #${puzzleNumber} — ${totalScore(results)}/${maxTotal(results.length)}`,
     results.map((r) => set[bandIndex(r.score)]).join(''),
     `median ${blocks < 1 ? blocks.toFixed(1) : Math.round(blocks)} blocks off`,
   ].join('\n')

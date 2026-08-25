@@ -1,12 +1,21 @@
 import { test, expect } from 'vitest'
-import { MAX_TOTAL, MULTIPLIERS, totalScore, shareString } from './share'
+import { maxTotal, MULTIPLIERS, totalScore, shareString } from './share'
 
 const perfect = MULTIPLIERS.map(() => ({ score: 100, distanceM: 0 }))
 
 test('multipliers top out at exactly 1000', () => {
-  expect(MAX_TOTAL).toBe(1000)
+  expect(maxTotal(MULTIPLIERS.length)).toBe(1000)
   expect(totalScore(perfect)).toBe(1000)
   expect(totalScore(MULTIPLIERS.map(() => ({ score: 0, distanceM: 9e3 })))).toBe(0)
+})
+
+test('a shortened day is scored out of what it can actually be worth', () => {
+  // An admin hiding a broken location leaves four rounds. A fixed 1000 would
+  // present that day as unwinnable and make the share string a lie.
+  expect(maxTotal(4)).toBe(700)
+  expect(maxTotal(0)).toBe(0)
+  const four = [1, 1, 2, 3].map(() => ({ score: 100, distanceM: 0 }))
+  expect(shareString(7, four, false)).toContain('700/700')
 })
 
 test('later rounds are worth more than earlier ones', () => {

@@ -21,7 +21,7 @@ npm run dev          # http://localhost:5173
 | `npm run build` | typecheck, build puzzles, bundle |
 | `npm test` | unit tests |
 | `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
-| `npm run check:events` | round-trips an event through `/api/events`; needs `DATABASE_URL` |
+| `npm run check:db` | round-trips an event and a config through the API; needs `DATABASE_URL` |
 | `npm run puzzles:build` | encodes `puzzles/` into `public/puzzles/` |
 
 `check:tiles` is worth running on a schedule. The imagery services are third-party and
@@ -41,8 +41,15 @@ buffer safely before the database exists. To provision:
 ```
 # Vercel dashboard → Storage → Postgres, which sets DATABASE_URL
 psql "$DATABASE_URL" -f api/schema.sql
-DATABASE_URL=... npm run check:events
+DATABASE_URL=... npm run check:db
 ```
+
+## Admin panel
+
+`/?admin` — scoring curve, beta code, and per-location content corrections. Writes are
+guarded by `ADMIN_TOKEN`; the URL is not a secret and is not meant to be one. Every client
+reads `GET /api/config` at boot and falls back to the last cached config, then to the values
+compiled into the build, so a slow or missing endpoint never stops a game starting.
 
 ## Imagery
 

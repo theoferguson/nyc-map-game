@@ -60,11 +60,23 @@ const PROGRESS_PREFIX = 'nycmap:progress:'
  * rules into storage -- and a later tweak to the curve would leave a resumed
  * game showing numbers the game can no longer produce.
  */
-export type Progress = { guesses: { lng: number; lat: number }[] }
+export type Progress = {
+  guesses: { lng: number; lat: number }[]
+  /**
+   * The day's location ids, joined. Guess N is scored against location N, so a
+   * board whose locations changed under a half-played game -- an admin hiding a
+   * wrong answer mid-day -- would re-pair every saved guess with a different
+   * place. Recording the layout lets a resume notice and start clean instead.
+   */
+  layout?: string
+}
 
-export function loadProgress(date: string): Progress | null {
+export function loadProgress(date: string, layout?: string): Progress | null {
   const saved = storage.parse<Progress | null>(PROGRESS_PREFIX + date, null)
   if (!saved || !Array.isArray(saved.guesses)) return null
+
+  // A board that changed shape is not the board these guesses were made on.
+  if (layout !== undefined && saved.layout !== undefined && saved.layout !== layout) return null
 
   // Truncated at the first bad entry, never filtered. Guess N is scored against
   // location N, so dropping a corrupt one from the middle would re-pair every
@@ -75,7 +87,7 @@ export function loadProgress(date: string): Progress | null {
     if (!Number.isFinite(g?.lng) || !Number.isFinite(g?.lat)) break
     guesses.push({ lng: g.lng, lat: g.lat })
   }
-  return guesses.length ? { guesses } : null
+  return guesses.length ? { guesses, layout: saved.layout } : null
 }
 
 export function saveProgress(date: string, progress: Progress): void {
@@ -216,17 +228,17 @@ const BETA_KEY = 'nycmap:beta'
  * of mouth it will leak, and the worst outcome is somebody plays ahead, which
  * is what it grants anyway.
  */
-const BETA_CODE = 'fivepoints'
+// The code itself now comes from the runtime config, so a leaked one can be
+// rotated without a deploy. Storing the code that unlocked a device rather than
+// a flag is what makes rotation actually revoke: change it, and every device
+// holding the old one is locked out on its next load.
 
-/** How far ahead of today the queue opens up. */
-export const BETA_DAYS_AHEAD = 5
-
-export const betaUnlocked = () => storage.get(BETA_KEY) === BETA_CODE
+export const betaUnlocked = (code: string) => storage.get(BETA_KEY) === code
 
 /** True if the code matched, so the caller can report a bad one. */
-export function tryBetaCode(input: string): boolean {
-  if (input.trim().toLowerCase() !== BETA_CODE) return false
-  storage.set(BETA_KEY, BETA_CODE)
+export function tryBetaCode(input: string, code: string): boolean {
+  if (input.trim().toLowerCase() !== code.trim().toLowerCase()) return false
+  storage.set(BETA_KEY, code)
   return true
 }
 

@@ -1511,3 +1511,65 @@ nothing is lost.
    `DATABASE_URL` on the project.
 2. `psql "$DATABASE_URL" -f api/schema.sql`
 3. `DATABASE_URL=... npm run check:events`
+
+---
+
+## 22. Runtime config and the admin panel (2026-08-25)
+
+`GET /api/config` is read by every client at boot; `POST` is guarded by `ADMIN_TOKEN`. The
+panel lives at `/?admin`.
+
+**Deliberately small, and the omissions are the design.** Most of what an admin panel could
+expose should not be a live knob. Round multipliers change `maxTotal`, so a share string from
+Tuesday would not mean what one from Wednesday means. Content scheduling already lives in git,
+where it has history and review -- a panel that edits it trades an audit trail for
+convenience. What is here either needs fast iteration (scoring, which is tuned by feel) or has
+an urgent path (a wrong answer that is live right now).
+
+| knob | why it is runtime |
+|---|---|
+| lambda per class, falloff, bullseye | tuning by feel needs a loop shorter than a deploy |
+| beta code, days ahead | a leaked code has to be revocable immediately |
+| per-location `factShort` | a fact that is wrong is wrong for every player until fixed |
+| per-location `hidden` | drops a broken round without pulling the day |
+
+**Fails open, always.** The config fetch sits in front of the first round, so it has a 2s
+timeout and three fallbacks: the fetched document, the last one cached in `localStorage`, then
+the values compiled into the build. No database, no endpoint, a malformed row, an offline
+phone -- the game starts and plays exactly as it shipped.
+
+**Validation repairs on read and refuses on write.** The client accepts a document with bad
+fields replaced by their defaults, because a partly-usable config beats none on the boot path.
+The endpoint refuses the whole write if anything is invalid, because silently storing a
+corrected version of what the operator typed is how a panel starts lying about its own state.
+
+**Scores are versioned.** `round_complete` carries `configVersion`. Without it, retuning
+lambda quietly makes yesterday's scores and today's incomparable -- and comparing locations by
+average score is the entire reason the events table exists. The config is also resolved once
+per session and frozen, so a change mid-game cannot score two rounds of the same day on
+different curves.
+
+**Hiding a location had a consequence worth chasing.** Guess N is scored against location N,
+so a board that loses a round under a half-played game would re-pair every saved guess with a
+different place -- the same defect as the `loadProgress` filter bug in section 10, arriving by
+a different route. `Progress` now records the day's layout (its location ids, joined) and a
+resume whose layout no longer matches starts clean instead. `MAX_TOTAL` became `maxTotal(n)`
+for the same reason: a four-round day scored out of 1000 reads as unwinnable.
+
+### The jsonb mistake, twice
+
+`${JSON.stringify(config)}::jsonb` stores a JSON *string*, not an object -- the identical
+failure that hit `events.props`, in a table written three weeks later by someone who had
+already fixed it once. `jsonb_typeof` returned `string`, `validateConfig` saw nothing it
+recognised, and every client silently received the shipped defaults.
+
+Nothing errored. The write returned 200 and echoed back the correct config, because it echoes
+the validated object in memory rather than the row. The version counter incremented on
+schedule. It was visible only by writing one value, reading it back, and checking that
+specific field -- `npm run check:db` now does exactly that for both tables, and asserts
+`jsonb_typeof(data) = 'object'` outright.
+
+*The rule this earns, stated plainly:* a jsonb parameter must be cast through text
+(`::text::jsonb`) or handed to the driver's json helper. Never pass a stringified object at a
+bare `::jsonb`. And the reason it recurred is worth more than the rule -- the first fix lived
+in a comment on an unrelated file, so nothing carried it to the next table. It is now a test.

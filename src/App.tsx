@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { MapView, type MapHandle } from './map/MapView'
-import { loadPuzzle, puzzleQueue, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
+import { loadPuzzle, puzzleQueue, layoutOf, type Puzzle, type PuzzleLocation } from './data/loadPuzzle'
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
-import { MULTIPLIERS, MAX_TOTAL, totalScore, shareString } from './game/share'
+import { MULTIPLIERS, maxTotal, totalScore, shareString } from './game/share'
 import { track, flush, consent, setConsent, queued, type Consent } from './game/telemetry'
+import { loadConfig, config, configVersion } from './game/config-client'
+import { setScoring } from './game/scoring'
 import { imageryVariant } from './map/tiles'
 import {
   puzzleDate,
@@ -23,7 +25,6 @@ import {
   betaUnlocked,
   tryBetaCode,
   lockBeta,
-  BETA_DAYS_AHEAD,
   type Stats,
   type Settings,
 } from './game/storage'
@@ -53,7 +54,12 @@ export default function App() {
   const [mapReady, setMapReady] = useState(false)
   const [settings, setSettings] = useState<Settings>(loadSettings)
   const [showSettings, setShowSettings] = useState(false)
-  const [beta, setBeta] = useState(betaUnlocked)
+  // Null until the config resolves. The whole app waits on it -- see the loader
+  // below -- because scoring, the beta code and the day's locations all depend
+  // on it, and starting a round on the defaults only to swap curves a moment
+  // later would score two rounds of the same game differently.
+  const [ready, setReady] = useState(false)
+  const [beta, setBeta] = useState(false)
   const [queue, setQueue] = useState<string[]>([])
 
   /**
@@ -107,12 +113,24 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // Never rejects: it falls back to the cached config, then to the shipped
+    // defaults. The game must start even when this endpoint does not answer.
+    void loadConfig().then((cfg) => {
+      setScoring(cfg.scoring)
+      setBeta(betaUnlocked(cfg.beta.code))
+      setReady(true)
+    })
+  }, [])
+
+  useEffect(() => {
     if (!beta) return
-    puzzleQueue().then((dates) => setQueue(dates.filter((d) => d <= shiftDate(today, BETA_DAYS_AHEAD))))
+    const ahead = config().beta.daysAhead
+    puzzleQueue().then((dates) => setQueue(dates.filter((d) => d <= shiftDate(today, ahead))))
   }, [beta, today])
 
   useEffect(() => {
-    const load = loadPuzzle(pickedDate ?? today)
+    if (!ready) return
+    const load = loadPuzzle(pickedDate ?? today, config().locations)
     load
       .then((p) => {
         setPuzzle(p)
@@ -123,7 +141,7 @@ export default function App() {
         // restoring stored numbers, so a resumed game and a fresh one can never
         // disagree about what a guess was worth. A beta day never resumes:
         // it was never saved, which is also what lets a past day be replayed.
-        const saved = pickedDate ? null : loadProgress(p.date)
+        const saved = pickedDate ? null : loadProgress(p.date, layoutOf(p))
         if (saved) {
           const replayed = saved.guesses
             .slice(0, p.locations.length)
@@ -146,7 +164,7 @@ export default function App() {
         }
       })
       .catch((e: Error) => setError(e.message))
-  }, [today, pickedDate])
+  }, [today, pickedDate, ready])
 
   const over = !!puzzle && round >= puzzle.locations.length
   // One path into the recap, whether the fifth round just ended or the page was
@@ -174,7 +192,7 @@ export default function App() {
   }, [puzzle, over, mapReady])
 
   if (error) return <Centered>{error}</Centered>
-  if (!puzzle) return <Centered>Loading…</Centered>
+  if (!ready || !puzzle) return <Centered>Loading…</Centered>
 
   if (!started && !over) {
     return (
@@ -244,7 +262,10 @@ export default function App() {
     // the player the round they have already played. Beta days are not saved at
     // all -- see `ephemeral`.
     if (!ephemeral) {
-      saveProgress(activeDate, { guesses: [...results.map((r) => r.guess), guess] })
+      saveProgress(activeDate, {
+        guesses: [...results.map((r) => r.guess), guess],
+        layout: layoutOf(puzzle!),
+      })
     }
 
     track('round_complete', {
@@ -254,6 +275,7 @@ export default function App() {
       borough: location.borough,
       difficulty: location.difficulty,
       tags: location.tags,
+      configVersion: configVersion(),
       distanceM: Math.round(distanceM),
       score,
       msToGuess: Date.now() - roundStarted.current,
@@ -683,7 +705,9 @@ function Results({
           <p className="text-sm text-neutral-400">NYC Daily #{puzzle.puzzleNumber}</p>
           <p className="text-3xl font-semibold tabular-nums">
             {total}
-            <span className="text-base font-normal text-neutral-500">/{MAX_TOTAL}</span>
+            <span className="text-base font-normal text-neutral-500">
+              /{maxTotal(puzzle.locations.length)}
+            </span>
           </p>
         </div>
         <p className="text-2xl tracking-wide">
@@ -840,7 +864,7 @@ function SettingsPanel({
               <span>
                 <span className="block text-sm font-medium">Beta access</span>
                 <span className="block text-xs text-neutral-400">
-                  Play any past day, or up to {BETA_DAYS_AHEAD} days ahead. Beta games do
+                  Play any past day, or up to {config().beta.daysAhead} days ahead. Beta games do
                   not count towards streaks.
                 </span>
               </span>
@@ -858,7 +882,7 @@ function SettingsPanel({
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                const ok = tryBetaCode(code)
+                const ok = tryBetaCode(code, config().beta.code)
                 setRejected(!ok)
                 if (ok) {
                   setCode('')

@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "check:tiles": "node scripts/check-tiles.mjs",
-    "check:events": "CHECK_EVENTS_DB=1 vitest run tests/events-roundtrip.test.ts",
+    "check:db": "CHECK_EVENTS_DB=1 vitest run tests/events-roundtrip.test.ts tests/config-roundtrip.test.ts",
     "test": "vitest run",
     "puzzles:build": "node scripts/build-puzzles.mjs",
     "predev": "npm run puzzles:build",
