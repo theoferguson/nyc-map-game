@@ -1530,6 +1530,7 @@ an urgent path (a wrong answer that is live right now).
 |---|---|
 | lambda per class, falloff, bullseye | tuning by feel needs a loop shorter than a deploy |
 | beta code, days ahead | a leaked code has to be revocable immediately |
+| a generated replacement code | rotation is only used if it takes one click |
 | per-location `factShort` | a fact that is wrong is wrong for every player until fixed |
 | per-location `hidden` | drops a broken round without pulling the day |
 
@@ -1555,6 +1556,22 @@ different place -- the same defect as the `loadProgress` filter bug in section 1
 a different route. `Progress` now records the day's layout (its location ids, joined) and a
 resume whose layout no longer matches starts clean instead. `MAX_TOTAL` became `maxTotal(n)`
 for the same reason: a four-round day scored out of 1000 reads as unwinnable.
+
+**Handing the code out (2026-08-25).** The panel copies the code and generates a replacement.
+Two details that are not decoration:
+
+*Copy is disabled while the field is unsaved.* The code in the input does nothing until a write
+succeeds, so copying it hands a tester something that will be rejected -- a confusing thing to
+debug over a text message, and entirely invisible from the panel.
+
+*Renewing revokes.* `betaUnlocked` compares against the stored code rather than a flag, so
+changing it locks out every device holding the old one on their next load. That is the point
+of rotation, but it means Renew is not a harmless button: it ends access for everyone
+currently testing, and there is no way to grant a second working code at the same time.
+
+Generated codes are two plain words and two digits -- `cornerlantern14` -- because they get
+said aloud and typed on phones. 36,000 combinations, which is nothing as a secret and plenty
+for something that only unlocks next week's puzzles.
 
 ### Every layer said yes and production said no
 

@@ -18,6 +18,23 @@ import { puzzleDate } from '../game/date'
 
 const TOKEN_KEY = 'nycmap:admin-token'
 
+/**
+ * Codes are said out loud and typed on phones, so they are two plain words and
+ * two digits rather than anything random-looking. Nothing here is a secret --
+ * the code gates early puzzles, not an account -- but ~40,000 combinations is
+ * enough that nobody stumbles onto it.
+ */
+const WORDS = [
+  'bodega', 'subway', 'bridge', 'harbor', 'uptown', 'midtown', 'borough',
+  'transit', 'avenue', 'skyline', 'ferry', 'tunnel', 'station', 'corner',
+  'island', 'river', 'tower', 'market', 'lantern', 'signal',
+]
+
+function newCode(): string {
+  const pick = (n: number) => crypto.getRandomValues(new Uint32Array(1))[0] % n
+  return `${WORDS[pick(WORDS.length)]}${WORDS[pick(WORDS.length)]}${10 + pick(90)}`
+}
+
 /** Distances the preview is scored at, chosen to span the shape of the curve. */
 const PREVIEW = [
   { label: '1 block', m: 80 },
@@ -34,12 +51,20 @@ export default function AdminPanel() {
   const [version, setVersion] = useState<number | null>(null)
   const [status, setStatus] = useState('Loading…')
   const [saving, setSaving] = useState(false)
+  /**
+   * The code as the server has it. Handing someone the value in the input
+   * before it is saved gives them a code that does not work yet, which is a
+   * confusing thing to debug over a text message.
+   */
+  const [savedCode, setSavedCode] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/config')
       .then((r) => r.json())
       .then((body: { version: number; config: unknown }) => {
-        setConfig(validateConfig(body.config).config)
+        const loaded = validateConfig(body.config).config
+        setConfig(loaded)
+        setSavedCode(loaded.beta.code)
         setVersion(body.version)
         setStatus('')
       })
@@ -63,6 +88,7 @@ export default function AdminPanel() {
       const body = await res.json()
       if (res.ok) {
         setVersion(body.version)
+        setSavedCode(config.beta.code)
         setStatus(`Saved. Version ${body.version} — live within a minute.`)
       } else if (res.status === 401) {
         setStatus('Token rejected.')
@@ -130,23 +156,11 @@ export default function AdminPanel() {
           </table>
         </Section>
 
-        <Section title="Beta access" note="Changing the code locks out every device holding the old one, which is what makes rotation work.">
-          <div className="grid grid-cols-2 gap-4">
-            <label className="block">
-              <span className="block text-xs text-neutral-400">code</span>
-              <input
-                value={config.beta.code}
-                onChange={(e) => patch({ beta: { ...config.beta, code: e.target.value } })}
-                className="mt-1 w-full rounded-lg bg-neutral-900 px-3 py-2 ring-1 ring-white/10"
-              />
-            </label>
-            <Num
-              label="days ahead"
-              value={config.beta.daysAhead}
-              onChange={(v) => patch({ beta: { ...config.beta, daysAhead: v } })}
-            />
-          </div>
-        </Section>
+        <Beta
+          config={config}
+          patch={patch}
+          savedCode={savedCode}
+        />
 
         <Locations config={config} patch={patch} />
 
@@ -172,6 +186,80 @@ export default function AdminPanel() {
         </Section>
       </div>
     </div>
+  )
+}
+
+function Beta({
+  config,
+  patch,
+  savedCode,
+}: {
+  config: Config
+  patch: (p: Partial<Config>) => void
+  savedCode: string | null
+}) {
+  const [copied, setCopied] = useState(false)
+  const code = config.beta.code
+  const dirty = savedCode !== null && code !== savedCode
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard needs a secure context and can be refused outright. The code
+      // is on screen and selectable, so there is nothing to recover from.
+    }
+  }
+
+  return (
+    <Section
+      title="Beta access"
+      note="Renewing locks out every device holding the old code — that is what makes rotation actually revoke, rather than just adding a second working code."
+    >
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="min-w-0 flex-1">
+          <span className="block text-xs text-neutral-400">code</span>
+          <input
+            value={code}
+            onChange={(e) => patch({ beta: { ...config.beta, code: e.target.value } })}
+            autoComplete="off"
+            spellCheck={false}
+            className="mt-1 w-full rounded-lg bg-neutral-900 px-3 py-2 font-mono text-lg ring-1 ring-white/10"
+          />
+        </label>
+        <button
+          onClick={copy}
+          disabled={dirty}
+          title={dirty ? 'Save before handing this out' : 'Copy to clipboard'}
+          className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium disabled:opacity-30"
+        >
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+        <button
+          onClick={() => patch({ beta: { ...config.beta, code: newCode() } })}
+          className="rounded-lg px-3 py-2 text-sm text-neutral-400 ring-1 ring-white/10"
+        >
+          Renew
+        </button>
+        <div className="w-28">
+          <Num
+            label="days ahead"
+            value={config.beta.daysAhead}
+            onChange={(v) => patch({ beta: { ...config.beta, daysAhead: v } })}
+          />
+        </div>
+      </div>
+
+      <p className="mt-3 text-xs text-neutral-500">
+        {dirty
+          ? 'Unsaved — this code does not work yet. Save, then copy.'
+          : savedCode === null
+            ? ''
+            : 'Testers enter this under Settings → Beta code.'}
+      </p>
+    </Section>
   )
 }
 
