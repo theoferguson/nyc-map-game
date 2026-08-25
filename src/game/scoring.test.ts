@@ -26,8 +26,11 @@ test('scoring is bullseye inside 40m and decays per class', () => {
 
   // A venue is more forgiving than a landmark at the same miss, because a deli
   // roof gives you nothing to aim at. If this inverts, the lambdas got swapped.
-  expect(roundScore(300, 'venue')).toBeGreaterThan(roundScore(300, 'landmark'))
-  expect(roundScore(300, 'area')).toBeGreaterThan(roundScore(300, 'venue'))
+  // Measured at 1km, not 300m: the head of the curve is flat enough now that
+  // all three classes round to the same score inside a few hundred metres.
+  // Class is a statement about how forgiving the tail is, not the peak.
+  expect(roundScore(1000, 'venue')).toBeGreaterThan(roundScore(1000, 'landmark'))
+  expect(roundScore(1000, 'area')).toBeGreaterThan(roundScore(1000, 'venue'))
 
   // Monotonic: further is never better.
   for (let d = 50; d < 5_000; d += 137) {
@@ -39,8 +42,9 @@ test('scoring is bullseye inside 40m and decays per class', () => {
 test('the curve is calibrated to how a miss actually feels', () => {
   // The anchors the tuning was derived from. If a future retune moves these,
   // it should be a deliberate decision, not a side effect.
-  expect(roundScore(1200, 'venue')).toBe(73)   // ~15 short blocks -> still decent
-  expect(roundScore(400, 'venue')).toBe(94)    // ~5 blocks -> a hit
+  expect(roundScore(1200, 'venue')).toBe(82)   // ~15 short blocks -> still decent
+  expect(roundScore(400, 'venue')).toBe(96)    // ~5 blocks -> a hit
+  expect(roundScore(2400, 'venue')).toBe(58)   // 1.5 miles -> right neighbourhood, wrong block
 
   // Being anywhere near the right block must never read as a failure.
   expect(roundScore(190, 'venue')).toBeGreaterThan(90)
@@ -48,8 +52,10 @@ test('the curve is calibrated to how a miss actually feels', () => {
 
   // ...but the two lazy strategies must stay worthless, or the game plays
   // itself: tapping midtown every round, and the wrong borough entirely.
-  expect(roundScore(3500, 'venue')).toBeLessThan(25)
+  // 2.2 miles is deliberately worth something now; the floor that matters is
+  // the one that keeps blind guessing worthless.
   expect(roundScore(10_000, 'venue')).toBeLessThan(2)
+  expect(roundScore(18_000, 'area')).toBe(0)
 
   // The flat head means precision below ~75m is unrewarded, so the explicit
   // bullseye is now belt-and-braces rather than load-bearing.

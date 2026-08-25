@@ -408,6 +408,30 @@ explicit 40m bullseye is belt-and-braces rather than load-bearing. Precision bel
 is unrewarded for venues. If tapping the actual door should beat being a block away, that is
 a separate mechanic -- a precision bonus -- not more lambda tuning.
 
+**Scoring widened again (2026-08-25).** Lambda multiplied by 1.4 -- area 3000 to 4200,
+landmark 2000 to 2800, venue 2600 to 3600. The shape is unchanged; only the width moved.
+
+| miss | before | now |
+|---|---|---|
+| 5 blocks (venue) | 94 | 96 |
+| 15 blocks (venue) | 73 | 82 |
+| 1.5 miles (venue) | 41 | 58 |
+| 3 miles (venue) | 8 | 22 |
+| wrong borough | 0 | 0-3 |
+| blind midtown tap | 0 | 0 |
+
+The band that moved is one to three miles, which is where "knew the neighbourhood, missed the
+block" lives -- previously scored as though it were a blind guess. The far end is untouched:
+a tap in the middle of Manhattan every round still scores nothing, which is the constraint
+all of this is squeezed against.
+
+*Consequence, and it cost a test:* the head is now flat enough that all three classes round to
+the same score inside a few hundred metres. `roundScore(300, 'venue')` no longer beats
+`roundScore(300, 'landmark')` -- both are 98. Class is now a statement about how forgiving the
+tail is rather than the peak, and the ordering test measures at 1km where the classes actually
+separate. Widening lambda buys generosity at short range by spending the resolution that
+distinguished the classes there.
+
 **Two features were dead behind one event.** `standardFraming` and the map instance that
 drives the fact cards were both assigned inside `m.once('load', ...)`. When that never
 fired, the camera never reset between rounds (leaving the player buried at the reveal zoom)

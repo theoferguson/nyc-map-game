@@ -27,9 +27,9 @@ export type LngLat = { lng: number; lat: number }
 const FALLOFF = 1.5
 
 const LAMBDA: Record<LocationClass, number> = {
-  area: 3000,
-  landmark: 2000,
-  venue: 2600,
+  area: 4200,
+  landmark: 2800,
+  venue: 3600,
 }
 
 /** Inside this radius every guess is a bullseye; below it the curve is noise. */
