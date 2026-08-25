@@ -1,6 +1,11 @@
 import postgres from 'postgres'
 import { timingSafeEqual } from 'node:crypto'
-import { DEFAULTS, validateConfig, type Config } from '../src/game/config.ts'
+// `.js`, not `.ts`. The extension is required under nodenext, and the compiler
+// emits whatever specifier is written -- so a `.ts` import survives typecheck
+// and `vercel build`, then fails at runtime with FUNCTION_INVOCATION_FAILED
+// because the file next to it is `config.js`. `vercel dev` runs the TypeScript
+// directly and never sees it.
+import { DEFAULTS, validateConfig, type Config } from '../src/game/config.js'
 
 /**
  * Read is public: every client needs it at boot. Write is guarded by a single

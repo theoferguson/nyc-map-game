@@ -1556,6 +1556,29 @@ a different route. `Progress` now records the day's layout (its location ids, jo
 resume whose layout no longer matches starts clean instead. `MAX_TOTAL` became `maxTotal(n)`
 for the same reason: a four-round day scored out of 1000 reads as unwinnable.
 
+### Every layer said yes and production said no
+
+`api/config.ts` imported `'../src/game/config.ts'`. The functions are compiled rather than
+bundled and the compiler emits import specifiers exactly as written, so the deployed
+`config.js` asked Node for a `.ts` file sitting next to it as `.js`. Production answered
+`FUNCTION_INVOCATION_FAILED` on every request.
+
+What makes it worth writing down is how thoroughly it was checked first. `tsc -b` passed --
+`allowImportingTsExtensions` exists to permit that specifier. `vercel build` reported ok. The
+whole endpoint had been exercised end to end through `vercel dev` against the real database:
+auth, validation, persistence, versioning, all correct. `vercel dev` runs the TypeScript
+directly and never resolves the emitted specifier at all, so the one thing it cannot test is
+the thing that shipped.
+
+Two checks now exist. `tests/build-output.test.ts` fails on any relative `.ts` import under
+`api/`, and was confirmed to fail when the mistake is put back. And the compiled function is
+worth actually running -- `node --input-type=module -e "import('./api/config.js')"` inside
+`.vercel/output/functions/api/config.func` loads it exactly as production does, which is a
+ten-second check that beats a deploy-and-see.
+
+*The general shape, again:* the failure was not in the logic, which was right, but in the gap
+between the environment that was tested and the one that runs.
+
 ### The jsonb mistake, twice
 
 `${JSON.stringify(config)}::jsonb` stores a JSON *string*, not an object -- the identical
