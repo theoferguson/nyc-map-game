@@ -36,13 +36,50 @@ test('imagery assignment is sticky, or the experiment measures nothing', () => {
   expect(VARIANTS.map((v) => v.id)).toContain(first.id)
 })
 
-test('every event carries the install id and which survey was served', () => {
+test('every event carries which survey was served', () => {
   track('round_complete', { score: 82 })
   const [event] = drain()
-  expect(event.installId).toBe('test-uuid')
   expect(VARIANTS.map((v) => v.id)).toContain(event.imagery)
   expect(event.props.score).toBe(82)
   expect(event.ts).toBeGreaterThan(0)
+})
+
+test('nothing persistent is written before the player has been asked', () => {
+  track('game_start', { puzzleNumber: 1 })
+  track('round_complete', { score: 82 })
+
+  expect(consent()).toBe('unset')
+  // The regulated act under ePrivacy is storing the identifier, not sending
+  // it, so an id written at capture time would defeat asking at all.
+  expect(localStorage.getItem('nycmap:id')).toBeNull()
+  expect(localStorage.getItem('nycmap:attribution')).toBeNull()
+  // The buffered events themselves carry no id either.
+  expect(drain().every((e) => !('installId' in e))).toBe(true)
+})
+
+test('the install id is created at flush, and is the same on every event', async () => {
+  setConsent(true)
+  track('game_start', { puzzleNumber: 1 })
+  track('round_complete', { score: 82 })
+  expect(localStorage.getItem('nycmap:id')).toBeNull()
+
+  const fetchSpy = vi.fn().mockResolvedValue({ status: 204 })
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+
+  const sent = JSON.parse(fetchSpy.mock.calls[0][1].body).events
+  expect(sent).toHaveLength(2)
+  expect(sent.every((e: { installId: string }) => e.installId === 'test-uuid')).toBe(true)
+  // And it persists, so tomorrow's game is the same device.
+  expect(localStorage.getItem('nycmap:id')).toBe('test-uuid')
+})
+
+test('granting consent commits the first touch it had been holding', () => {
+  track('game_start', { puzzleNumber: 1 })
+  expect(localStorage.getItem('nycmap:attribution')).toBeNull()
+  setConsent(true)
+  const stored = JSON.parse(localStorage.getItem('nycmap:attribution')!)
+  expect(stored.utm_source).toBe('twitter')
 })
 
 test('first-touch attribution is captured once, on game_start only', () => {
@@ -101,12 +138,17 @@ test('corrupted storage does not permanently break the game', () => {
   expect(drain()).toHaveLength(1)
 })
 
-test('an install id is still issued without a secure context', () => {
+test('an install id is still issued without a secure context', async () => {
   // crypto.randomUUID is absent over plain http and on Safari before 15.4.
   vi.stubGlobal('crypto', {})
   store.clear()
+  setConsent(true)
   expect(() => track('game_start', {})).not.toThrow()
-  expect(drain()[0].installId).toMatch(/^anon-/)
+
+  const fetchSpy = vi.fn().mockResolvedValue({ status: 204 })
+  vi.stubGlobal('fetch', fetchSpy)
+  await flush()
+  expect(JSON.parse(fetchSpy.mock.calls[0][1].body).events[0].installId).toMatch(/^anon-/)
 })
 
 /* ------------------------------------------------------- progress & stats */
@@ -235,9 +277,13 @@ test('nothing is sent, and nothing is kept, once a player has said no', async ()
   expect(fetchSpy).not.toHaveBeenCalled()
 })
 
-test('saying no deletes the id the device was using', () => {
+test('saying no deletes the id a previous yes had created', async () => {
+  setConsent(true)
   track('round_complete', {})
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ status: 204 }))
+  await flush()
   expect(localStorage.getItem('nycmap:id')).toBe('test-uuid')
+
   setConsent(false)
   expect(localStorage.getItem('nycmap:id')).toBeNull()
 })

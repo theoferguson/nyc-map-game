@@ -6,6 +6,10 @@ import { storage } from './storage'
  * only once the player has said yes -- see `consent` below. Until then, and
  * forever if they say no, nothing leaves the device.
  *
+ * And until then nothing identifying is written to it either: no install id,
+ * no stored attribution. Buffered events are anonymous gameplay records, and
+ * the id that ties them to a device is created at flush time.
+ *
  * Nothing here is personal. An anonymous install id, which survey the browser
  * was assigned, how the player did, and where they arrived from. No account, no
  * contact details, no device location -- the only coordinates recorded are the
@@ -50,9 +54,21 @@ export function consent(): Consent {
 /** Saying no clears what was buffered. Answering the question is not a way to be recorded. */
 export function setConsent(granted: boolean): void {
   storage.set(CONSENT_KEY, granted ? 'granted' : 'denied')
-  if (granted) return
-  storage.set(QUEUE_KEY, '[]')
-  storage.remove(ID_KEY)
+  if (!granted) {
+    storage.set(QUEUE_KEY, '[]')
+    storage.remove(ID_KEY)
+    return
+  }
+  // First-touch is only worth keeping once there is something to attach it to.
+  //
+  // ponytail: a player who lands today and consents next week gets that later
+  // visit recorded as their first touch. The buffered game_start from the
+  // original visit still carries the real referrer, so the event is right even
+  // when the stored summary is not -- and with the ask on the landing screen,
+  // consenting on a later visit is the uncommon path.
+  if (sessionAttribution && !storage.get(ATTRIBUTION_KEY)) {
+    storage.set(ATTRIBUTION_KEY, JSON.stringify(sessionAttribution))
+  }
 }
 
 /**
@@ -80,10 +96,24 @@ function coarseRegion(): Record<string, string> {
   }
 }
 
-export type TrackedEvent = {
+/**
+ * What is sent. The install id is stamped on at flush time rather than at
+ * capture, because flushing is the only thing that happens after consent.
+ */
+export type TrackedEvent = BufferedEvent & { installId: string }
+
+/**
+ * What is held on the device. No install id, deliberately.
+ *
+ * ePrivacy regulates *storing* a persistent identifier for analytics, not
+ * transmitting one -- so writing the id the moment the first event is captured
+ * would be the regulated act happening before the question is asked, however
+ * little ever left the device. Buffered events are anonymous gameplay records
+ * until somebody says yes, and are deleted outright if they say no.
+ */
+export type BufferedEvent = {
   name: string
   ts: number
-  installId: string
   imagery: string
   props: Record<string, unknown>
 }
@@ -103,10 +133,17 @@ function installId(): string {
 /**
  * First-touch only. Where someone came from the day they discovered the game is
  * the marketing question; the referrer on their fortieth visit is not.
+ *
+ * Held in memory rather than written on sight, for the same reason the install
+ * id is: nothing persistent is put on the device before the player has been
+ * asked. `setConsent(true)` is what commits it.
  */
+let sessionAttribution: Record<string, string> | null = null
+
 function attribution(): Record<string, string> {
   const stored = storage.parse<Record<string, string> | null>(ATTRIBUTION_KEY, null)
   if (stored) return stored
+  if (sessionAttribution) return sessionAttribution
 
   const params = new URLSearchParams(window.location.search)
   const first: Record<string, string> = {
@@ -117,7 +154,7 @@ function attribution(): Record<string, string> {
     const value = params.get(key)
     if (value) first[key] = value.slice(0, 64)
   }
-  storage.set(ATTRIBUTION_KEY, JSON.stringify(first))
+  sessionAttribution = first
   return first
 }
 
@@ -133,10 +170,9 @@ function referrerHost(): string {
 export function track(name: string, props: Record<string, unknown> = {}): void {
   if (consent() === 'denied') return
 
-  const event: TrackedEvent = {
+  const event: BufferedEvent = {
     name,
     ts: Date.now(),
-    installId: installId(),
     imagery: imageryVariant().id,
     props:
       name === 'game_start'
@@ -144,14 +180,14 @@ export function track(name: string, props: Record<string, unknown> = {}): void {
         : props,
   }
 
-  const queue = storage.parse<TrackedEvent[]>(QUEUE_KEY, [])
+  const queue = storage.parse<BufferedEvent[]>(QUEUE_KEY, [])
   queue.push(event)
   storage.set(QUEUE_KEY, JSON.stringify(queue.slice(-QUEUE_CAP)))
 }
 
 /** Returns buffered events and clears them. */
-export function drain(): TrackedEvent[] {
-  const queue = storage.parse<TrackedEvent[]>(QUEUE_KEY, [])
+export function drain(): BufferedEvent[] {
+  const queue = storage.parse<BufferedEvent[]>(QUEUE_KEY, [])
   storage.set(QUEUE_KEY, '[]')
   return queue
 }
@@ -165,7 +201,7 @@ export function drain(): TrackedEvent[] {
  * Settings makes the next silent failure obvious.
  */
 export function queued(): number {
-  return storage.parse<TrackedEvent[]>(QUEUE_KEY, []).length
+  return storage.parse<BufferedEvent[]>(QUEUE_KEY, []).length
 }
 
 /**
@@ -173,8 +209,8 @@ export function queued(): number {
  * flight, so order survives a retry. Capped like any other write -- a device
  * that has been offline for a month does not get to grow without bound.
  */
-function requeue(events: TrackedEvent[]): void {
-  const queue = storage.parse<TrackedEvent[]>(QUEUE_KEY, [])
+function requeue(events: BufferedEvent[]): void {
+  const queue = storage.parse<BufferedEvent[]>(QUEUE_KEY, [])
   storage.set(QUEUE_KEY, JSON.stringify([...events, ...queue].slice(-QUEUE_CAP)))
 }
 
@@ -205,8 +241,10 @@ export async function flush(): Promise<void> {
 }
 
 /** True if the batch is settled -- delivered, or refused in a way retrying cannot fix. */
-async function send(events: TrackedEvent[]): Promise<boolean> {
-  const body = JSON.stringify({ events })
+async function send(events: BufferedEvent[]): Promise<boolean> {
+  const id = installId()
+  const stamped: TrackedEvent[] = events.map((e) => ({ ...e, installId: id }))
+  const body = JSON.stringify({ events: stamped })
   try {
     const res = await fetch('/api/events', {
       method: 'POST',

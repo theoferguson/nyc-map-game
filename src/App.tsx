@@ -422,7 +422,10 @@ function ConsentAsk({
   if (consent !== 'unset') return null
   return (
     <div className="flex items-center gap-2 border-t border-white/10 pt-3">
-      <p className="min-w-0 flex-1 text-[11px] leading-snug text-neutral-400">
+      {/* Explicitly left, not inherited: the landing screen centres everything
+          inside `Centered`, and centred prose beside a pair of right-hand
+          buttons reads as a mistake. This is a control row, not copy. */}
+      <p className="min-w-0 flex-1 text-left text-[11px] leading-snug text-neutral-400">
         Share anonymous play data to help tune the puzzles? No account, no ads,
         no third parties.
       </p>

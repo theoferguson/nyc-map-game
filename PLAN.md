@@ -1405,6 +1405,25 @@ to play a second one before anything is learned. `denied` records nothing and de
 install id -- answering the question must not itself be a way to be identified. The toggle
 in Settings reverses either answer.
 
+### Nothing identifying is stored before the ask (2026-08-25)
+
+Caught in review, and it contradicted this section's own reasoning. The argument for asking
+at all was that ePrivacy regulates *storing* a persistent identifier for analytics rather
+than transmitting one -- and the code then wrote the install id and first-touch attribution
+to `localStorage` on the first event, well before the question was put. "Nothing leaves the
+device" was true and answered a different question than the one said to govern the design.
+
+Now: buffered events are `BufferedEvent`, which has no install id at all. The id is created
+and stamped on at flush, which is the only thing that happens after consent. Attribution is
+held in memory and committed by `setConsent(true)`. A player who says no had nothing
+identifying written about them at any point; a player who never answers is in the same
+position.
+
+*The one thing given up:* someone who lands today and consents next week has that later visit
+recorded as their first touch. The buffered `game_start` from the original visit still
+carries the true referrer, so the event is right even where the stored summary is not -- and
+with the ask on the landing screen, consenting on a later visit is the uncommon path.
+
 ### What the endpoint refuses
 
 It is public, unauthenticated and write-only, so nothing in the body is trusted: an event
