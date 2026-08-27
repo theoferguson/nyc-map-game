@@ -222,13 +222,16 @@ export default function App() {
           stats={stats}
           resuming={results.length > 0}
           onPlay={() => {
+            // Starting the game is the opt-in the notice beside this button
+            // describes. Only from `unset`: a player who turned it off in
+            // Settings must not be re-enrolled by pressing Play.
+            if (dataConsent === 'unset') answerConsent(true)
             setStarted(true)
             roundStarted.current = Date.now()
             gameStarted.current = Date.now()
           }}
           onSettings={() => setShowSettings(true)}
           consent={dataConsent}
-          onConsent={answerConsent}
           queue={beta ? queue : []}
           picked={pickedDate}
           onPick={(date) => {
@@ -390,8 +393,6 @@ export default function App() {
           results={results}
           stats={stats}
           colorblind={settings.colorblind}
-          consent={dataConsent}
-          onConsent={answerConsent}
           onFocus={(i, inset) =>
             map.current?.focusLocation(
               { lng: puzzle.locations[i].lng, lat: puzzle.locations[i].lat },
@@ -451,42 +452,28 @@ function useCountdown(): string {
 }
 
 /**
- * Shown on both the landing screen and the results panel, and only until it is
- * answered once. Two placements because neither covers everyone on its own: a
- * player who never finishes a game is never asked by the results panel, and the
- * landing screen does not render at all once the day's game is over. Answering
- * in either place retires it everywhere.
+ * The notice, not a question.
+ *
+ * Starting a game is the consent: the two-button card was walked past by every
+ * player who saw it, including the person who built it, and a card nobody
+ * answers collects nothing while looking like it asked. This says what happens
+ * in one line, next to the only button on the screen, and points at the switch
+ * that turns it off.
+ *
+ * The trade is real and worth naming: an affirmative click on a button labelled
+ * *Play* is weaker consent than one on a button labelled *Yes*, and under
+ * ePrivacy it is the softer reading. What keeps it defensible is that the
+ * notice sits beside the action rather than behind a link, nothing personal is
+ * collected, and withdrawal is one tap away in Settings -- where turning it off
+ * also deletes the id the device was using.
  */
-function ConsentAsk({
-  consent,
-  onConsent,
-}: {
-  consent: Consent
-  onConsent: (granted: boolean) => void
-}) {
+function ConsentNotice({ consent }: { consent: Consent }) {
   if (consent !== 'unset') return null
   return (
-    <div className="flex items-center gap-2 border-t border-white/10 pt-3">
-      {/* Explicitly left, not inherited: the landing screen centres everything
-          inside `Centered`, and centred prose beside a pair of right-hand
-          buttons reads as a mistake. This is a control row, not copy. */}
-      <p className="min-w-0 flex-1 text-left text-[11px] leading-snug text-neutral-400">
-        Share anonymous play data to help tune the puzzles? No account, no ads,
-        no third parties.
-      </p>
-      <button
-        onClick={() => onConsent(true)}
-        className="shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium active:bg-white/20"
-      >
-        Sure
-      </button>
-      <button
-        onClick={() => onConsent(false)}
-        className="shrink-0 px-1 py-1.5 text-xs text-neutral-500 active:text-neutral-300"
-      >
-        No
-      </button>
-    </div>
+    <p className="text-[10px] leading-relaxed text-neutral-600">
+      Playing shares anonymous scores, so the puzzles can be tuned. No account,
+      no ads. Turn it off in Settings.
+    </p>
   )
 }
 
@@ -497,7 +484,6 @@ function Landing({
   onPlay,
   onSettings,
   consent,
-  onConsent,
   queue,
   picked,
   onPick,
@@ -508,7 +494,6 @@ function Landing({
   onPlay: () => void
   onSettings: () => void
   consent: Consent
-  onConsent: (granted: boolean) => void
   queue: string[]
   picked: string | null
   onPick: (date: string | null) => void
@@ -576,7 +561,7 @@ function Landing({
           {resuming ? 'Resume' : picked !== null ? 'Play this day' : 'Play'}
         </button>
 
-        <ConsentAsk consent={consent} onConsent={onConsent} />
+        <ConsentNotice consent={consent} />
 
         {stats.played > 0 && (
           <p className="text-xs text-neutral-500">
@@ -613,16 +598,12 @@ function Results({
   stats,
   colorblind,
   onFocus,
-  consent,
-  onConsent,
 }: {
   puzzle: Puzzle
   results: Result[]
   stats: Stats
   colorblind: boolean
   onFocus: (index: number, bottomInset: number) => void
-  consent: Consent
-  onConsent: (granted: boolean) => void
 }) {
   const [copied, setCopied] = useState(false)
   const [step, setStep] = useState(0)
@@ -747,7 +728,6 @@ function Results({
           {stats.streak > 1 && `${stats.streak} day streak · `}Next puzzle in {countdown}
         </p>
 
-        <ConsentAsk consent={consent} onConsent={onConsent} />
       </div>
     </Floating>
   )

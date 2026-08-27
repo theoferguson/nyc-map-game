@@ -1398,6 +1398,27 @@ persistent identifier stored for analytics, and ePrivacy wants opt-in for that r
 how harmless the contents are. Being right about an exemption is worth less than an inline
 question with two buttons.
 
+**Replaced by a notice, and Play is the opt-in (2026-08-26).** Every placement of the
+two-button card failed the same way: people walked past it. Landing-screen, results-screen,
+both at once -- the author of the card walked past his own card. Two devices opted in across
+the whole run, while people were demonstrably playing, and the consent-gated table read as
+though nobody had.
+
+So the question became a notice. One line of fine print beside the Play button says what
+playing shares and where to switch it off; pressing Play is the affirmative act. Settings
+still holds the toggle, and turning it off still deletes the id.
+
+*The trade, stated rather than buried:* a click on a button labelled **Play** is weaker consent
+than a click on one labelled **Yes**, and under ePrivacy it is the softer reading. What keeps it
+defensible is that the notice sits beside the action rather than behind a link, that nothing
+personal is collected, and that withdrawal is one tap away. What makes it necessary is that the
+stricter version collected nothing at all -- and a consent mechanism that yields no data is not
+protecting anyone, it is just failing quietly. The `tallies` counters exist precisely so this
+choice is not load-bearing: the headline numbers need no consent either way.
+
+*One rule in the code worth not losing:* Play grants only from `unset`. A player who turned it
+off in Settings and later presses Play must not be silently re-enrolled.
+
 **Asked on the results screen, not the landing screen (moved 2026-08-23).** The first
 placement put it under the Play button, where it lost every time -- a player heading for
 Play does not stop to read a grey box beneath it. Worse, the landing screen does not render
