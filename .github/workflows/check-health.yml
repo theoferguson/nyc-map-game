@@ -1,0 +1,35 @@
+# The failures this project actually has all produce plausible output rather
+# than errors: a dead database still serves the page, a bad deploy still returns
+# 200 at the root, an empty events table reads as "nobody played" whether nobody
+# played or the pipeline broke. Nothing here surfaces without deliberate
+# looking, so this looks every day.
+name: check health
+
+on:
+  schedule:
+    # 13:05 UTC, five minutes after check tiles, so two failures on the same
+    # morning arrive as two notifications rather than one ambiguous one.
+    - cron: '5 13 * * *'
+  push:
+    paths:
+      - 'scripts/check-health.mjs'
+      - '.github/workflows/check-health.yml'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # No install step, and no database credential: the checker uses node
+      # built-ins only and talks to the deployed site, so it tests what players
+      # actually reach and cannot be broken by the dependency tree it outlives.
+      #
+      # ADMIN_TOKEN is optional. Without it the content and gate checks still
+      # run; with it, content runway and traffic are checked too.
+      - run: node scripts/check-health.mjs
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}

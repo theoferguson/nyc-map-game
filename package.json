@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "check:tiles": "node scripts/check-tiles.mjs",
+    "check:health": "node scripts/check-health.mjs",
     "check:db": "CHECK_EVENTS_DB=1 vitest run tests/events-roundtrip.test.ts tests/config-roundtrip.test.ts",
     "test": "vitest run",
     "puzzles:push": "node scripts/push-puzzles.mjs",

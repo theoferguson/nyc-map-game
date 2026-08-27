@@ -21,9 +21,14 @@ npm run dev          # http://localhost:5173
 | `npm run build` | typecheck, build puzzles, bundle |
 | `npm test` | unit tests |
 | `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
+| `npm run check:health` | asserts today plays, the gate holds, and content has not run out |
 | `npm run check:db` | round-trips an event and a config through the API; needs `DATABASE_URL` |
 | `npm run puzzles:push` | uploads `puzzles/` to the database; needs `DATABASE_URL` |
 | `npm run puzzles:pull` | brings database edits back into `puzzles/` and `content/` |
+
+`check:health` runs daily in Actions alongside `check:tiles`. It checks the deployed site
+rather than the database — no credential in CI, and it tests what players actually reach.
+Set `ADMIN_TOKEN` as a repository secret to enable the content-runway and traffic checks.
 
 `check:tiles` is worth running on a schedule. The imagery services are third-party and
 break silently — NYC dropped every survey after 2018 from one host without notice, and a
