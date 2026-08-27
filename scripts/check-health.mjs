@@ -16,6 +16,8 @@
  * it tests what players actually reach.
  */
 
+import { runwayDays } from './runway.mjs'
+
 const SITE = process.env.SITE ?? 'https://nyc-map-game.vercel.app'
 const TOKEN = process.env.ADMIN_TOKEN ?? ''
 /** Below this, authoring is no longer a background task. */
@@ -131,10 +133,12 @@ if (!TOKEN) {
       fail(`could not list authored days (${res.status})`)
     } else {
       const { dates } = await res.json()
-      const future = dates.map((d) => d.date).filter((d) => d >= today)
-      const last = future.at(-1)
-      const left = Math.round((Date.parse(last) - Date.parse(today)) / 86_400_000)
-      if (left < MIN_RUNWAY_DAYS) {
+      const all = dates.map((d) => d.date)
+      const left = runwayDays(all, today)
+      const last = all.filter((d) => d >= today).sort().at(-1)
+      if (left === null) {
+        fail('no content for today or any day after it — the queue is empty')
+      } else if (left < MIN_RUNWAY_DAYS) {
         fail(`only ${left} day(s) of content left, through ${last}`)
       } else {
         note(`${left} days of content, through ${last}`)

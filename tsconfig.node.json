@@ -4,6 +4,10 @@
     "target": "es2023",
     "lib": ["ES2023"],
     "types": ["node"],
+    // tests/ imports the plain-JS scripts they cover -- the runway calculation
+    // and the puzzle encoder. Without this they are typechecked as missing
+    // modules rather than inferred.
+    "allowJs": true,
     "skipLibCheck": true,
 
     /* Bundler mode */
