@@ -52,6 +52,16 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [round, setRound] = useState(0)
   const [started, setStarted] = useState(false)
+  /**
+   * Forces the landing screen back up after a finished game.
+   *
+   * The day picker lives there, so without a way back a tester who enters a
+   * beta code from the results panel has unlocked something they cannot reach
+   * until tomorrow. A reload into a finished game still goes straight to the
+   * recap -- that is `over` doing its job, and this is deliberately a separate
+   * flag rather than a change to it.
+   */
+  const [home, setHome] = useState(false)
   const [mapReady, setMapReady] = useState(false)
   const [settings, setSettings] = useState<Settings>(loadSettings)
   const [showSettings, setShowSettings] = useState(false)
@@ -214,7 +224,7 @@ export default function App() {
   if (error) return <Centered>{error}</Centered>
   if (!ready || !puzzle) return <Centered>Loading…</Centered>
 
-  if (!started && !over) {
+  if (home || (!started && !over)) {
     return (
       <>
         <Landing
@@ -226,6 +236,7 @@ export default function App() {
             // describes. Only from `unset`: a player who turned it off in
             // Settings must not be re-enrolled by pressing Play.
             if (dataConsent === 'unset') answerConsent(true)
+            setHome(false)
             setStarted(true)
             roundStarted.current = Date.now()
             gameStarted.current = Date.now()
@@ -393,6 +404,9 @@ export default function App() {
           results={results}
           stats={stats}
           colorblind={settings.colorblind}
+          onSettings={() => setShowSettings(true)}
+          onHome={() => setHome(true)}
+          beta={beta}
           onFocus={(i, inset) =>
             map.current?.focusLocation(
               { lng: puzzle.locations[i].lng, lat: puzzle.locations[i].lat },
@@ -597,12 +611,18 @@ function Results({
   results,
   stats,
   colorblind,
+  onSettings,
+  onHome,
+  beta,
   onFocus,
 }: {
   puzzle: Puzzle
   results: Result[]
   stats: Stats
   colorblind: boolean
+  onSettings: () => void
+  onHome: () => void
+  beta: boolean
   onFocus: (index: number, bottomInset: number) => void
 }) {
   const [copied, setCopied] = useState(false)
@@ -728,6 +748,22 @@ function Results({
           {stats.streak > 1 && `${stats.streak} day streak · `}Next puzzle in {countdown}
         </p>
 
+        {/* The game is over, so this is the only route left to the beta code --
+            and, once entered, to the day picker that makes it useful. */}
+        <div className="flex items-center justify-center gap-5">
+          <button
+            onClick={onSettings}
+            className="text-xs text-neutral-400 underline underline-offset-4"
+          >
+            Settings
+          </button>
+          <button
+            onClick={onHome}
+            className="text-xs text-neutral-400 underline underline-offset-4"
+          >
+            {beta ? 'Play another day' : 'Home'}
+          </button>
+        </div>
       </div>
     </Floating>
   )
