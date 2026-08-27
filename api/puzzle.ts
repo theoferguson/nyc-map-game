@@ -71,9 +71,19 @@ export async function GET(req: Request): Promise<Response> {
     // which is a slower version of the leak this endpoint exists to close.
     if (date > limit) return new Response(null, { status: 404 })
 
+    // Counted in the same round trip as the read, so measuring costs nothing
+    // on the boot path. A separate fire-and-forget write would be cheaper to
+    // write and worse to run: serverless can end the invocation before it
+    // lands, which quietly undercounts exactly when traffic is highest.
     const [row] = await client<
       { date: string; puzzle_number: number; theme: string | null; locations: string }[]
-    >`select date::text, puzzle_number, theme, locations from puzzles where date = ${date}`
+    >`
+      with bump as (
+        insert into tallies (puzzle_date, hour, kind, n)
+        values (${date}, date_trunc('hour', now()), 'load', 1)
+        on conflict (puzzle_date, hour, kind) do update set n = tallies.n + 1
+      )
+      select date::text, puzzle_number, theme, locations from puzzles where date = ${date}`
     if (!row) return new Response(null, { status: 404 })
 
     return Response.json(

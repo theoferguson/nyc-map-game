@@ -48,3 +48,19 @@ create table if not exists puzzles (
   theme         text,
   locations     text  not null
 );
+
+-- Consent-free counters. Telemetry is opt-in and most players never answer, so
+-- `events` cannot say whether anybody played -- absence of rows is absence of
+-- consent, not absence of players.
+--
+-- These rows carry no identifier of any kind: not an install id, not an IP, not
+-- a session. They are counts of things that happened, which is aggregate
+-- statistics rather than tracking, and they are the only honest answer to "how
+-- many games today".
+create table if not exists tallies (
+  puzzle_date date        not null,
+  hour        timestamptz not null,
+  kind        text        not null check (kind in ('load', 'complete')),
+  n           int         not null default 0,
+  primary key (puzzle_date, hour, kind)
+);

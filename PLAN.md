@@ -1705,6 +1705,35 @@ Nine of 250 landed on their original date and slot, which is chance rather than 
 Someone determined could study all of them. Genuinely fresh content needs the generator in
 section 4, and this buys the time to build it rather than substituting for it.
 
+### Consent-only measurement cannot tell you nobody played (2026-08-26)
+
+People played; the events table showed nothing for the day. Nothing was broken -- the endpoint
+accepted a probe, the shipped bundle still carried the consent card and the flush -- and that
+was the finding. `flush()` returns early unless consent is `granted`, so every player who did
+not tap *Sure* left their events in their own browser. Two devices have ever opted in, and the
+table is exactly those two.
+
+This was predicted on 24 August and dismissed too lightly: an ask that is easy to walk past
+means the data quietly never arrives. What was not obvious until it happened is the second-order
+problem -- **absence of rows reads as absence of players.** A consent-gated table does not
+report low consent, it reports low traffic, and the two are indistinguishable from inside it.
+
+The fix is not to weaken consent. It is to count the things that need none.
+
+`tallies` holds counts and nothing else: no install id, no IP, no session, no properties. Just
+that a load or a completion happened, on a day, in an hour. Loads are counted inside the same
+query that reads the puzzle, so measuring costs no extra round trip on the boot path -- a
+fire-and-forget write would have been simpler to write and worse to run, since serverless can
+end an invocation before it lands, undercounting hardest exactly when traffic is highest.
+
+The admin panel shows loads, completions, and how many of those players opted in. The gap
+between the last two columns is the number that stops `events` being misread, and it belongs
+on screen rather than in someone's head.
+
+*Honest about what it is:* loads are a floor. A cached replay, an offline fallback, or a
+second round in the same five minutes never reaches the server. It counts requests, not people,
+and it cannot be made to count people without the identifier it deliberately does not have.
+
 ### One cached day, against the availability the move cost (2026-08-25)
 
 Moving content into the database bought secrecy and spent reliability. Static puzzle files came
@@ -1729,6 +1758,26 @@ Three rules make it safe rather than merely convenient:
 
 *Still open:* the first load of the day needs the API regardless. A player who has not opened
 the game during an outage cannot play, and no amount of client caching changes that.
+
+### A route is not a place (2026-08-26)
+
+"Staten Island Ferry" geocoded to `class=route`, and Nominatim answers a route with the centre
+of its line -- the middle of the Upper Bay, open water, two miles from either dock. It was live
+as round 1 of a difficulty-1 slot before anyone had played that day.
+
+It passed every check there was: inside the viewbox, inside the NYC bounds, a real coordinate,
+a plausible number. This is the third geocoding failure of the same family after Moscow and the
+Bronx River, and the pattern holds -- **a confidently wrong coordinate looks exactly like a
+right one.**
+
+`author.mjs` now refuses `class=route` outright, and prints the OSM class and type on every
+successful hit, because a linear feature is the failure that most resembles a success: a street
+centre and a river centre are both real coordinates for something that is not a point.
+
+*A second lesson, about fixing it:* the obvious repair -- move the answer to the Manhattan dock
+-- would have broken the day, which had exactly the two outer-borough locations the content
+rules require. The location swapped with an all-outer-borough day instead. Content constraints
+are coupled across days, so a single-record fix is rarely a single-record change.
 
 ### The schedule moved forward a day (2026-08-25)
 

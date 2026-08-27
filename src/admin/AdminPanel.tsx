@@ -229,6 +229,8 @@ export default function AdminPanel() {
           savedCode={savedCode}
         />
 
+        <Traffic token={token} />
+
         <Locations config={config} patch={patch} betaCode={config.beta.code} />
 
         <Section title="Save" note="Nothing above has any effect until this succeeds.">
@@ -243,6 +245,60 @@ export default function AdminPanel() {
         </Section>
       </div>
     </div>
+  )
+}
+
+/**
+ * Loads and completions, counted server-side without consent.
+ *
+ * The number that matters here is the gap between "played" and "consented":
+ * telemetry only ever sees the second, so reading `events` alone answers
+ * "how many people opted in" while looking like it answers "how many played".
+ */
+function Traffic({ token }: { token: string }) {
+  const [days, setDays] = useState<
+    { date: string; loads: number; completes: number; consented: number }[] | null
+  >(null)
+
+  useEffect(() => {
+    fetch('/api/stats', { method: 'POST', headers: { 'x-admin-token': token } })
+      .then((r) => r.json())
+      .then((b: { days?: typeof days }) => setDays(b.days ?? []))
+      .catch(() => setDays([]))
+  }, [token])
+
+  return (
+    <Section
+      title="Traffic"
+      note="Counted for every player. Loads are a floor — a cached or offline replay never reaches the server."
+    >
+      {days === null ? (
+        <p className="text-sm text-neutral-500">Loading…</p>
+      ) : days.length === 0 ? (
+        <p className="text-sm text-neutral-500">Nothing counted yet.</p>
+      ) : (
+        <table className="w-full text-sm tabular-nums">
+          <thead>
+            <tr className="text-left text-xs uppercase tracking-wide text-neutral-500">
+              <th className="py-1 font-medium">day</th>
+              <th className="py-1 font-medium">loads</th>
+              <th className="py-1 font-medium">finished</th>
+              <th className="py-1 font-medium">opted in</th>
+            </tr>
+          </thead>
+          <tbody>
+            {days.map((d) => (
+              <tr key={d.date} className="border-t border-white/5">
+                <td className="py-1 text-neutral-400">{d.date}</td>
+                <td className="py-1">{d.loads ?? 0}</td>
+                <td className="py-1">{d.completes ?? 0}</td>
+                <td className="py-1 text-neutral-500">{d.consented ?? 0}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </Section>
   )
 }
 

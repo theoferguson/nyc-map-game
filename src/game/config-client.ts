@@ -82,3 +82,22 @@ export async function verifyBetaCode(code: string): Promise<boolean | null> {
     return null
   }
 }
+
+/**
+ * Records that a game was finished. No identifier, no properties -- see
+ * api/tally.ts. Not gated on consent, because there is nothing here to consent
+ * to, and because a completion rate that only counts players who opted in is
+ * not a completion rate.
+ */
+export function tallyComplete(date: string): void {
+  try {
+    void fetch('/api/tally', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ kind: 'complete', date }),
+      keepalive: true,
+    }).catch(() => {})
+  } catch {
+    // Never let counting break the end of a game.
+  }
+}

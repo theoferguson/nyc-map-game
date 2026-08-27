@@ -4,7 +4,7 @@ import { loadPuzzle, puzzleQueue, layoutOf, type Puzzle, type PuzzleLocation } f
 import { haversine, roundScore, describeMiss, type LngLat } from './game/scoring'
 import { MULTIPLIERS, maxTotal, totalScore, shareString } from './game/share'
 import { track, flush, consent, setConsent, queued, type Consent } from './game/telemetry'
-import { loadConfig, config, configVersion, verifyBetaCode } from './game/config-client'
+import { loadConfig, config, configVersion, verifyBetaCode, tallyComplete } from './game/config-client'
 import { setScoring } from './game/scoring'
 import { imageryVariant } from './map/tiles'
 import {
@@ -325,6 +325,9 @@ export default function App() {
         durationMs: Date.now() - gameStarted.current,
       })
       void flush()
+      // Counted for every player, not only those who opted into telemetry --
+      // otherwise "games completed today" measures consent rather than play.
+      if (!ephemeral) tallyComplete(puzzle!.date)
     } else {
       map.current?.resetCamera()
     }

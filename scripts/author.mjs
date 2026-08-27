@@ -67,10 +67,19 @@ for (const day of [preview, ...days]) {
     const [hit] = await res.json()
     if (!hit) {
       console.error(`  NOT FOUND: ${loc.id} — "${loc.query}"`)
+    } else if (hit.class === 'route') {
+      // A route is a line, and Nominatim answers with its centre. "Staten
+      // Island Ferry" resolved to the middle of the Upper Bay -- open water,
+      // miles from either dock, and no player could ever have been right.
+      // Inside the viewbox, inside NYC, plausible to every other check.
+      // Ask for a terminal, a station, a building: something that is a place.
+      console.error(`  ROUTE, NOT A PLACE: ${loc.id} — "${loc.query}" is a ${hit.type} route`)
     } else {
       loc.lat = +(+hit.lat).toFixed(6)
       loc.lng = +(+hit.lon).toFixed(6)
-      console.log(`  ok ${loc.id.padEnd(34)} ${loc.lat}, ${loc.lng}`)
+      // class/type printed because a linear feature is the failure that looks
+      // most like a success -- a street or a river centre is a real coordinate.
+      console.log(`  ok ${loc.id.padEnd(34)} ${loc.lat}, ${loc.lng}  (${hit.class}/${hit.type})`)
     }
     looked++
     await sleep(1100)
