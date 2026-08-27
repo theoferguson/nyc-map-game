@@ -23,6 +23,7 @@ npm run dev          # http://localhost:5173
 | `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
 | `npm run check:db` | round-trips an event and a config through the API; needs `DATABASE_URL` |
 | `npm run puzzles:push` | uploads `puzzles/` to the database; needs `DATABASE_URL` |
+| `npm run puzzles:pull` | brings database edits back into `puzzles/` and `content/` |
 
 `check:tiles` is worth running on a schedule. The imagery services are third-party and
 break silently — NYC dropped every survey after 2018 from one host without notice, and a
@@ -59,7 +60,11 @@ answers necessarily reach the browser, because scoring happens there.
 
 ## Admin panel
 
-`/?admin` — scoring curve, beta code, and per-location content corrections. Writes are
+`/?admin` — traffic, scoring curve, beta code, and a full content editor: every field of every
+location on any authored day, with a map so a pin can be reviewed rather than a coordinate.
+
+**The panel edits the database directly.** After editing, run `npm run puzzles:pull` before the
+next `puzzles:push`, or the push overwrites the edit with whatever is on disk. Writes are
 guarded by `ADMIN_TOKEN`; the URL is not a secret and is not meant to be one. Every client
 reads `GET /api/config` at boot and falls back to the last cached config, then to the values
 compiled into the build, so a slow or missing endpoint never stops a game starting.

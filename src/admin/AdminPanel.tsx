@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DEFAULTS, validateConfig, type Config } from '../game/config'
-import { decodePuzzle, type Puzzle } from '../data/loadPuzzle'
+import { PinMap } from './PinMap'
+import { validateDay, BOROUGHS, CLASSES, type DayLocation } from '../data/validateDay'
 import { roundScore, setScoring } from '../game/scoring'
 import { puzzleDate } from '../game/date'
 
@@ -231,7 +232,7 @@ export default function AdminPanel() {
 
         <Traffic token={token} />
 
-        <Locations config={config} patch={patch} betaCode={config.beta.code} />
+        <Content token={token} />
 
         <Section title="Save" note="Nothing above has any effect until this succeeds.">
           <button
@@ -377,99 +378,250 @@ function Beta({
 }
 
 /**
- * Facts are edited against a real day rather than typed as bare ids, because
- * nobody knows a location id by heart and a typo in one is a silent no-op --
- * an override for an id that does not exist looks saved and does nothing.
+ * Full content editor for one day.
+ *
+ * Reads through /api/admin rather than /api/puzzle, so any authored day can be
+ * audited -- including the ones the public gate refuses, which are the only
+ * ones a wrong pin can still be fixed on before anybody plays them.
+ *
+ * Edits are written back to the puzzle itself rather than layered as config
+ * overrides. Overrides were right for an emergency correction; they are the
+ * wrong shape for routine editing, where two sources of truth for the same
+ * field is how the two drift apart.
  */
-function Locations({
-  config,
-  patch,
-  betaCode,
-}: {
-  config: Config
-  patch: (p: Partial<Config>) => void
-  betaCode: string
-}) {
+function Content({ token }: { token: string }) {
+  const [dates, setDates] = useState<{ date: string; number: number }[]>([])
   const [date, setDate] = useState(puzzleDate)
-  const [puzzle, setPuzzle] = useState<Puzzle | null>(null)
-  const [error, setError] = useState('')
+  const [locations, setLocations] = useState<DayLocation[] | null>(null)
+  const [selected, setSelected] = useState(0)
+  const [dirty, setDirty] = useState(false)
+  const [status, setStatus] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const call = (body: Record<string, unknown>) =>
+    fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-token': token },
+      body: JSON.stringify(body),
+    })
 
   useEffect(() => {
-    // Cleared before the fetch so a slow load cannot show the previous day's
-    // locations under the new date.
-    // oxlint-disable-next-line react/set-state-in-effect
-    setError('')
-    setPuzzle(null)
-    // Deliberately unpatched: the panel edits the authored content, so it has
-    // to show what was authored rather than what the overrides already say.
-    // Through the same gate as everyone else, with the live beta code as the
-    // key -- the panel has no privileged path to content, so a day beyond the
-    // beta window cannot be edited here either.
-    fetch(`/api/puzzle?date=${date}&code=${encodeURIComponent(betaCode)}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('none'))))
-      .then((raw) => setPuzzle(decodePuzzle(raw)))
-      .catch(() => setError(`No puzzle available for ${date}.`))
-  }, [date, betaCode])
+    call({ action: 'dates' })
+      .then((r) => r.json())
+      .then((b: { dates?: { date: string; number: number }[] }) => setDates(b.dates ?? []))
+      .catch(() => setDates([]))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token])
 
-  const set = (id: string, next: { factShort?: string; hidden?: boolean }) => {
-    const locations = { ...config.locations }
-    const merged = { ...locations[id], ...next }
-    if (!merged.factShort && !merged.hidden) delete locations[id]
-    else locations[id] = merged
-    patch({ locations })
+  useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
+    setLocations(null)
+    setSelected(0)
+    setDirty(false)
+    setStatus('')
+    call({ action: 'day', date })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('none'))))
+      .then((b: { locations: DayLocation[] }) => setLocations(b.locations))
+      .catch(() => setStatus(`No day authored for ${date}.`))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date, token])
+
+  const problems = locations ? validateDay(locations) : []
+
+  function edit(index: number, patch: Partial<DayLocation>) {
+    setLocations((ls) => ls && ls.map((l, i) => (i === index ? { ...l, ...patch } : l)))
+    setDirty(true)
+    setStatus('')
   }
 
-  return (
-    <Section title="Content corrections" note="Overrides are keyed by location, so a fix applies wherever that place appears.">
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        className="rounded-lg bg-neutral-900 px-3 py-2 ring-1 ring-white/10"
-      />
-      {error && <p className="mt-3 text-sm text-amber-400">{error}</p>}
+  async function save() {
+    if (!locations) return
+    setSaving(true)
+    try {
+      const res = await call({ action: 'save', date, locations })
+      const body = await res.json()
+      if (res.ok) {
+        setDirty(false)
+        setStatus('Saved. Live within five minutes.')
+      } else {
+        setStatus(body.problems?.join(' · ') ?? body.error ?? 'Save failed.')
+      }
+    } catch {
+      setStatus('Save failed — network.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
-      <div className="mt-4 space-y-4">
-        {puzzle?.locations.map((l) => {
-          const override = config.locations[l.id] ?? {}
-          return (
-            <div key={l.id} className="rounded-xl bg-neutral-900 p-4 ring-1 ring-white/10">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="font-medium">{l.prompt}</p>
-                  <p className="text-[11px] text-neutral-500">{l.id} · {l.class} · {l.borough}</p>
-                </div>
-                <label className="flex shrink-0 items-center gap-2 text-xs text-neutral-400">
-                  <input
-                    type="checkbox"
-                    checked={override.hidden === true}
-                    onChange={(e) => set(l.id, { hidden: e.target.checked || undefined })}
-                    className="size-4 accent-amber-400"
-                  />
-                  hide
-                </label>
-              </div>
-              <textarea
-                value={override.factShort ?? l.factShort}
-                onChange={(e) =>
-                  set(l.id, { factShort: e.target.value === l.factShort ? undefined : e.target.value })
-                }
-                rows={3}
-                className="mt-3 w-full resize-y rounded-lg bg-neutral-950 p-3 text-sm ring-1 ring-white/10"
-              />
-              {override.factShort && (
-                <button
-                  onClick={() => set(l.id, { factShort: undefined })}
-                  className="mt-2 text-xs text-neutral-500 underline underline-offset-4"
-                >
-                  revert to the authored fact
-                </button>
-              )}
-            </div>
-          )
-        })}
+  const current = locations?.[selected]
+  const number = dates.find((d) => d.date === date)?.number
+
+  return (
+    <Section
+      title="Content"
+      note="Edits go straight to the puzzle, not to an override — so what you see here is what the day actually is."
+    >
+      <div className="flex flex-wrap items-center gap-3">
+        <select
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="rounded-lg bg-neutral-900 px-3 py-2 ring-1 ring-white/10"
+        >
+          {dates.map((d) => (
+            <option key={d.date} value={d.date}>
+              {d.date} · #{d.number}
+            </option>
+          ))}
+        </select>
+        {number !== undefined && (
+          <span className="text-xs text-neutral-500">
+            {date < puzzleDate() ? 'past' : date === puzzleDate() ? 'live today' : 'not yet published'}
+          </span>
+        )}
       </div>
+
+      {status && <p className="mt-3 text-sm text-neutral-300">{status}</p>}
+
+      {locations && (
+        <div className="mt-4 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {locations.map((l, i) => (
+              <button
+                key={l.id + i}
+                onClick={() => setSelected(i)}
+                className={`rounded-lg px-3 py-1.5 text-xs ${
+                  i === selected ? 'bg-amber-400 font-medium text-neutral-900' : 'bg-neutral-900 text-neutral-300'
+                }`}
+              >
+                {i + 1}. {l.prompt || '(untitled)'}
+              </button>
+            ))}
+          </div>
+
+          <PinMap
+            locations={locations}
+            selected={selected}
+            onMove={(lat, lng) => edit(selected, { lat, lng })}
+          />
+
+          {current && (
+            <div className="space-y-3 rounded-xl bg-neutral-900 p-4 ring-1 ring-white/10">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="prompt (what the player sees)" value={current.prompt}
+                  onChange={(v) => edit(selected, { prompt: v })} />
+                <Field label="name" value={current.name} onChange={(v) => edit(selected, { name: v })} />
+                <Field label="id" value={current.id} onChange={(v) => edit(selected, { id: v })} />
+                <Field label="tags (comma separated)" value={current.tags.join(', ')}
+                  onChange={(v) => edit(selected, { tags: v.split(',').map((t) => t.trim()).filter(Boolean) })} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <Field label="lat" value={String(current.lat)} mono
+                  onChange={(v) => edit(selected, { lat: Number(v) })} />
+                <Field label="lng" value={String(current.lng)} mono
+                  onChange={(v) => edit(selected, { lng: Number(v) })} />
+                <Choice label="class" value={current.class} options={[...CLASSES]}
+                  onChange={(v) => edit(selected, { class: v })} />
+                <Choice label="borough" value={current.borough} options={[...BOROUGHS]}
+                  onChange={(v) => edit(selected, { borough: v })} />
+              </div>
+
+              <Choice label="difficulty" value={String(current.difficulty)}
+                options={['1', '2', '3', '4', '5']}
+                onChange={(v) => edit(selected, { difficulty: Number(v) })} />
+
+              <label className="block">
+                <span className="block text-xs text-neutral-400">fact</span>
+                <textarea
+                  value={current.factShort}
+                  onChange={(e) => edit(selected, { factShort: e.target.value })}
+                  rows={3}
+                  className="mt-1 w-full resize-y rounded-lg bg-neutral-950 p-3 text-sm ring-1 ring-white/10"
+                />
+              </label>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="source URL" value={current.sourceUrl}
+                  onChange={(v) => edit(selected, { sourceUrl: v })} />
+                <Field label="source attribution" value={current.sourceAttribution}
+                  onChange={(v) => edit(selected, { sourceAttribution: v })} />
+              </div>
+            </div>
+          )}
+
+          {problems.length > 0 && (
+            <ul className="space-y-1 rounded-xl bg-amber-400/10 p-3 text-xs text-amber-300">
+              {problems.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          )}
+
+          <button
+            onClick={save}
+            disabled={saving || !dirty || problems.length > 0}
+            className="rounded-lg bg-white px-5 py-2 font-semibold text-neutral-900 disabled:opacity-30"
+          >
+            {saving ? 'Saving…' : dirty ? 'Save this day' : 'No changes'}
+          </button>
+        </div>
+      )}
     </Section>
+  )
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  mono,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  mono?: boolean
+}) {
+  return (
+    <label className="block">
+      <span className="block text-xs text-neutral-400">{label}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
+        className={`mt-1 w-full rounded-lg bg-neutral-950 px-3 py-2 text-sm ring-1 ring-white/10 ${
+          mono ? 'font-mono tabular-nums' : ''
+        }`}
+      />
+    </label>
+  )
+}
+
+function Choice({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string
+  value: string
+  options: string[]
+  onChange: (value: string) => void
+}) {
+  return (
+    <label className="block">
+      <span className="block text-xs text-neutral-400">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-lg bg-neutral-950 px-3 py-2 text-sm ring-1 ring-white/10"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </label>
   )
 }
 

@@ -20,6 +20,7 @@
   },
   "include": [
     ".",
-    "../src/game/config.ts"
+    "../src/game/config.ts",
+    "../src/data/validateDay.ts"
   ]
 }
