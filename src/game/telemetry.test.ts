@@ -354,7 +354,9 @@ test('a long-offline queue is sent in batches the endpoint will accept', async (
   const sizes = fetchSpy.mock.calls.map((c) => JSON.parse(c[1].body).events.length)
   expect(sizes).toEqual([100, 100, 50])
   // Every event went exactly once, in order.
-  const sent = fetchSpy.mock.calls.flatMap((c) => JSON.parse(c[1].body).events.map((e) => e.props.i))
+  const sent = fetchSpy.mock.calls.flatMap((c) =>
+    (JSON.parse(c[1].body).events as { props: { i: number } }[]).map((e) => e.props.i),
+  )
   expect(sent).toEqual([...Array(250).keys()])
   expect(drain()).toHaveLength(0)
 })

@@ -19,9 +19,6 @@
     "erasableSyntaxOnly": true
   },
   "include": [
-    ".",
-    "../src/game/config.ts",
-    "../src/data/validateDay.ts",
-    "../src/data/codec.d.mts"
+    "."
   ]
 }

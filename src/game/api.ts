@@ -2,11 +2,15 @@ import { storage } from './storage'
 import { DEFAULTS, validateConfig, toPublic, type PublicConfig } from './config'
 
 /**
- * Client half of the runtime config: fetch it, cache it, and never let it stop
- * the game starting.
+ * Everything the client asks of our own API, and the config those answers
+ * resolve to.
+ *
+ * Named for what it is rather than what it started as: it was `config-client`
+ * until it also held the beta check and the completion tally, at which point
+ * the name described a third of the file.
  *
  * Kept out of `config.ts` so that file stays free of browser imports -- the
- * serverless endpoint imports the schema, and a shared module that reaches for
+ * serverless endpoints import the schema, and a shared module that reaches for
  * localStorage is one refactor away from breaking the function that validates
  * writes to it.
  */

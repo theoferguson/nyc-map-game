@@ -1,5 +1,8 @@
 # NYC Daily Map Game
 
+**New here?** `ARCHITECTURE.md` is the map — what exists and how it fits.
+`PLAN.md` is the decision record: why each choice was made, in the order it happened.
+
 A daily browser game in the Wordle family. Five significant New York locations are named;
 you find each one on unlabelled satellite imagery and tap it. Scoring is by proximity,
 feedback is immediate, and the day ends with every answer on the map at once.
