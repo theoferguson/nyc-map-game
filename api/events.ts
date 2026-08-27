@@ -1,5 +1,4 @@
-import postgres from 'postgres'
-
+import { db } from './_db.js'
 /**
  * The flush endpoint. Public, unauthenticated and write-only, which is the
  * whole threat model: anyone can POST anything, so nothing here trusts the
@@ -40,13 +39,6 @@ type Row = {
  * multiplies connections by instance count and exhausts the server's limit
  * long before it helps.
  */
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
 
 function clean(value: unknown, max: number): string | null {
   if (typeof value !== 'string') return null

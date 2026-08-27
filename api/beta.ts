@@ -1,4 +1,4 @@
-import postgres from 'postgres'
+import { db } from './_db.js'
 import { DEFAULTS, validateConfig, type Config } from '../src/game/config.js'
 
 /**
@@ -13,14 +13,6 @@ import { DEFAULTS, validateConfig, type Config } from '../src/game/config.js'
  * next week's puzzle can fetch it directly. What this protects is the
  * *intentionality* of the tester group, not the secrecy of the content.
  */
-
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
 
 const normalise = (s: string) => s.trim().toLowerCase()
 

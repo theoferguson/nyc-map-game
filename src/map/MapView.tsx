@@ -95,6 +95,17 @@ export function MapView({
   /** Screen position of an in-progress hold, for the ring. */
   const [holding, setHolding] = useState<{ x: number; y: number } | null>(null)
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /**
+   * Pointers currently down on the map.
+   *
+   * A hold is only ever started by a lone finger. Without this, a pinch
+   * started two holds: the second `pointerdown` overwrote `holdTimer.current`,
+   * orphaning the first timer where no cancel path could reach it. It fired
+   * mid-zoom and committed at `unproject` of the original screen point against
+   * a camera that had since moved -- which is why the pin landed between the
+   * fingers rather than under either of them.
+   */
+  const pointers = useRef(new Set<number>())
 
   // These change as the round advances, but the map listener is registered once,
   // so read the current values through refs rather than rebuilding the map.
@@ -194,6 +205,12 @@ export function MapView({
           place.current(p)
         }, DOUBLE_CLICK_WINDOW_MS)
       })
+
+      // Belt and braces for gestures the pointer events do not describe as two
+      // fingers -- a trackpad pinch, or a touch MapLibre has captured. If the
+      // camera starts moving, whatever the player is doing is not placing.
+      m.on('zoomstart', cancelHold)
+      m.on('movestart', cancelHold)
 
       // The zoom itself is MapLibre's; all we do is call off the pending commit.
       m.on('dblclick', () => {
@@ -315,10 +332,17 @@ export function MapView({
   }), [])
 
 
-  const cancelHold = () => {
+  // A declaration rather than a const: hoisting is what lets the map effect,
+  // which is written above this, register it as a listener.
+  function cancelHold() {
     if (holdTimer.current) clearTimeout(holdTimer.current)
     holdTimer.current = null
     setHolding(null)
+  }
+
+  const releasePointer = (e: React.PointerEvent) => {
+    pointers.current.delete(e.pointerId)
+    cancelHold()
   }
 
   /**
@@ -327,6 +351,14 @@ export function MapView({
    * step anywhere else in the game, so this is the only undo a player gets.
    */
   const onPointerDown = (e: React.PointerEvent) => {
+    pointers.current.add(e.pointerId)
+    // A second finger means a pinch, never a placement. Cancel what the first
+    // one started rather than racing it -- and do this before the careful-mode
+    // guard, so the set stays honest even when careful mode is off.
+    if (pointers.current.size > 1) {
+      cancelHold()
+      return
+    }
     if (!carefulMode || !canPlace.current || !map.current) return
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -338,7 +370,9 @@ export function MapView({
       holdTimer.current = null
       setHolding(null)
       const m = map.current
-      if (!m || !canPlace.current) return
+      // Re-checked at fire time, not only at press time: a second finger, a
+      // round ending, or a camera reset can all happen inside the hold.
+      if (!m || !canPlace.current || pointers.current.size !== 1) return
       const { lng, lat } = m.unproject([x, y])
       addPin(m, { lng, lat }, '#fbbf24')
       place.current({ lng, lat })
@@ -364,9 +398,9 @@ export function MapView({
         className="map-surface h-full w-full"
         onContextMenu={(e) => e.preventDefault()}
         onPointerDown={onPointerDown}
-        onPointerUp={cancelHold}
-        onPointerCancel={cancelHold}
-        onPointerLeave={cancelHold}
+        onPointerUp={releasePointer}
+        onPointerCancel={releasePointer}
+        onPointerLeave={releasePointer}
       />
       {holding && (
         <svg

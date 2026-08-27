@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { existsSync, readFileSync } from 'node:fs'
 import { decodePuzzle } from './loadPuzzle'
-import { encodeLocations } from '../../scripts/encode.mjs'
+import { encodeLocations } from './codec.mjs'
 
 /**
  * Drives the real encoder against the real decoder. Content no longer ships

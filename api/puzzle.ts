@@ -1,4 +1,4 @@
-import postgres from 'postgres'
+import { db, type Db } from './_db.js'
 import { DEFAULTS, validateConfig } from '../src/game/config.js'
 import { puzzleDate, shiftDate } from '../src/game/date.js'
 
@@ -16,21 +16,34 @@ import { puzzleDate, shiftDate } from '../src/game/date.js'
  * Today is New York's today, for everyone, matching the game's own rollover.
  */
 
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
-
 const normalise = (s: string) => s.trim().toLowerCase()
+
+/**
+ * Invented placeholder content, so `npm run dev` plays with no database.
+ * Every date serves the same day, which is enough to exercise the whole loop.
+ */
+async function sample(params: URLSearchParams): Promise<Response> {
+  const { readFile } = await import('node:fs/promises')
+  const { encodeLocations } = await import('../src/data/codec.mjs')
+  const day = JSON.parse(await readFile('content/sample.json', 'utf8'))
+  const date = params.get('date') ?? puzzleDate()
+
+  if (params.has('index')) return Response.json([puzzleDate()])
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return new Response(null, { status: 400 })
+
+  return Response.json({
+    date,
+    puzzleNumber: 0,
+    theme: null,
+    locations: encodeLocations(day.locations, date),
+  })
+}
 
 /**
  * The latest date this caller may see. Today for everyone; further ahead for a
  * beta tester, by exactly the window the config allows.
  */
-async function horizon(client: postgres.Sql, code: string | null): Promise<string> {
+async function horizon(client: Db, code: string | null): Promise<string> {
   const today = puzzleDate()
   if (!code) return today
 
@@ -48,6 +61,11 @@ async function horizon(client: postgres.Sql, code: string | null): Promise<strin
 export async function GET(req: Request): Promise<Response> {
   const params = new URL(req.url).searchParams
   const client = db()
+
+  // Development only, and set by the Vite plugin rather than inferred from a
+  // missing DATABASE_URL -- production must fail loudly on a misconfigured
+  // database rather than quietly serving placeholder content.
+  if (!client && process.env.DEV_SAMPLE_CONTENT) return sample(params)
   if (!client) return new Response(null, { status: 503 })
 
   const code = params.get('code')

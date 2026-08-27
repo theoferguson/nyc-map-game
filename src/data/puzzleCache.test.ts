@@ -12,7 +12,7 @@ vi.stubGlobal('localStorage', {
 })
 
 const { loadPuzzle } = await import('./loadPuzzle')
-const { encodeLocations } = await import('../../scripts/encode.mjs')
+const { encodeLocations } = await import('./codec.mjs')
 
 const DATE = '2026-09-01'
 const LOCATIONS = [

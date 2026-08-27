@@ -15,10 +15,23 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
+**No database or credentials needed.** The dev server serves the `api/` handlers itself, and
+with no `DATABASE_URL` the puzzle endpoint returns a committed sample day
+(`content/sample.json`) — five obvious landmarks, enough to play the whole loop. Telemetry
+writes answer 503, which the client treats as retryable, so events simply buffer on the device.
+
+To run against real content, pull the environment from Vercel first:
+
+```bash
+npx vercel env pull .env.local
+set -a; source .env.local; set +a
+npm run dev
+```
+
 | script | what it does |
 |---|---|
-| `npm run dev` | dev server (builds puzzles first) |
-| `npm run build` | typecheck, build puzzles, bundle |
+| `npm run dev` | dev server, including `api/`; serves sample content without a database |
+| `npm run build` | typecheck, test, bundle |
 | `npm test` | unit tests |
 | `npm run check:tiles` | asserts every imagery endpoint still serves real tiles |
 | `npm run check:health` | asserts today plays, the gate holds, and content has not run out |

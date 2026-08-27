@@ -1,6 +1,7 @@
 import type { LocationClass } from '../game/scoring'
 import type { LocationOverride } from '../game/config'
 import { storage } from '../game/storage'
+import { decodeLocations } from './codec.mjs'
 
 export type PuzzleLocation = {
   id: string
@@ -31,18 +32,10 @@ export type Puzzle = {
   locations: PuzzleLocation[]
 }
 
-/** Mirror of the encoder in scripts/build-puzzles.mjs. */
-function xor(bytes: Uint8Array, key: string): Uint8Array {
-  const k = new TextEncoder().encode(key)
-  return bytes.map((b, i) => b ^ k[i % k.length])
-}
-
 export type EncodedPuzzle = Omit<Puzzle, 'locations'> & { locations: string }
 
 export function decodePuzzle(raw: EncodedPuzzle): Puzzle {
-  const bytes = Uint8Array.from(atob(raw.locations), (c) => c.charCodeAt(0))
-  const locations = JSON.parse(new TextDecoder().decode(xor(bytes, raw.date)))
-  return { ...raw, locations }
+  return { ...raw, locations: decodeLocations<PuzzleLocation>(raw.locations, raw.date) }
 }
 
 /**

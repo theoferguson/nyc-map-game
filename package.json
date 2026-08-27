@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "DEV_SAMPLE_CONTENT=1 vite --host",
     "build": "tsc -b && vitest run && vite build",
     "lint": "oxlint",
     "preview": "vite preview",

@@ -1,6 +1,5 @@
-import postgres from 'postgres'
-import { timingSafeEqual } from 'node:crypto'
-
+import { db } from './_db.js'
+import { adminTokenMatches } from './_auth.js'
 /**
  * Read side of the consent-free counters, for the admin panel.
  *
@@ -8,24 +7,8 @@ import { timingSafeEqual } from 'node:crypto'
  * business figures, and there is no reason to publish how many people play.
  */
 
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
-
-function tokenMatches(supplied: string | null): boolean {
-  const expected = process.env.ADMIN_TOKEN
-  if (!expected || !supplied) return false
-  const a = Buffer.from(supplied)
-  const b = Buffer.from(expected)
-  return a.length === b.length && timingSafeEqual(a, b)
-}
-
 export async function POST(req: Request): Promise<Response> {
-  if (!tokenMatches(req.headers.get('x-admin-token'))) {
+  if (!adminTokenMatches(req.headers.get('x-admin-token'))) {
     return Response.json({ error: 'unauthorised' }, { status: 401 })
   }
   const client = db()

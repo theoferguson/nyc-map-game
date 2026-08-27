@@ -8,7 +8,7 @@
  */
 import { readdir, readFile } from 'node:fs/promises'
 import postgres from 'postgres'
-import { encodeLocations } from './encode.mjs'
+import { encodeLocations } from '../src/data/codec.mjs'
 
 const SRC = new URL('../puzzles/', import.meta.url)
 

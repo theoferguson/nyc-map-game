@@ -1,7 +1,8 @@
-import postgres from 'postgres'
-import { timingSafeEqual } from 'node:crypto'
+import { db } from './_db.js'
+import { adminTokenMatches } from './_auth.js'
 import { DEFAULTS, validateConfig } from '../src/game/config.js'
 import { validateDay, type DayLocation } from '../src/data/validateDay.js'
+import { decodeLocations, encodeLocations } from '../src/data/codec.mjs'
 
 /**
  * Everything the admin panel does that needs the token, behind one auth check.
@@ -19,36 +20,8 @@ import { validateDay, type DayLocation } from '../src/data/validateDay.js'
 
 const MAX_BODY_BYTES = 256 * 1024
 
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
-
-function tokenMatches(supplied: string | null): boolean {
-  const expected = process.env.ADMIN_TOKEN
-  if (!expected || !supplied) return false
-  const a = Buffer.from(supplied)
-  const b = Buffer.from(expected)
-  return a.length === b.length && timingSafeEqual(a, b)
-}
-
-/** Mirror of the client decoder, and of scripts/encode.mjs. */
-function xor(bytes: Uint8Array, key: string): Uint8Array {
-  const k = new TextEncoder().encode(key)
-  return bytes.map((b, i) => b ^ k[i % k.length])
-}
-
-const decode = (blob: string, date: string): DayLocation[] =>
-  JSON.parse(new TextDecoder().decode(xor(Uint8Array.from(Buffer.from(blob, 'base64')), date)))
-
-const encode = (locations: DayLocation[], date: string): string =>
-  Buffer.from(xor(new TextEncoder().encode(JSON.stringify(locations)), date)).toString('base64')
-
 export async function POST(req: Request): Promise<Response> {
-  if (!tokenMatches(req.headers.get('x-admin-token'))) {
+  if (!adminTokenMatches(req.headers.get('x-admin-token'))) {
     return Response.json({ error: 'unauthorised' }, { status: 401 })
   }
 
@@ -95,7 +68,7 @@ export async function POST(req: Request): Promise<Response> {
       date,
       puzzleNumber: row.puzzle_number,
       theme: row.theme,
-      locations: decode(row.locations, date),
+      locations: decodeLocations<DayLocation>(row.locations, date),
     })
   }
 
@@ -110,7 +83,7 @@ export async function POST(req: Request): Promise<Response> {
     if (problems.length) return Response.json({ error: 'invalid day', problems }, { status: 400 })
 
     const { count } = await client`
-      update puzzles set locations = ${encode(locations, date)} where date = ${date}`
+      update puzzles set locations = ${encodeLocations(locations, date)} where date = ${date}`
     if (count === 0) return Response.json({ error: 'no such day' }, { status: 404 })
     return Response.json({ ok: true, date })
   }

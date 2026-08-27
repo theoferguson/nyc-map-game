@@ -1,5 +1,5 @@
-import postgres from 'postgres'
-import { timingSafeEqual } from 'node:crypto'
+import { db } from './_db.js'
+import { adminTokenMatches } from './_auth.js'
 // `.js`, not `.ts`. The extension is required under nodenext, and the compiler
 // emits whatever specifier is written -- so a `.ts` import survives typecheck
 // and `vercel build`, then fails at runtime with FUNCTION_INVOCATION_FAILED
@@ -15,14 +15,6 @@ import { DEFAULTS, validateConfig, toPublic, type Config } from '../src/game/con
  */
 
 const MAX_BODY_BYTES = 64 * 1024
-
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
 
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
   new Response(JSON.stringify(body), {
@@ -57,16 +49,9 @@ export async function GET(): Promise<Response> {
 }
 
 /** Constant-time, so a wrong token cannot be narrowed down by how fast it fails. */
-function tokenMatches(supplied: string | null): boolean {
-  const expected = process.env.ADMIN_TOKEN
-  if (!expected || !supplied) return false
-  const a = Buffer.from(supplied)
-  const b = Buffer.from(expected)
-  return a.length === b.length && timingSafeEqual(a, b)
-}
 
 export async function POST(req: Request): Promise<Response> {
-  if (!tokenMatches(req.headers.get('x-admin-token'))) {
+  if (!adminTokenMatches(req.headers.get('x-admin-token'))) {
     return json({ error: 'unauthorised' }, 401)
   }
 

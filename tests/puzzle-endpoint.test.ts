@@ -3,6 +3,10 @@ import { GET } from '../api/puzzle.ts'
 
 beforeEach(() => {
   delete process.env.DATABASE_URL
+  // Set by the dev script so a fresh clone can play without a database. If it
+  // ever reaches the test run, "no database" stops meaning 503 and this file
+  // passes for the wrong reason.
+  delete process.env.DEV_SAMPLE_CONTENT
 })
 
 const get = (query: string) => GET(new Request(`https://x/api/puzzle?${query}`))

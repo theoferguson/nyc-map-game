@@ -1,0 +1,76 @@
+{
+  "note": "Development sample. Not scheduled content — five obvious landmarks, so a fresh clone can play the game without a database. Real content lives in Postgres and never in this repo.",
+  "theme": null,
+  "locations": [
+    {
+      "id": "sample-empire-state",
+      "name": "The Empire State Building",
+      "prompt": "The Empire State Building",
+      "lat": 40.748442,
+      "lng": -73.985656,
+      "class": "landmark",
+      "borough": "manhattan",
+      "difficulty": 1,
+      "tags": ["midtown", "skyscraper", "art-deco"],
+      "factShort": "A development sample, not real content. The Empire State Building went up in 410 days during the depths of the Depression.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Empire_State_Building",
+      "sourceAttribution": "Wikipedia"
+    },
+    {
+      "id": "sample-brooklyn-bridge",
+      "name": "The Brooklyn Bridge",
+      "prompt": "The Brooklyn Bridge",
+      "lat": 40.706086,
+      "lng": -73.996864,
+      "class": "area",
+      "borough": "brooklyn",
+      "difficulty": 2,
+      "tags": ["east-river", "bridge", "1880s"],
+      "factShort": "A development sample, not real content. The Brooklyn Bridge opened in 1883 and was the longest suspension bridge in the world at the time.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+      "sourceAttribution": "Wikipedia"
+    },
+    {
+      "id": "sample-unisphere",
+      "name": "The Unisphere",
+      "prompt": "The Unisphere",
+      "lat": 40.746563,
+      "lng": -73.845238,
+      "class": "landmark",
+      "borough": "queens",
+      "difficulty": 3,
+      "tags": ["flushing-meadows", "worlds-fair", "1960s"],
+      "factShort": "A development sample, not real content. The Unisphere was built as the theme symbol of the 1964 New York World's Fair.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Unisphere",
+      "sourceAttribution": "Wikipedia"
+    },
+    {
+      "id": "sample-yankee-stadium",
+      "name": "Yankee Stadium",
+      "prompt": "Yankee Stadium",
+      "lat": 40.829643,
+      "lng": -73.926175,
+      "class": "area",
+      "borough": "bronx",
+      "difficulty": 4,
+      "tags": ["south-bronx", "stadium", "baseball"],
+      "factShort": "A development sample, not real content. The current Yankee Stadium opened in 2009 across the street from the original.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Yankee_Stadium",
+      "sourceAttribution": "Wikipedia"
+    },
+    {
+      "id": "sample-wonder-wheel",
+      "name": "The Wonder Wheel",
+      "prompt": "The Wonder Wheel",
+      "lat": 40.574926,
+      "lng": -73.977664,
+      "class": "landmark",
+      "borough": "brooklyn",
+      "difficulty": 5,
+      "tags": ["coney-island", "amusement-park", "1920s"],
+      "factShort": "A development sample, not real content. The Wonder Wheel has turned at Coney Island since 1920 and carries both swinging and stationary cars.",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Wonder_Wheel",
+      "sourceAttribution": "Wikipedia"
+    }
+  ]
+}

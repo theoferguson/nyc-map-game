@@ -26,9 +26,16 @@ dist-ssr
 # Authored content. Never in the repo: a public repo publishes every future
 # day in plaintext, and git history keeps it there. Content lives in the
 # database and is served through the date gate in /api/puzzle.
-content/
+# `content/*` rather than `content/`: a negation cannot reach inside an
+# excluded directory, so the directory itself has to stay visible for the
+# sample below to be re-included.
+content/*
 puzzles/
 public/puzzles/
+# The development sample is invented placeholder content, committed so a fresh
+# clone can play without a database. It is not scheduled and reveals nothing
+# about the real queue.
+!content/sample.json
 .vercel
 
 # Never in a public repo. `vercel env pull` writes the database URL here.

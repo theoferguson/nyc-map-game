@@ -12,6 +12,7 @@
  */
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import postgres from 'postgres'
+import { decodeLocations } from '../src/data/codec.mjs'
 
 const OUT = new URL('../puzzles/', import.meta.url)
 const DAYS = new URL('../content/days.json', import.meta.url)
@@ -20,11 +21,6 @@ const url = process.env.DATABASE_URL
 if (!url) {
   console.error('DATABASE_URL is not set')
   process.exit(1)
-}
-
-function xor(bytes, key) {
-  const k = new TextEncoder().encode(key)
-  return bytes.map((b, i) => b ^ k[i % k.length])
 }
 
 /** id -> query, from whatever is already on disk. */
@@ -46,8 +42,7 @@ const days = []
 let missingQuery = 0
 
 for (const r of rows) {
-  const bytes = xor(Uint8Array.from(Buffer.from(r.locations, 'base64')), r.date)
-  const locations = JSON.parse(new TextDecoder().decode(bytes))
+  const locations = decodeLocations(r.locations, r.date)
   await writeFile(
     new URL(`${r.date}.json`, OUT),
     JSON.stringify(

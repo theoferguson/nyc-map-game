@@ -1,5 +1,4 @@
-import postgres from 'postgres'
-
+import { db } from './_db.js'
 /**
  * A counter, not an event.
  *
@@ -14,14 +13,6 @@ import postgres from 'postgres'
  */
 
 const KINDS = new Set(['complete'])
-
-let sql: postgres.Sql | null = null
-function db(): postgres.Sql | null {
-  const url = process.env.DATABASE_URL
-  if (!url) return null
-  sql ??= postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10 })
-  return sql
-}
 
 export async function POST(req: Request): Promise<Response> {
   let kind = ''
