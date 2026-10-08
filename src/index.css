@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "maplibre-gl/dist/maplibre-gl.css";
+@import "leaflet/dist/leaflet.css";
 
 html, body, #root {
   height: 100%;
@@ -10,23 +10,37 @@ html, body, #root {
 /* Long-press on the map must not raise the iOS callout or the Android context
    menu -- careful mode (M5) is a press-and-hold and the native UI eats it. */
 .map-surface {
+  /* Leaflet's panes and controls carry z-indexes in the hundreds; without a
+     stacking context of its own the map would paint over every overlay. */
+  isolation: isolate;
   -webkit-touch-callout: none;
   user-select: none;
   touch-action: none;
 }
 
-/* MapLibre's attribution docks itself to the canvas corner; float it to match
-   the rest of the UI. Attribution is required by both tile providers, so it is
-   restyled rather than removed. */
-.maplibregl-ctrl-bottom-right {
-  margin: 0 0.75rem 0.75rem 0;
+/* No tile has loaded yet, or the imagery stops: show the app's own dark
+   ground, not Leaflet's light grey. */
+.leaflet-container {
+  background: transparent;
 }
-.maplibregl-ctrl-attrib {
-  border-radius: 9999px !important;
-  background: rgb(23 23 23 / 0.75) !important;
+
+/* Leaflet's attribution docks itself to the map corner; float it to match the
+   wordmark pills opposite. Attribution is required by both tile providers, so
+   it is restyled rather than removed -- and Leaflet has no collapsed form, so
+   it wraps short of the wordmark and settings button instead of running into
+   them. */
+.leaflet-control-container .leaflet-bottom.leaflet-right .leaflet-control-attribution {
+  margin: 0 0.75rem 0.75rem 0;
+  padding: 0.25rem 0.625rem;
+  max-width: calc(100vw - 11rem);
+  font-size: 10px;
+  line-height: 1.3;
+  text-align: right;
+  border-radius: 0.75rem;
+  background: rgb(23 23 23 / 0.75);
   backdrop-filter: blur(4px);
 }
-.maplibregl-ctrl-attrib a,
-.maplibregl-ctrl-attrib {
-  color: rgb(212 212 212) !important;
+.leaflet-container .leaflet-control-attribution,
+.leaflet-container .leaflet-control-attribution a {
+  color: rgb(212 212 212);
 }

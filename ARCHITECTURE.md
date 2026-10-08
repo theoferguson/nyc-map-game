@@ -31,7 +31,7 @@ src/admin/AdminPanel.tsx
 | `src/App.tsx` | the game state machine, and nothing else |
 | `src/screens/` | `Landing`, `Results`, `SettingsPanel` — one screen each |
 | `src/ui/` | `Floating`, `Centered` — layout primitives shared by screens |
-| `src/map/` | MapLibre setup, imagery sources, the A/B assignment |
+| `src/map/` | Leaflet setup, imagery sources, the A/B assignment |
 | `src/game/` | rules and device state: scoring, dates, storage, telemetry, config |
 | `src/data/` | puzzle loading, the codec, day validation |
 | `src/admin/` | the operator panel, reachable at `/?admin` |

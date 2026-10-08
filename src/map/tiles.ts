@@ -16,9 +16,9 @@ export type Imagery = {
   attribution: string
   /** A concrete tile used to confirm the service is alive before wiring it up. */
   probe: string
-  /** Where the service has tiles. Outside this MapLibre would ask and get a 404. */
+  /** Where the service has tiles. Outside this the map would ask and get a 404. */
   bounds?: [number, number, number, number]
-  minzoom?: number
+  /** The deepest level the service is asked for; past it, its tiles are scaled up. */
   maxzoom?: number
 }
 
@@ -35,7 +35,7 @@ export const BASEMAP: Imagery = {
    * outside the city, which is only ever on screen at the wide end-of-game
    * framing; from z14 up the player is inside the five boroughs looking for a
    * building, where the city survey covers it completely and every Esri tile
-   * fetched underneath is bytes nobody sees. Above the cap MapLibre overzooms
+   * fetched underneath is bytes nobody sees. Above the cap Leaflet overzooms
    * these tiles, so the background stays present, just soft -- which is the
    * right trade for a layer that is either hidden or peripheral.
    */
@@ -57,9 +57,6 @@ export const VARIANTS: Imagery[] = [
     id: 'doitt-2018',
     label: 'NYC aerial · 2018',
     bounds: NYC_BOUNDS,
-    // The map never goes below 9.5, and without a floor MapLibre walks the
-    // pyramid up to z1 hunting for a parent tile to show while loading.
-    minzoom: 9,
     url: 'https://maps.nyc.gov/xyz/1.0.0/photo/2018/{z}/{x}/{y}.png8',
     attribution: 'Imagery &copy; NYC OTI (2018)',
     probe: 'https://maps.nyc.gov/xyz/1.0.0/photo/2018/15/9649/12315.png8',
@@ -68,7 +65,6 @@ export const VARIANTS: Imagery[] = [
     id: 'nyc-2024',
     label: 'NYC aerial · 2024',
     bounds: NYC_BOUNDS,
-    minzoom: 9,
     url: 'https://tiles.arcgis.com/tiles/yG5s3afENB5iO9fj/arcgis/rest/services/NYC_Orthos_2024/MapServer/tile/{z}/{y}/{x}',
     attribution: 'Imagery &copy; NYC OTI (2024)',
     probe: 'https://tiles.arcgis.com/tiles/yG5s3afENB5iO9fj/arcgis/rest/services/NYC_Orthos_2024/MapServer/tile/15/12315/9649',
@@ -99,8 +95,8 @@ export function imageryVariant(): Imagery {
 /**
  * Returns the raster layers to draw, bottom first.
  *
- * MapLibre's multi-URL `tiles` array shards across hosts, it does not fail over,
- * so the city layer's availability is settled up front with one probe instead.
+ * A tile layer has no failover -- a dead host is just missing tiles -- so the
+ * city layer's availability is settled up front with one probe instead.
  */
 export async function resolveSources(timeoutMs = 1500): Promise<Imagery[]> {
   const variant = imageryVariant()

@@ -119,7 +119,7 @@ entire word list and survived; this is the same bet.
 
 ```
 src/game/     scoring curve, miss copy, share string, telemetry
-src/map/      MapLibre setup, imagery sources, recap card placement
+src/map/      Leaflet setup, imagery sources, recap card placement
 src/data/     puzzle schema, loading, decoding
 puzzles/      authored days (plain)
 scripts/      puzzle encoder, imagery health check

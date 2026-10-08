@@ -1832,3 +1832,41 @@ The encoder now lives in `scripts/encode.mjs`, imported by both the push script 
 so the test drives the real encoder against the real decoder on a synthetic day. The
 content-rules test is skipped when the files are absent, since it only matters to whoever has
 them open.
+
+## 24. MapLibre out, Leaflet in (2026-10-08)
+
+A browser that refused WebGL2 got a blank page: MapLibre logged `GPUInitializationError`,
+returned a half-built map, and `disableRotation()` on its missing handlers threw. Nothing was
+wrong with the deploy. MapLibre draws only through WebGL, and Chrome no longer falls back to
+software WebGL when hardware acceleration is off, so for that player there was no map to have.
+
+The game uses none of what WebGL buys: raster tiles, pins, one dashed line, north-up with
+rotation switched off. Leaflet draws tiles as `<img>` and the line as SVG, so it needs no GPU,
+and every camera call had a direct equivalent. The JS bundle went from 321.6 KB to 118.3 KB
+gzipped.
+
+Verified by playing a full game in headless Chrome with `--disable-3d-apis` (WebGL2 reported
+unavailable): tiles load, guesses place, reveal and recap fly, no exceptions, no tile 404s.
+
+Things that did not carry over for free:
+
+- **maxBounds means something different.** MapLibre's held the whole viewport inside the city,
+  which made the opening framing "the city box exactly covers the screen" and stopped a
+  mid-round zoom-out there. Leaflet's only holds the centre, so the first port opened wide on
+  New Jersey -- and at that zoom the city surveys serve sparse, patchy low-level tiles the game
+  never used to request. The floor is now set explicitly (`getBoundsZoom(bounds, true)`),
+  recomputed on resize, and lifted with the cage at the recap.
+- **Click tolerance is a class default.** Leaflet has no per-map `clickTolerance`; the 10px
+  rule is set on `Draggable`, which only the map uses.
+- **Stacking.** Leaflet's panes carry z-indexes in the hundreds, so the map container is
+  isolated or it paints over every overlay.
+- **No collapsed attribution.** It wraps short of the wordmark instead. (MapLibre's expanded
+  attribution already ran into the wordmark on load, so this is a small improvement.)
+- **Reduced motion.** MapLibre skipped non-essential camera animation for it; Leaflet ignores
+  it, so the reset and reveal check it themselves. The recap flight stays animated, as before.
+- `updateWhenZooming: false` on the tile layers: mid-pinch, intermediate levels are no longer
+  fetched and discarded. `minzoom` on the city sources is gone -- it existed to stop MapLibre
+  walking the pyramid for parent tiles, which Leaflet never does.
+
+*Still to check on a real phone:* pinch and pan feel, careful-mode hold, and a tap during a
+pan. The pointer bookkeeping is unchanged, but Leaflet reports gestures differently.
