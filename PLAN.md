@@ -1868,5 +1868,5 @@ Things that did not carry over for free:
   fetched and discarded. `minzoom` on the city sources is gone -- it existed to stop MapLibre
   walking the pyramid for parent tiles, which Leaflet never does.
 
-*Still to check on a real phone:* pinch and pan feel, careful-mode hold, and a tap during a
-pan. The pointer bookkeeping is unchanged, but Leaflet reports gestures differently.
+*Checked on a real phone (2026-10-08)* against the Vercel preview: pinch and pan feel,
+careful-mode hold, and a tap during a pan all behave as they did under MapLibre.
