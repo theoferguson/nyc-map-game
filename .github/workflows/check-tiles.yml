@@ -22,10 +22,10 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
       # No install step: the checker depends on nothing but node built-ins, and
       # keeping it that way means this alarm cannot be broken by the dependency
       # tree it is meant to outlive.
