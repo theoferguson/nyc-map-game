@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Map as MapLibreMap, Marker } from 'maplibre-gl'
+import { Map as LeafletMap, Marker, divIcon } from 'leaflet'
 import { resolveSources } from '../map/tiles'
+import { imageryLayers } from '../map/layers'
 import type { DayLocation } from '../data/validateDay'
 
 /**
@@ -25,7 +26,7 @@ export function PinMap({
   onMove: (lat: number, lng: number) => void
 }) {
   const container = useRef<HTMLDivElement>(null)
-  const map = useRef<MapLibreMap | null>(null)
+  const map = useRef<LeafletMap | null>(null)
   const markers = useRef<Marker[]>([])
   /**
    * State, not `map.current`. A ref does not re-render, so an effect that
@@ -49,30 +50,16 @@ export function PinMap({
 
     void resolveSources().then((sources) => {
       if (cancelled || !container.current) return
-      const m = new MapLibreMap({
-        container: container.current,
-        style: {
-          version: 8,
-          sources: Object.fromEntries(
-            sources.map((s) => [
-              s.id,
-              {
-                type: 'raster',
-                tiles: [s.url],
-                tileSize: 256,
-                attribution: s.attribution,
-                ...(s.bounds ? { bounds: s.bounds } : {}),
-                ...(s.minzoom ? { minzoom: s.minzoom } : {}),
-                ...(s.maxzoom ? { maxzoom: s.maxzoom } : {}),
-              },
-            ]),
-          ),
-          layers: sources.map((s) => ({ id: s.id, type: 'raster', source: s.id })),
-        },
-        center: [-73.97, 40.72],
+      const m = new LeafletMap(container.current, {
+        center: [40.72, -73.97],
         zoom: 10,
+        // The surveys stop at z18, so past it there is nothing to request.
+        maxZoom: 18,
+        zoomControl: false,
       })
-      m.on('click', (e) => latest.current.onMove(+e.lngLat.lat.toFixed(6), +e.lngLat.lng.toFixed(6)))
+      m.attributionControl.setPrefix(false)
+      for (const layer of imageryLayers(sources, 18)) layer.addTo(m)
+      m.on('click', (e) => latest.current.onMove(+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)))
       map.current = m
       setReady(true)
     })
@@ -92,13 +79,18 @@ export function PinMap({
     if (!m) return
     for (const marker of markers.current) marker.remove()
     markers.current = locations.map((l, i) => {
-      const el = document.createElement('div')
       const active = i === selected
-      el.style.cssText = `width:${active ? 18 : 12}px;height:${active ? 18 : 12}px;border-radius:50%;
-        background:${active ? '#fbbf24' : '#ffffff'};border:2px solid #171717;
-        box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:pointer`
-      el.title = l.prompt
-      return new Marker({ element: el }).setLngLat([l.lng, l.lat]).addTo(m)
+      const size = active ? 18 : 12
+      const icon = divIcon({
+        className: '',
+        iconSize: [size, size],
+        html: `<div style="width:100%;height:100%;box-sizing:border-box;border-radius:50%;
+          background:${active ? '#fbbf24' : '#ffffff'};border:2px solid #171717;
+          box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:pointer"></div>`,
+      })
+      // Clicks bubble to the map, as they did before: a click on a pin moves the
+      // highlighted one there, which is the only thing a click here ever does.
+      return new Marker([l.lat, l.lng], { icon, title: l.prompt, bubblingMouseEvents: true }).addTo(m)
     })
   }, [locations, selected, ready])
 
@@ -108,12 +100,12 @@ export function PinMap({
   useEffect(() => {
     const l = latest.current.locations[latest.current.selected]
     if (!map.current || !l) return
-    map.current.flyTo({ center: [l.lng, l.lat], zoom: 15, duration: 600 })
+    map.current.flyTo([l.lat, l.lng], 15, { duration: 0.6 })
   }, [focusedId, ready])
 
   return (
     <div className="space-y-2">
-      <div ref={container} className="h-72 w-full overflow-hidden rounded-xl ring-1 ring-white/10" />
+      <div ref={container} className="isolate h-72 w-full overflow-hidden rounded-xl ring-1 ring-white/10" />
       <p className="text-[11px] text-neutral-500">
         Click the map to move the highlighted pin. Zoom in far enough to see the
         building — that is the check a coordinate cannot give you.

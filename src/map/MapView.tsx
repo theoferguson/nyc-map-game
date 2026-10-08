@@ -1,19 +1,37 @@
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import {
-  Map as MapLibreMap,
+  Map as LeafletMap,
   Marker,
-  LngLatBounds,
-  type CenterZoomBearing,
-  type GeoJSONSource,
-} from 'maplibre-gl'
+  Polyline,
+  Draggable,
+  divIcon,
+  latLngBounds,
+  type LatLng,
+} from 'leaflet'
 import { resolveSources, NYC_BOUNDS as NYC } from './tiles'
+import { imageryLayers } from './layers'
 import type { LngLat } from '../game/scoring'
 
-/** [[W,S],[E,N]] for the camera APIs -- the player cannot pan out of the city. */
-const NYC_BOUNDS: [[number, number], [number, number]] = [
-  [NYC[0], NYC[1]],
-  [NYC[2], NYC[3]],
-]
+/** [[S,W],[N,E]] for the camera APIs -- the player cannot pan out of the city. */
+const NYC_BOUNDS = latLngBounds([NYC[1], NYC[0]], [NYC[3], NYC[2]])
+
+// A tap that drifts past 10px is the tail end of a pan, not a placement. Leaflet
+// has no per-map option for this; every drag in the app is the map's, so the
+// class default is the map's.
+Draggable.mergeOptions({ clickTolerance: 10 })
+
+/** Programmatic camera moves cut instead of flying when the OS asks for less motion. */
+const animate = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** A teardrop pin, tip on the point. Drawn inline: Leaflet's default marker is a
+ *  PNG that bundlers lose, and two colours do not justify an asset pipeline. */
+const pinIcon = (color: string) =>
+  divIcon({
+    className: '',
+    iconSize: [27, 41],
+    iconAnchor: [13.5, 41],
+    html: `<svg width="27" height="41" viewBox="0 0 27 41"><path d="M13.5 .5C6.3.5.5 6.3.5 13.5c0 9.8 13 27 13 27s13-17.2 13-27C26.5 6.3 20.7.5 13.5.5z" fill="${color}" stroke="rgb(0 0 0 / .3)"/><circle cx="13.5" cy="13.5" r="5" fill="#fff"/></svg>`,
+  })
 
 /**
  * Past z18 you start reading painted rooftop signage, stadium logos and storefront
@@ -39,16 +57,13 @@ const RECAP_ZOOM = 14.5
 
 /** Mirrors the reveal's zoom-in, so the round ends by running it backwards. */
 const RESET_MS = 900
-const FRAMING_PADDING = 20
 
 /**
- * MapLibre fires click, click, dblclick -- so a double-click to zoom would commit
- * the first click as a guess. Placement therefore waits out the double-click
- * window before committing.
+ * The browser fires click, click, dblclick -- so a double-click to zoom would
+ * commit the first click as a guess. Placement therefore waits out the
+ * double-click window before committing.
  */
 const DOUBLE_CLICK_WINDOW_MS = 300
-
-const EMPTY = { type: 'FeatureCollection', features: [] } as const
 
 
 export type MapHandle = {
@@ -87,9 +102,11 @@ export function MapView({
   holdMs?: number
 }) {
   const container = useRef<HTMLDivElement>(null)
-  const map = useRef<MapLibreMap | null>(null)
-  const standardFraming = useRef<CenterZoomBearing | null>(null)
+  const map = useRef<LeafletMap | null>(null)
+  const standardFraming = useRef<{ center: LatLng; zoom: number } | null>(null)
   const pins = useRef<Marker[]>([])
+  /** The dashed guess-to-answer line, emptied between rounds rather than rebuilt. */
+  const link = useRef<Polyline | null>(null)
   const pendingPlace = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resetting = useRef(false)
   /** Screen position of an in-progress hold, for the ring. */
@@ -120,8 +137,11 @@ export function MapView({
     careful.current = { on: carefulMode, ms: holdMs }
   })
 
-  const addPin = (m: MapLibreMap, p: LngLat, color: string) => {
-    pins.current.push(new Marker({ color }).setLngLat([p.lng, p.lat]).addTo(m))
+  const addPin = (m: LeafletMap, p: LngLat, color: string) => {
+    // Not interactive, so a tap on a pin falls through to the map like any other.
+    pins.current.push(
+      new Marker([p.lat, p.lng], { icon: pinIcon(color), interactive: false, keyboard: false }).addTo(m),
+    )
   }
 
   useEffect(() => {
@@ -130,63 +150,41 @@ export function MapView({
     resolveSources().then((sources) => {
       if (cancelled || !container.current) return
 
-      const m = new MapLibreMap({
-        container: container.current,
-        style: {
-          version: 8,
-          sources: {
-            ...Object.fromEntries(
-              sources.map((s, i) => [
-                `satellite-${i}`,
-                {
-                  type: 'raster',
-                  tiles: [s.url],
-                  tileSize: 256,
-                  // Per source, not per map: each service has its own coverage
-                  // and its own useful zoom range, and asking outside either is
-                  // a round trip for nothing.
-                  ...(s.bounds ? { bounds: s.bounds } : {}),
-                  minzoom: s.minzoom ?? 0,
-                  maxzoom: s.maxzoom ?? MAX_ZOOM,
-                  attribution: s.attribution,
-                },
-              ]),
-            ),
-            link: { type: 'geojson', data: EMPTY },
-          },
-          layers: [
-            ...sources.map((_, i) => ({
-              id: `satellite-${i}`,
-              type: 'raster' as const,
-              source: `satellite-${i}`,
-            })),
-            {
-              id: 'link',
-              type: 'line',
-              source: 'link',
-              paint: {
-                'line-color': '#fbbf24',
-                'line-width': 2,
-                'line-dasharray': [2, 2],
-              },
-            },
-          ],
-        },
-        bounds: NYC_BOUNDS,
-        fitBoundsOptions: { padding: FRAMING_PADDING },
+      const m = new LeafletMap(container.current, {
         minZoom: MIN_ZOOM,
         maxZoom: MAX_ZOOM,
+        // Fractional zoom: MIN_ZOOM is 9.5, and a pinch should stop where the
+        // fingers stop rather than snapping to a whole level.
+        zoomSnap: 0,
         maxBounds: NYC_BOUNDS,
-        // North-up is essential: the Manhattan grid is a primary orientation cue.
-        dragRotate: false,
-        pitchWithRotate: false,
-        // A tap that drifts past 10px is the tail end of a pan, not a placement.
-        clickTolerance: 10,
-        attributionControl: { compact: true },
+        // A hard wall rather than Leaflet's default rubber band, which lets the
+        // player drag out into New Jersey and then yanks them back.
+        maxBoundsViscosity: 1,
+        // No rotation exists in Leaflet, so north-up -- essential, the Manhattan
+        // grid is a primary orientation cue -- needs nothing switched off.
+        zoomControl: false,
+        // Safari's emulated long-press fires a contextmenu and swallows the next
+        // click; careful mode's hold is ours, and nothing here wants a menu.
+        tapHold: false,
       })
-
-      m.touchZoomRotate.disableRotation()
-      m.keyboard.disableRotation()
+      m.attributionControl.setPrefix(false)
+      // Leaflet's maxBounds only keeps the centre in the city; the screen edges
+      // are free to show New Jersey. So the zoom floor is wherever the city box
+      // exactly covers the screen -- which is also the opening framing -- and
+      // it moves when the window changes shape, until the recap lifts the cage.
+      const cover = () => Math.max(MIN_ZOOM, m.getBoundsZoom(NYC_BOUNDS, true))
+      m.setMinZoom(cover())
+      m.setView(NYC_BOUNDS.getCenter(), cover(), { animate: false })
+      m.on('resize', () => {
+        if (m.options.maxBounds) m.setMinZoom(cover())
+      })
+      for (const layer of imageryLayers(sources, MAX_ZOOM)) layer.addTo(m)
+      link.current = new Polyline([], {
+        color: '#fbbf24',
+        weight: 2,
+        dashArray: '4 4',
+        interactive: false,
+      }).addTo(m)
 
       m.on('click', (e) => {
         // Gated here rather than in the caller: the pin is dropped from this
@@ -197,7 +195,7 @@ export function MapView({
         // this path must stay out of the way entirely -- otherwise a tap
         // commits through it and the hold-to-place guarantee is worthless.
         if (!canPlace.current || resetting.current || careful.current.on) return
-        const p = { lng: e.lngLat.lng, lat: e.lngLat.lat }
+        const p = { lng: e.latlng.lng, lat: e.latlng.lat }
         if (pendingPlace.current) clearTimeout(pendingPlace.current)
         pendingPlace.current = setTimeout(() => {
           pendingPlace.current = null
@@ -207,12 +205,12 @@ export function MapView({
       })
 
       // Belt and braces for gestures the pointer events do not describe as two
-      // fingers -- a trackpad pinch, or a touch MapLibre has captured. If the
+      // fingers -- a trackpad pinch, or a touch Leaflet has captured. If the
       // camera starts moving, whatever the player is doing is not placing.
       m.on('zoomstart', cancelHold)
       m.on('movestart', cancelHold)
 
-      // The zoom itself is MapLibre's; all we do is call off the pending commit.
+      // The zoom itself is Leaflet's; all we do is call off the pending commit.
       m.on('dblclick', () => {
         if (pendingPlace.current) clearTimeout(pendingPlace.current)
         pendingPlace.current = null
@@ -224,18 +222,9 @@ export function MapView({
 
       // Captured immediately, and replayed verbatim at the start of every round.
       // Recomputing per round, or easing into it, lets the previous reveal leak
-      // position into the next prompt.
-      //
-      // Deliberately NOT gated on the 'load' event: cameraForBounds only needs
-      // the container size, which exists as soon as the map is constructed.
-      // Waiting for 'load' meant that if it never fired, the camera reset and
-      // the end-of-game cards both died silently with the map still working.
-      standardFraming.current =
-        m.cameraForBounds(NYC_BOUNDS, { padding: FRAMING_PADDING }) ?? {
-          center: m.getCenter(),
-          zoom: m.getZoom(),
-          bearing: 0,
-        }
+      // position into the next prompt. The map was framed on the city a few
+      // lines up, so where it sits now is the standard framing.
+      standardFraming.current = { center: m.getCenter(), zoom: m.getZoom() }
       ready.current?.()
     })
 
@@ -244,6 +233,7 @@ export function MapView({
       if (pendingPlace.current) clearTimeout(pendingPlace.current)
       map.current?.remove()
       map.current = null
+      link.current = null
     }
   }, [])
 
@@ -256,13 +246,15 @@ export function MapView({
       // zoom. The destination is still the one camera computed at startup, so
       // every round starts from an identical framing however it got there.
       resetting.current = true
-      m.easeTo({ ...standardFraming.current, duration: RESET_MS })
 
-      // Also fires if the player grabs the map mid-flight, which aborts the
-      // ease -- they have taken over, so hand control straight back.
+      // Registered before the move, which ends synchronously when motion is
+      // reduced. If the player grabs the map mid-flight it fires when their drag
+      // ends -- they have taken over, so hand control straight back.
       m.once('moveend', () => {
         resetting.current = false
       })
+      const { center, zoom } = standardFraming.current
+      m.flyTo(center, zoom, { duration: RESET_MS / 1000, animate: animate() })
     },
 
     revealAnswer: (guess, answer) => {
@@ -272,32 +264,23 @@ export function MapView({
 
       // Straight line, not a great-circle arc: curvature over a few km is
       // sub-pixel, so interpolating it would be invisible work.
-      ;(m.getSource('link') as GeoJSONSource).setData({
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            [guess.lng, guess.lat],
-            [answer.lng, answer.lat],
-          ],
-        },
-      })
+      link.current?.setLatLngs([
+        [guess.lat, guess.lng],
+        [answer.lat, answer.lng],
+      ])
 
-      m.fitBounds(
-        new LngLatBounds([guess.lng, guess.lat], [guess.lng, guess.lat]).extend([
-          answer.lng,
-          answer.lat,
-        ]),
-        { padding: 80, maxZoom: REVEAL_MAX_ZOOM, duration: 900 },
-      )
+      m.flyToBounds(latLngBounds([guess.lat, guess.lng], [answer.lat, answer.lng]), {
+        padding: [80, 80],
+        maxZoom: REVEAL_MAX_ZOOM,
+        duration: 0.9,
+        animate: animate(),
+      })
     },
 
     clearPins: () => {
       pins.current.forEach((p) => p.remove())
       pins.current = []
-      const src = map.current?.getSource('link') as GeoJSONSource | undefined
-      src?.setData(EMPTY)
+      link.current?.setLatLngs([])
     },
 
     focusLocation: (p, bottomInset = 0) => {
@@ -308,14 +291,12 @@ export function MapView({
       //
       // The padding is load-bearing: the recap panel covers the lower half of a
       // phone screen, so centring the answer would put the pin directly behind
-      // it. This lifts it into the visible strip above.
-      m.flyTo({
-        center: [p.lng, p.lat],
-        zoom: RECAP_ZOOM,
-        padding: { top: 0, left: 0, right: 0, bottom: bottomInset },
-        duration: 900,
-        essential: true,
-      })
+      // it. This lifts it into the visible strip above: the centre goes half the
+      // inset below the pin, which puts the pin mid-strip. Always animated, even
+      // with reduced motion -- the flight is what tells the player where the
+      // next answer is relative to the last.
+      const center = m.unproject(m.project([p.lat, p.lng], RECAP_ZOOM).add([0, bottomInset / 2]), RECAP_ZOOM)
+      m.flyTo(center, RECAP_ZOOM, { duration: 0.9 })
     },
 
     showAllAnswers: (points) => {
@@ -326,7 +307,8 @@ export function MapView({
       // maxBounds exists to stop players wandering out of the city mid-round.
       // The game is over; there is nothing left to constrain, and the recap
       // flies between answers which the cage would fight.
-      m.setMaxBounds(null)
+      m.setMaxBounds(undefined)
+      m.setMinZoom(MIN_ZOOM)
 
     },
   }), [])
@@ -373,7 +355,7 @@ export function MapView({
       // Re-checked at fire time, not only at press time: a second finger, a
       // round ending, or a camera reset can all happen inside the hold.
       if (!m || !canPlace.current || pointers.current.size !== 1) return
-      const { lng, lat } = m.unproject([x, y])
+      const { lng, lat } = m.containerPointToLatLng([x, y])
       addPin(m, { lng, lat }, '#fbbf24')
       place.current({ lng, lat })
     }, careful.current.ms)
